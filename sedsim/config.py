@@ -17,6 +17,10 @@ import configparser
 import os
 import sys
 
+import numpy
+import scipy.interpolate as interpolate
+
+
 
 import messages as MTU
 import filters
@@ -155,6 +159,7 @@ class check_prepare:
                 MTU.Info('Spectra directory already created', 'No') 
 
         ### 5 - Check the template configuration
+        MTU.Info('-5-###Check Template section###---','Yes')
         self.config.Template = self.check_Template(self.config.Template)
 
 
@@ -478,7 +483,7 @@ class check_prepare:
         ###check basessp
         if Temp['BaseSSP']:
             if os.path.isfile(Temp['BaseSSP']):
-                MTU.Info('BaseSSP found', 'Yes')
+                MTU.Info('BaseSSP found', 'No')
             else:
                 MTU.Error('BaseSSP not found ... exit', 'Yes')
                 sys.exit()
@@ -489,7 +494,7 @@ class check_prepare:
         ###Dust Use
         if Temp['DustUse']:
             if os.path.isfile(Temp['DustUse']):
-                MTU.Info('Dust file found (DustUse)', 'Yes')
+                MTU.Info('Dust file found (DustUse)', 'No')
             else:
                 MTU.Error('Dust file not found (DustUse) ... exit', 'Yes')
                 sys.exit()
@@ -556,3 +561,176 @@ class check_prepare:
 
         return Temp
 
+class prepare_dis:
+    """
+    This class check and prepare the program
+    """
+
+    def __init__(self,):
+        """
+        Class Constructor
+        """
+
+    def full_array(self, conf):
+        '''
+        Method that computes extract StN, redshift and normalisation
+        Magnitude from the full array given by the user
+        Parameter
+        ---------
+        conf        dict, from the config file
+
+        Returns:
+        --------
+        redshift    list, of redshift
+        StN         list, of Signal to noise
+        mag         list, of normalisation magnitude
+        '''
+
+    def full_array(self, conf):
+        '''
+        Method that computes extract StN, redshift and normalisation
+        Magnitude from the full array given by the user
+        Parameter
+        ---------
+        conf        dict, from the config file
+
+        Returns:
+        --------
+        redshift    list, of redshift
+        StN         list, of Signal to noise
+        mag         list, of normalisation magnitude
+        '''
+        
+
+        A = numpy.loadtxt(conf.General['full_array']).T        
+        
+        redshift = A[0]
+        mag = A[1]
+
+        if conf.DataT == 'Combined' or conf.DataT == 'Spectro':
+            STN = []
+            for i in range(int(conf.SPEC['NSpec'])):
+                STN.append(A[2+i])
+        else:
+            STN = numpy.zeros(len(mag))
+
+        return redshift, STN, mag
+
+    def indiv_dist(self, conf):
+        '''
+        Method that computes random individual distribution of
+        StN, redshift and normalisation magnitude from the 3 independant
+        distribution given by the user
+        Parameter
+        ---------
+        conf        dict, from the config file
+
+        Returns:
+        --------
+        redshift    list, of redshift
+        StN         list, of Signal to noise
+        mag         list, of normalisation magnitude
+        '''
+        File = conf.General['PDir']+'/final_array_z_StN_mag.txt'
+        ###if it already exists then we have been there already
+        if os.path.isfile(File):
+            MTU.Info('final_array_z_StN_mag.txt already exist, load it', 'No')
+            conf.General['full_array'] = File
+
+            A = numpy.loadtxt(conf.General['full_array']).T
+            redshift = A[0]
+            mag = A[1]
+            if conf.DataT == 'Combined' or conf.DataT == 'Spectro':
+                STN = []
+                for i in range(int(conf.SPEC['NSpec'])):
+                    STN.append(A[2+i])
+            else:
+                STN = numpy.zeros(len(mag))
+
+            return redshift, STN, mag
+
+        else:
+            ###Number of simulations
+            Nsim = conf.General['N_obj']
+
+            ####we start by the redshift distribution
+            zdistuser = numpy.loadtxt(conf.General['z_dist'])
+            new_zdist = self.dist_from_user_dist(zdistuser,Nsim,int(len(zdistuser)/10))
+            #plot().two_dist(zdistuser,20,'user, N=%s'%len(zdistuser), new_zdist, 20,\
+            #        'final dist, N=%s'%Nsim, 'Redshift z')
+
+            ##then the magnitudes 
+            if conf.DataT in ['Combined', 'Photo']:
+                Norm_distuser = numpy.loadtxt(conf.PHOT['Norm_distribution'])
+            else:
+                Norm_distuser = numpy.loadtxt(conf.SPEC['Norm_distribution'])
+
+            new_Normdist = self.dist_from_user_dist(Norm_distuser,Nsim,int(len(Norm_distuser)/10))
+            ##then the StN
+            if conf.DataT == 'Combined' or conf.DataT == 'Spectro':
+                specs = list(conf.SPEC['types'])
+                Ndist = []
+                for i in range(int(conf.SPEC['NSpec'])):
+                    StN_distuser = numpy.loadtxt(conf.SPEC['types'][specs[i]]['Stnfile'])
+                    new_StNdist = self.dist_from_user_dist(StN_distuser,Nsim,int(len(StN_distuser)/10))
+                    #plot().two_dist(StN_distuser,20,'user, N=%s'%len(StN_distuser), new_StNdist, 20,\
+                    #'final dist, N=%s'%Nsim, 'Signa-to-noise ratio')  
+                    Ndist.append(new_StNdist) 
+            else:
+                Ndist = [numpy.zeros(len(new_zdist))]
+
+            ##and write it down
+            File = self.write_down_full_array(new_zdist, Ndist, new_Normdist, conf)
+
+    def write_down_full_array(self, z, Stn, Norm, conf):
+        '''
+        This method writes down the full array made from the individual
+        distributions
+        '''
+        File = conf.General['PDir']+'/final_array_z_StN_mag.txt'
+        if not os.path.isfile(File):
+            MTU.Info('Write down final_array_z_StN_mag.txt', 'No')
+            with open(File, 'w') as FF:
+                ##first we create the header
+                head = '#redshift\tMagNorm'
+                for i in range(len(Stn)):
+                     head += '\tStN_%s'%str(i+1)
+                head += '\n' 
+                FF.write(head)
+
+                for i in enumerate(z):
+                    line = '%.4f\t%.4f\t'%(z[i[0]],Norm[i[0]])
+                    for j in range(len(Stn)):
+                        line += '\t%.4f'%(Stn[j][i[0]])
+                    line += '\n'
+                    FF.write(line)
+            
+            return File 
+        else:
+            MTU.Info('Final_array_z_StN_mag.txt, already exist', 'No')
+            return File
+
+
+
+    def dist_from_user_dist(self, user_dist, Nsim, binning):
+        '''
+        Method that draw from the user distribution another distribution
+        with the Nsim object that has the same shape
+        Parameter
+        ---------
+        user_dist   list, of values from the user distribution
+        Nsim        int, number of simulation given by the user
+        binning     binning, of the distribution
+
+        Return:
+        -------
+        new_dist    list, of Nsim value with the same distribution as
+                          user_dist
+        '''
+        hist, bin_edges = numpy.histogram(user_dist, bins=binning, density=True)
+        cum_values = numpy.zeros(bin_edges.shape)
+        cum_values[1:] = numpy.cumsum(hist*numpy.diff(bin_edges))
+        inv_cdf = interpolate.interp1d(cum_values, bin_edges)
+        r = numpy.random.rand(Nsim)
+        new_dist = inv_cdf(r)
+        return new_dist

@@ -24,6 +24,7 @@ import cli
 import __info__ as info
 import config
 import messages as MTU
+import cosmo
 
 def main():
     '''
@@ -64,9 +65,29 @@ def main():
                 break
 
     if args.project != None:
-        print('\nLOAD: %s\n'%args.project)
+        print('----------------------------------------------------------')
+        MTU.Info('LOAD: %s\n'%args.project, 'No')
         full_conf = config.read_config(args.project)
         final = config.check_prepare(full_conf)
+        print('----------------------------------------------------------')
+
+        ###### Prepare the distribution of z, StN, mag
+        if final.config.General['gen_array'] == 'no':
+            MTU.Info('Prepare distributions (stn, mag, z) for the %s objects'\
+                %(final.config.General['N_obj']),'Yes') 
+            config.prepare_dis().indiv_dist(final.config)
+
+        ###Prepare Cosmological module
+        MTU.Info('Prepare comology module', 'Yes')
+        COSMOS = cosmo.Cosmology(final.config.COSMO['Ho'], \
+               final.config.COSMO['Omega_m'], \
+               final.config.COSMO['Omega_L'])
+
+        ### Prepare library
+        Name_LIB = os.path.join(final.config.General['PDir'],\
+                        final.config.General['PName']+'.hdf5')
+        final.config.General['Name_LIB'] = Name_LIB
+
 
 if __name__ == "__main__":
     main()
