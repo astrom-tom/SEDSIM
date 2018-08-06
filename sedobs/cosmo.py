@@ -14,8 +14,9 @@ based on paper from David W. Hogg, 2000
 ###Python Libs
 from scipy import integrate
 import numpy
-from units import Phys_const, length, time
 #--------------------------------------------------
+
+from . import units
 
 class Cosmology:    
     '''
@@ -31,9 +32,9 @@ class Cosmology:
         self.Omega_L = Omega_L
         self.Omega_k = 0
         #### speed of light, m/s and conversion
-        self.c = Phys_const().speed_of_light_ms()
-        self.km_to_mpc = length().km_to_mpc(1)
-        self.Gyr_to_sec = time().Gyr_to_sec(1)
+        self.c = units.Phys_const().speed_of_light_ms()
+        self.km_to_mpc = units.length().km_to_mpc(1)
+        self.Gyr_to_sec = units.time().Gyr_to_sec(1)
 
     def Hubbletime(self, ):
         '''

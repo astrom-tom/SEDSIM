@@ -8,15 +8,14 @@ Modul dealing with the filters
 @place  UV/LAM/UCBJ
 @License: GNU public licence v3.0 - see LICENCE.txt
 '''
+##standard lib
+import os
 
 ####Python Libraries
 import h5py
 import numpy
 import scipy
-import os
 
-###SPARTAN moduls
-#from SIM_miscellaneous.Check_plots import plot
 
 class Retrieve_Filter_inf:
     """

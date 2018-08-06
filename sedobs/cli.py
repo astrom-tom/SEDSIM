@@ -31,10 +31,10 @@ class CLI:
         """
         This function creates defines the 7 main arguments of SPARTAN using the argparse module
         """
-        parser = argparse.ArgumentParser(description="SEDSIM, R. Thomas, 2018, \
+        parser = argparse.ArgumentParser(description="SEDobs, R. Thomas, 2018, \
                 This program comes with ABSOLUTELY NO WARRANTY; and is distributed under \
                 the GPLv3.0 Licence terms.See the version of this Licence distributed along \
-                this code for details.\n website: \
+                this code for details.\n website: \n \
                 https://astrom-tom.github.io/SEDSIM/build/html/index.html")
 
         parser.add_argument("-p", "--project", help="Input configuration file")

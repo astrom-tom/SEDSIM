@@ -20,10 +20,8 @@ import sys
 import numpy
 import scipy.interpolate as interpolate
 
-
-
-import messages as MTU
-import filters
+from . import messages as MTU
+from . import filters
 
 class read_config:
     """
@@ -139,7 +137,8 @@ class check_prepare:
         MTU.Info('-4-###Check fake observation configuration section###---','Yes')
         if dtype == 'Photo' or dtype == 'Combined':
             MTU.Info('------###Check Photometric configuration###---','No')
-            bands = self.check_PHOT(self.config.PHOT, gen_array, self.config.General['filter_file'])
+            bands = self.check_PHOT(self.config, gen_array, self.config.General['filter_file'])
+            self.config.PHOT['Band_list'] = bands
             if not os.path.isdir(self.config.General['PDir']+'/photo_indiv'):
                  os.makedirs(self.config.General['PDir']+'/photo_indiv')
             else:
@@ -147,7 +146,7 @@ class check_prepare:
 
         if dtype == 'Spectro' or dtype == 'Combined':
             MTU.Info('------###Check Spectroscoptic configuration###---','No')
-            spectra, specnorm, specs_noise = self.check_SPECTRO(self.config.SPEC, \
+            spectra, specnorm, specs_noise = self.check_SPECTRO(self.config, \
                     gen_array, self.config.General['filter_file'])
 
             self.config.SPEC['types'] = spectra
@@ -210,7 +209,7 @@ class check_prepare:
         if General['full_array']:
             ##if something is given we check if the file exist 
             MTU.Info('You choosed to give a Full array (z, StN, mag)','Yes')
-            if os.path.isfile(General['full_array']):
+            if os.path.isfile(os.path.join(General['PDir'], General['full_array'])):
                 MTU.Info('Full array (z, StN, mag) file found','No')
                 genarray = 'yes'
             else: 
@@ -220,7 +219,7 @@ class check_prepare:
             MTU.Info('You choosed individual distribution (z, STN, mag)','Yes')
             ###first we check if a distribution of redshift was given
             if General['z_dist'] != '' :
-                if os.path.isfile(General['z_dist']):
+                if os.path.isfile(os.path.join(General['PDir'], General['z_dist'])):
                     MTU.Info('redshift distribution: file found','No')
                 else: 
                     MTU.Error('redshift distribution: file not found...exit\n', 'Yes')
@@ -259,15 +258,15 @@ class check_prepare:
             sys.exit()
 
         if dataT['Photometry'].lower() == 'yes' and dataT['Spectro'].lower()== 'no':
-            MTU.Info('Photometry only will be simulated\n', 'No')
+            MTU.Info('Photometry only will be simulated', 'No')
             return 'Photo'
 
         if dataT['Photometry'].lower() == 'no' and dataT['Spectro'].lower()== 'yes':
-            MTU.Info('Spectroscopy only will be simulated\n', 'No')
+            MTU.Info('Spectroscopy only will be simulated', 'No')
             return 'Spectro'
 
         if dataT['Photometry'].lower() == 'yes' and dataT['Spectro'].lower()== 'yes':
-            MTU.Info('Spectroscopy and Photometry will be simulated\n', 'No')
+            MTU.Info('Spectroscopy and Photometry will be simulated', 'No')
             return 'Combined'
 
 
@@ -287,7 +286,7 @@ class check_prepare:
                 MTU.Info('Cosmological configuration: OK', 'No')
 
 
-    def check_PHOT(self, PHOT, gen_array, filter_file):
+    def check_PHOT(self, config, gen_array, filter_file):
         '''
         Method that checks the Phot configuration
         Parameters
@@ -296,6 +295,10 @@ class check_prepare:
         gen_array   str, yes or no to use full array. If no, we use individual
                          distribution
         '''
+        ##extract from configuration
+        PHOT = config.PHOT
+        General = config.General
+
         ##extract list of filter from the filter file
         list_filt = filters.Retrieve_Filter_inf(filter_file).filter_list()
 
@@ -311,7 +314,7 @@ class check_prepare:
         if gen_array == 'no':
             ##if not we have to check the magnitude distribution
             if PHOT['Norm_distribution'] != '':
-                if os.path.isfile(PHOT['Norm_distribution']):
+                if os.path.isfile(os.path.join(General['PDir'], PHOT['Norm_distribution'])):
                     MTU.Info('Normalisation magnitude file found ','No') 
                 else:
                     MTU.Error('Normalisation magnitude file not found... exit', 'Yes')
@@ -353,10 +356,15 @@ class check_prepare:
 
         return bands_to_simulate
 
-    def check_SPECTRO(self, SPEC, gen_array, filter_file):
+    def check_SPECTRO(self, config, gen_array, filter_file):
         '''
         Method that checks the spectroscopic configuration
         '''
+
+        ##extract from configuration
+        SPEC = config.SPEC
+        General = config.General
+
         ### SPEC
         if SPEC['NSpec']:
             MTU.Info('Number of spectra: %s'%SPEC['NSpec'], 'No')
@@ -414,7 +422,7 @@ class check_prepare:
         if gen_array == 'no':
             ##if not we have to check the magnitude distribution
             if SPEC['Norm_distribution'] != '':
-                if os.path.isfile(SPEC['Norm_distribution']):
+                if os.path.isfile(os.path.join(General['PDir'], SPEC['Norm_distribution'])):
                     MTU.Info('Normalisation magnitude file found ','No') 
                 else:
                     MTU.Error('Normalisation magnitude file not found... exit', 'Yes')
@@ -460,7 +468,8 @@ class check_prepare:
                 MTU.Error('Rsolving power must be > 0 ... exit', 'Yes')
                 sys.exit()
 
-            if gen_array != 'yes' and not os.path.isfile(indiv_spec[4]):
+            if gen_array != 'yes' and not \
+                    os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])):
                 MTU.Error('StN file for spectra #%s not found... exit'%n, 'Yes')
                 sys.exit()
             else:
@@ -518,6 +527,7 @@ class check_prepare:
                 MTU.Info('IGM file found', 'No')
             else:
                 MTU.Error('IGM file not found', 'Yes')
+                sys,exit()
             MTU.Info('IGM type: %s'%Temp['IGMtype'], 'No')
         else:
             MTU.Info('No IGM will be used ', 'No')
@@ -570,21 +580,6 @@ class prepare_dis:
         """
         Class Constructor
         """
-
-    def full_array(self, conf):
-        '''
-        Method that computes extract StN, redshift and normalisation
-        Magnitude from the full array given by the user
-        Parameter
-        ---------
-        conf        dict, from the config file
-
-        Returns:
-        --------
-        redshift    list, of redshift
-        StN         list, of Signal to noise
-        mag         list, of normalisation magnitude
-        '''
 
     def full_array(self, conf):
         '''
