@@ -26,7 +26,6 @@ Welcome to SEDobs's documentation!
 .. figure:: ./pics/Logo.png
     :width: 750px
     :align: center
-    :alt: GUI
 
 
 Content
