@@ -165,6 +165,12 @@
 <div class="section" id="id1">
 <h1>Configuration<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p><strong>Input Data</strong></p>
+<p class="last">SEDobs relies on numerous input that are pre-computed (e.g. Simple Stellar Population, IGM extinction, etc). To make use of them you must download them at this link:
+These are not being computed on the fly which save a lot of time in the simulating process. See details below on how to use them.</p>
+</div>
 <p>In order to make a simulation run with SEDobs, a configuration file must be filled. An example is given below:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
 <span class="nv">Project_name</span><span class="o">=</span>
@@ -214,6 +220,14 @@
 <p>This configuration file is composed of 6 mandatory sections. If one is missing, SEDobs can not run. We detail them below.</p>
 <div class="section" id="general">
 <h2>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
+<p>The general section is the first of the configuration file. It is composed of 7 entries:</p>
+<ul class="simple">
+<li><strong>Project_name</strong>: This is the name of your project. All the files created in the <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a> writing part of the code will use this name as prefix. For example if you name your project ‘my_simulation’, all the files will start by ‘’my_simulation+ending.txt’‘. <strong>It must not contain any space.</strong></li>
+<li><strong>Author</strong>: This is your name. Here you can write whatever you want (like name + date). This is not use anywhere in the code. <strong>It is more for a personnal note</strong>.</li>
+<li><strong>Project Directory</strong>: This is the (absolute) path of the directory where you want SEDobs to write all the outputs. Usually it is the directory where the configuration file is located. All the files an directory that are created by SEDobs will be written in that directory.</li>
+<li><strong>Nobj</strong>: This is the number of objects you want SEDobs to create. Here you have to be careful. If you give a full array (see above), this parameter will not be taken into account. And SEDobs will simulate the number of object you have in the full_array file.</li>
+<li><strong>filter_file</strong>: This file is one of the additional data of SEDobs that you MUST download. You can download it here <a class="reference download internal" href="_downloads/SEDobs_filters.hdf5" download=""><code class="xref download docutils literal notranslate"><span class="pre">SEDobs_filters.hdf5</span></code></a>. It contains more than 100 filters. You can find details in the <a class="reference internal" href="filters.html"><span class="doc">filters</span></a> page.</li>
+</ul>
 </div>
 <div class="section" id="data-type">
 <h2>Data_type<a class="headerlink" href="#data-type" title="Permalink to this headline">¶</a></h2>
@@ -233,7 +247,7 @@
 </div>
 <div class="section" id="cosmo">
 <h2>Cosmo<a class="headerlink" href="#cosmo" title="Permalink to this headline">¶</a></h2>
-<p>This part deals with the cosmological model used by SEDobs. When simulating a galaxy at redshift <strong>z</strong>, SEDobs is able to take into account a cosmological model. This means that at <strong>z</strong>, the template used for the simulation will be younger that the age of the Universe at <strong>z</strong> in the cosmological model you want use. The cosmological model is given by 3 parameters: the Hubble constant Ho and two comological parameters: the dark energy density: omega_L and the matter density parameter: omega_m. SEDobs checks that Omega_m + Omega_L =1. If not it will comnplain. If you want SEDobs to be able to use templates older than the age of the Universe at a given <strong>z</strong>, you can say ‘No’ to Use_Cosmo.
+<p>This part deals with the cosmological model used by SEDobs. When simulating a galaxy at redshift <strong>z</strong>, SEDobs is able to take into account a cosmological model. This means that at <strong>z</strong>, the template used for the simulation will be younger that the age of the Universe at <strong>z</strong> in the cosmological model you want use. The cosmological model is given by 3 parameters: the Hubble constant Ho and two comological parameters: the dark energy density: omega_L and the matter density parameter: omega_m. SEDobs checks that Omega_m + Omega_L =1. If not it will complain. If you want SEDobs to be able to use templates older than the age of the Universe at a given <strong>z</strong>, you can say ‘No’ to Use_Cosmo. This way, SEDobs will randomely choose templates in the set of template, regardless of their age.
 An example of this section is given below:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Cosmo<span class="o">]</span>
 <span class="nv">Ho</span><span class="o">=</span><span class="m">70</span>

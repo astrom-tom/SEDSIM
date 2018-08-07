@@ -22,3 +22,118 @@
 Configuration
 -------------
 -------------
+
+.. warning::
+ 
+        **Input Data**
+ 
+        SEDobs relies on numerous input that are pre-computed (e.g. Simple Stellar Population, IGM extinction, etc). To make use of them you must download them at this link: 
+        These are not being computed on the fly which save a lot of time in the simulating process. See details below on how to use them. 
+
+
+In order to make a simulation run with SEDobs, a configuration file must be filled. An example is given below:
+
+.. code-block:: shell
+
+    [General]
+    Project_name=
+    Author= 
+    Project_Directory= 
+    full_array=
+    z_distribution= 
+    Nobj= 
+    filter_file= 
+
+    [Data_Type]
+    Photometry= 
+    Spectro= 
+
+    [Spectro]
+    NSpec= 
+    Norm_band= 
+    Noise_reg= 
+    Norm_distribution= 
+    types= 
+
+    [Photo]
+    Norm_band= 
+    Norm_distribution= 
+    Nband= 
+    Band_list= 
+
+    [Cosmo]
+    Ho=
+    Omega_m= 
+    Omega_L= 
+    Use_Cosmo= 
+
+    [Templates]
+    BaseSSP= 
+    DustUse= 
+    EBVList= 
+    IGMUse= 
+    IGMtype= 
+    EMline= 
+    Lyafrac= 
+    Age= 
+    TAU= 
+    MET= 
+
+
+This configuration file is composed of 6 mandatory sections. If one is missing, SEDobs can not run. We detail them below.
+
+
+General
+^^^^^^^
+The general section is the first of the configuration file. It is composed of 7 entries:
+
+* **Project_name**: This is the name of your project. All the files created in the :doc:`output` writing part of the code will use this name as prefix. For example if you name your project 'my_simulation', all the files will start by ''my_simulation+ending.txt''. **It must not contain any space.**
+
+* **Author**: This is your name. Here you can write whatever you want (like name + date). This is not use anywhere in the code. **It is more for a personnal note**.
+
+* **Project Directory**: This is the (absolute) path of the directory where you want SEDobs to write all the outputs. Usually it is the directory where the configuration file is located. All the files an directory that are created by SEDobs will be written in that directory.
+
+* **Nobj**: This is the number of objects you want SEDobs to create. Here you have to be careful. If you give a full array (see above), this parameter will not be taken into account. And SEDobs will simulate the number of object you have in the full_array file. 
+
+* **filter_file**: This file is one of the additional data of SEDobs that you MUST download. You can download it here :download:`SEDobs_filters.hdf5 <./files/SEDobs_filters.hdf5>`. It contains more than 100 filters. You can find details in the :doc:`filters` page.
+
+
+Data_type
+^^^^^^^^^
+This is where you tell SEDobs what kind of data you will use. Two entries are given: Photometry and Spectroscopy. If you want both of them you must write 'Yes' for each of them. If you just want one type, you must write 'Yes' to the one you want and 'No' to the other one. Example:
+
+.. code-block:: shell
+
+    [Data_Type]               [Data_Type]              [Data_Type]
+    Photometry = Yes          Photometry = Yes         Photometry = No
+    Spectro = No              Spectro = Yes            Spectro = Yes
+
+Of course, if you put two 'No', SEDobs will not simulate anything.
+
+
+ 
+
+Spectro
+^^^^^^^
+
+Photo
+^^^^^
+
+Cosmo
+^^^^^
+This part deals with the cosmological model used by SEDobs. When simulating a galaxy at redshift **z**, SEDobs is able to take into account a cosmological model. This means that at **z**, the template used for the simulation will be younger that the age of the Universe at **z** in the cosmological model you want use. The cosmological model is given by 3 parameters: the Hubble constant Ho and two comological parameters: the dark energy density: omega_L and the matter density parameter: omega_m. SEDobs checks that Omega_m + Omega_L =1. If not it will complain. If you want SEDobs to be able to use templates older than the age of the Universe at a given **z**, you can say 'No' to Use_Cosmo. This way, SEDobs will randomely choose templates in the set of template, regardless of their age.
+An example of this section is given below:
+
+.. code-block:: shell
+
+    [Cosmo]
+    Ho=70
+    Omega_m=0.27
+    Omega_L=0.73
+    Use_Cosmo=Yes
+
+
+
+Templates
+^^^^^^^^^
+
