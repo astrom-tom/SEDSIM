@@ -1,4 +1,4 @@
-.. _Usage:
+.. _Spectroscopic simulations:
 
 
 |Python36| |Licence| |numpy| |scipy| 
@@ -19,9 +19,9 @@
    :target: https://www.scipy.org/
 
 
-Getting started
----------------
----------------
+Spectroscopic Simulation
+------------------------
+------------------------
 
 You start SEDobs from a terminal. SEDobs comes with a command line interface which includes a 'help' that you can display in your terminal using the help command. It must be called like this::
 

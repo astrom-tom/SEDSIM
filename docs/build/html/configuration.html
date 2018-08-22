@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Outputs" href="output.html" />
+    <link rel="next" title="Photometric Simulation" href="photo.html" />
     <link rel="prev" title="Getting started" href="usage.html" /> 
 
   
@@ -90,12 +90,15 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#general">General</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-type">Data_type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#spectro">Spectro</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#photo">Photo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spectro">Spectro</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cosmo">Cosmo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="photo.html">Photometric Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Spectro.html">Spectroscopic Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="full.html">Full Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Outputs</a></li>
 </ul>
 
@@ -226,7 +229,7 @@ These are not being computed on the fly which save a lot of time in the simulati
 <li><strong>Author</strong>: This is your name. Here you can write whatever you want (like name + date). This is not use anywhere in the code. <strong>It is more for a personnal note</strong>.</li>
 <li><strong>Project Directory</strong>: This is the (absolute) path of the directory where you want SEDobs to write all the outputs. Usually it is the directory where the configuration file is located. All the files an directory that are created by SEDobs will be written in that directory.</li>
 <li><strong>Nobj</strong>: This is the number of objects you want SEDobs to create. Here you have to be careful. If you give a full array (see above), this parameter will not be taken into account. And SEDobs will simulate the number of object you have in the full_array file.</li>
-<li><strong>filter_file</strong>: This file is one of the additional data of SEDobs that you MUST download. You can download it here <a class="reference download internal" href="_downloads/SEDobs_filters.hdf5" download=""><code class="xref download docutils literal notranslate"><span class="pre">SEDobs_filters.hdf5</span></code></a>. It contains more than 100 filters. You can find details in the <a class="reference internal" href="filters.html"><span class="doc">filters</span></a> page.</li>
+<li><strong>filter_file</strong>: This file is one of the additional data of SEDobs that you MUST download. You can download it here <a class="reference download internal" href="_downloads/SEDobs_filters.hdf5" download=""><code class="xref download docutils literal notranslate"><span class="pre">SEDobs_filters.hdf5</span></code></a>. It contains more than 100 filters. You can find details in the <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page.</li>
 </ul>
 </div>
 <div class="section" id="data-type">
@@ -239,11 +242,70 @@ These are not being computed on the fly which save a lot of time in the simulati
 </div>
 <p>Of course, if you put two ‘No’, SEDobs will not simulate anything.</p>
 </div>
-<div class="section" id="spectro">
-<h2>Spectro<a class="headerlink" href="#spectro" title="Permalink to this headline">¶</a></h2>
-</div>
 <div class="section" id="photo">
 <h2>Photo<a class="headerlink" href="#photo" title="Permalink to this headline">¶</a></h2>
+<p>This is where you tell SEDOBS what photometric data to simulate:</p>
+<ul>
+<li><p class="first"><strong>Norm_band</strong>: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page for all the filters available).</p>
+</li>
+<li><p class="first"><strong>Norm_distribution</strong>: If you are not using the full_array option, the is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the band you gave in the <strong>Norm_band</strong> entry.</p>
+</li>
+<li><p class="first"><strong>Nband</strong>: The number of photometric band you want to be computed for a given simulation.</p>
+</li>
+<li><p class="first"><strong>Band_list</strong>: This is where you give the photometric configuration for each band. For each of them you must give multiple information <strong>(name,offset,mean,sigma)</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>name</strong>: This is the name of the filter</li>
+<li><strong>offset</strong>: This is the offset of the band (in magnitude) that will be applied in all the magnitudes</li>
+<li><strong>mean</strong> and <strong>sigma</strong>: To compute the errors on the band, SEDobs created a gaussian and randomely select in that gaussian to create the simulated error. You must give for each band the mean and sigma of that gaussian.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>An example is given below:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> r-megacam
+<span class="nv">Norm_distribution</span> <span class="o">=</span> magnorm.txt
+<span class="nv">Nband</span> <span class="o">=</span> <span class="m">10</span>
+<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
+.0, <span class="m">0</span>.23, <span class="m">0</span>.12<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
+cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="spectro">
+<h2>Spectro<a class="headerlink" href="#spectro" title="Permalink to this headline">¶</a></h2>
+<p>This is where you precise the spectroscopic information of the simulations. Five entries are needed:</p>
+<ul>
+<li><p class="first"><strong>NSpec</strong>: This is the number of spectroscopy per simulated galaxy you want to create. For a given template, randomely chosen in the library, you can ask to have 1, 2 or N spectra to be created (for example sdss-like and HST-like).</p>
+</li>
+<li><p class="first"><strong>Norm_band</strong>: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above), you must give an offset, and information about errors on that band.</p>
+</li>
+<li><p class="first"><strong>Noise_reg</strong>: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.</p>
+</li>
+<li><p class="first"><strong>Norm_distribution</strong>: You must give the normalisation file (see above for photometry). If you use the full_array option this can be ignored.</p>
+</li>
+<li><p class="first"><strong>types</strong>: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: <strong>l1, l2, dl, R, SNR.txt</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>l1</strong>: The starting wavelength of your spectrum</li>
+<li><strong>l2</strong>: The end wavelength of your spectrum</li>
+<li><strong>dl</strong>: The delta lambda of your spectrum</li>
+<li><strong>R</strong>: The spectral resolution of your spectrum</li>
+<li><strong>SNR.txt</strong>: The file containing the Signal to noise ratio distribution</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>You must repeat that for each spectrum.</p>
+<p>An example of this section is given below.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Spectro<span class="o">]</span>
+<span class="nv">NSpec</span> <span class="o">=</span> <span class="m">2</span>
+<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>i-megacam,0.0, <span class="m">0</span>.1, <span class="m">0</span>.03<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.2, <span class="m">0</span>.08<span class="o">)</span>
+<span class="nv">Noise_reg</span> <span class="o">=</span> <span class="o">(</span><span class="m">1080</span>,1170<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">3580</span>,3680<span class="o">)</span>
+<span class="nv">Norm_distribution</span> <span class="o">=</span> magnorm.txt
+<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,opt.txt<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,16000,46.5,130,NIR.txt<span class="o">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="cosmo">
 <h2>Cosmo<a class="headerlink" href="#cosmo" title="Permalink to this headline">¶</a></h2>
@@ -270,7 +332,7 @@ An example of this section is given below:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="output.html" class="btn btn-neutral float-right" title="Outputs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="photo.html" class="btn btn-neutral float-right" title="Photometric Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="usage.html" class="btn btn-neutral" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

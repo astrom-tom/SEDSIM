@@ -14,9 +14,8 @@
 ###import libraries
 import sys
 import os
-from subprocess import call
 import socket
-
+from subprocess import call
 
 ###Local modules
 from . import cli
@@ -85,7 +84,7 @@ def main():
             redshift, StN, mag = config.prepare_dis().indiv_dist(final.config)
         else:
             MTU.Info('Extract full array', 'Yes')
-            redshift, StN, mag = config.prepare_dis().full_array(final_config)
+            redshift, StN, mag = config.prepare_dis().full_array(final.config)
             MTU.Info('SPARTAN SIM will simulate %s objects'%len(mag), 'No')
 
         ###Prepare Cosmological module

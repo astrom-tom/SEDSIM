@@ -38,6 +38,8 @@ class CLI:
                 https://astrom-tom.github.io/SEDSIM/build/html/index.html")
 
         parser.add_argument("-p", "--project", help="Input configuration file")
+        parser.add_argument("--test", action="store_true", \
+                help="If you wanna try the test run of SEDobs")
         parser.add_argument("--docs", action="store_true", help="open the doc in web browser")
         parser.add_argument("--version", action="store_true", help="display current version of SEDSIM")
 

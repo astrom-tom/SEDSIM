@@ -40,18 +40,19 @@ This command will display the help of the program::
       -h, --help            Show this help message and exit
       -p PROJECT, --project PROJECT
                             Input configuration file
+      --test                If you wanna try the test run of SEDobs
       --docs                Open the doc in web browser
       --version             Display version of photon.
 
 In details it means:
 
-* SEDobs has 4 optionnal arguments. You can start SEDobs without any argument. 
-* Few arguments can be used:
+SEDobs has 5 optionnal arguments. You can start SEDobs without any argument. Few arguments can be used:
 	
-	* -h: Display this help in the terminal.
-	* -p or --project: Takes an configuration file as input. 
-	* --docs: Display in the web browser the documentation of the code. If you have a valid internet connection it will open the online documentation, if not it will open the local documentation.
-	* --version: Display in terminal the current version of the software.
+* -h: Display this help in the terminal.
+* -p or --project: Takes an configuration file as input. 
+* use - -test: This is to run the test configuration of SEDobs. It is one already given with the code. SEDobs will ask you what kind of configuration you want to run: photo, spectro, multi-spectro or full (multi-spectroscopy and multi-photometry)
+* use - -docs: Display in the web browser the documentation of the code. If you have a valid internet connection it will open the online documentation, if not it will open the local documentation.
+* use - -version: Display in terminal the current version of the software.
 
 
 The command line interface is made using the argparse library (part of the standard python library).

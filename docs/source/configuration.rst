@@ -110,14 +110,61 @@ This is where you tell SEDobs what kind of data you will use. Two entries are gi
 
 Of course, if you put two 'No', SEDobs will not simulate anything.
 
+Photo
+^^^^^
+This is where you tell SEDOBS what photometric data to simulate:
 
- 
+* **Norm_band**: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see :doc:`filters` page for all the filters available).
+* **Norm_distribution**: If you are not using the full_array option, the is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the band you gave in the **Norm_band** entry.
+* **Nband**: The number of photometric band you want to be computed for a given simulation.
+* **Band_list**: This is where you give the photometric configuration for each band. For each of them you must give multiple information **(name,offset,mean,sigma)**:
+
+    * **name**: This is the name of the filter
+    * **offset**: This is the offset of the band (in magnitude) that will be applied in all the magnitudes
+    * **mean** and **sigma**: To compute the errors on the band, SEDobs created a gaussian and randomely select in that gaussian to create the simulated error. You must give for each band the mean and sigma of that gaussian.
+
+An example is given below:
+
+.. code-block:: shell
+
+    Norm_band = r-megacam
+    Norm_distribution = magnorm.txt
+    Nband = 10
+    Band_list = (u-megacam,0.0, 0.31, 0.38);(g-megacam,0.0,0.15,0.20);(r-megacam,0.0,0.19,0.09);(i-megacam, 0
+    .0, 0.23, 0.12);(z-megacam,0.0, 0.38, 0.19);(J-wircam, 0.0, 0.68, 0.45);(H-wircam, 0.0, 0.71,0.37);(K-wir
+    cam,0.0,0.55, 0.41);(IRAC1,0.0,0.08, 0.04);(IRAC2,0.0,0.09,0.06)
+
+
 
 Spectro
 ^^^^^^^
+This is where you precise the spectroscopic information of the simulations. Five entries are needed:
 
-Photo
-^^^^^
+* **NSpec**: This is the number of spectroscopy per simulated galaxy you want to create. For a given template, randomely chosen in the library, you can ask to have 1, 2 or N spectra to be created (for example sdss-like and HST-like).
+* **Norm_band**: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above), you must give an offset, and information about errors on that band. 
+* **Noise_reg**: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.
+* **Norm_distribution**: You must give the normalisation file (see above for photometry). If you use the full_array option this can be ignored. 
+* **types**: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: **l1, l2, dl, R, SNR.txt**:
+    
+    * **l1**: The starting wavelength of your spectrum
+    * **l2**: The end wavelength of your spectrum
+    * **dl**: The delta lambda of your spectrum
+    * **R**: The spectral resolution of your spectrum
+    * **SNR.txt**: The file containing the Signal to noise ratio distribution
+
+You must repeat that for each spectrum.
+
+An example of this section is given below.
+
+.. code-block:: shell
+
+    [Spectro]
+    NSpec = 2 
+    Norm_band = (i-megacam,0.0, 0.1, 0.03);(J-wircam, 0.0, 0.2, 0.08)
+    Noise_reg = (1080,1170);(3580,3680)
+    Norm_distribution = magnorm.txt
+    types = (3500,9500,7.25,240,opt.txt);(12000,16000,46.5,130,NIR.txt)
+
 
 Cosmo
 ^^^^^
