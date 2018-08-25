@@ -25,9 +25,9 @@ Configuration
 
 .. warning::
  
-        **Input Data**
+        **Input Files**
  
-        SEDobs relies on numerous input that are pre-computed (e.g. Simple Stellar Population, IGM extinction, etc). To make use of them you must download them at this link: 
+        SEDobs relies on numerous inputs that are pre-computed (e.g. Stellar Population, IGM extinction, etc). To make use of them you must download them at this `link <https://drive.google.com/open?id=0B6RLimXliDkhOG93ZzRSSDhvUUE>`_ 
         These are not being computed on the fly which save a lot of time in the simulating process. See details below on how to use them. 
 
 
@@ -239,7 +239,7 @@ An example of this section is given below:
 
 Templates
 ^^^^^^^^^
-This is the section where you tell SEDobs what kind of templates you want to choose from to make the simulations. In order to speed-up the simulation process different types of templates and extinction have been pre-computed. You must download these files here [LINK]. Be carefull of the file size as some files are more than 1Gb. The directories are: 
+This is the section where you tell SEDobs what kind of templates you want to choose from to make the simulations. In order to speed-up the simulation process different types of templates and extinction have been pre-computed. You must download these files `here <https://drive.google.com/open?id=0B6RLimXliDkhOG93ZzRSSDhvUUE>`_. Be carefull of the file size as some files are more than 1Gb. The directories are: 
 
     * Directory EXT: Contains different dust extinction laws. You can freely add yours.
     * Directory EmLine: Contains emission lines related files.
