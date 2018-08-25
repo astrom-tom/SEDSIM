@@ -13,9 +13,10 @@ for the simulations
 @License: GPL v3.0 - see LICENCE.txt
 '''
 
-import configparser
 import os
 import sys
+from pathlib import Path
+import configparser
 
 import numpy
 import scipy.interpolate as interpolate
@@ -59,7 +60,9 @@ class read_config:
         General['PDir'] = config.get('General', 'Project_Directory')
         General['full_array']=config.get('General','full_array')
         General['z_dist']=config.get('General', 'z_distribution')
-        General['N_obj']=config.getint('General', 'Nobj')
+        General['N_obj']=config.get('General', 'Nobj')
+        if General['N_obj'] != '':
+            General['N_obj'] = int(General['N_obj'])
         General['filter_file'] = config.get('General', 'filter_file')
         self.General = General
 
@@ -118,6 +121,11 @@ class check_prepare:
         Class Constructor
         """
         self.config = config
+
+        home = str(Path.home())
+        fileconf = os.path.join(home, '.sedobs_conf')
+        self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
+
 
         ### 1- We check the general section
         MTU.Info('-1-###Check general section###---','No')
@@ -208,7 +216,7 @@ class check_prepare:
         ###need the Stn or z distribution
         if General['full_array']:
             ##if something is given we check if the file exist 
-            MTU.Info('You choosed to give a Full array (z, StN, mag)','Yes')
+            MTU.Info('You choosed to give a Full array (z, StNs, mags)','Yes')
             if os.path.isfile(os.path.join(General['PDir'], General['full_array'])):
                 MTU.Info('Full array (z, StN, mag) file found','No')
                 genarray = 'yes'
@@ -216,7 +224,7 @@ class check_prepare:
                 MTU.Error('Full array (z, StN, mag) not found...exit\n', 'Yes')
                 sys.exit()
         else: 
-            MTU.Info('You choosed individual distribution (z, STN, mag)','Yes')
+            MTU.Info('You choosed individual distribution (z, STNs, mags)','Yes')
             ###first we check if a distribution of redshift was given
             if General['z_dist'] != '' :
                 if os.path.isfile(os.path.join(General['PDir'], General['z_dist'])):
@@ -443,9 +451,15 @@ class check_prepare:
         n=1
         for i in spectralist:
             indiv_spec= i.strip("()").split(',')
-            if len(indiv_spec) != 5:
-                MTU.Error('Spectral type must be of the form (li,lf,dl,res,StNfile) ... exit', 'Yes')
-                sys.exit()
+
+            if gen_array == 'no':
+                if len(indiv_spec) != 5:
+                    MTU.Error('Spectral type must be of the form (li,lf,dl,res,StNfile) ... exit', 'Yes')
+                    sys.exit()
+            else:
+                if len(indiv_spec) != 4:
+                    MTU.Error('Spectral type must be of the form (li,lf,dl,res) ... exit', 'Yes')
+                    sys.exit()
 
             indiv_spec[0] = float(indiv_spec[0])
             indiv_spec[1] = float(indiv_spec[1])
@@ -468,19 +482,20 @@ class check_prepare:
                 MTU.Error('Rsolving power must be > 0 ... exit', 'Yes')
                 sys.exit()
 
-            if gen_array != 'yes' and not \
-                    os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])):
-                MTU.Error('StN file for spectra #%s not found... exit'%n, 'Yes')
-                sys.exit()
-            else:
-                MTU.Info('StN file for spectra #%s found'%n, 'No')
+            if gen_array == 'no':
+                if os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])):
+                    MTU.Error('StN file for spectra #%s not found... exit'%n, 'Yes')
+                    sys.exit()
+                else:
+                    MTU.Info('StN file for spectra #%s... exit'%n, 'Yes')
 
             spectra_to_simulate['spec_%s'%n] = {}
             spectra_to_simulate['spec_%s'%n]['l0'] = indiv_spec[0]
             spectra_to_simulate['spec_%s'%n]['lf'] = indiv_spec[1]
             spectra_to_simulate['spec_%s'%n]['dl'] = indiv_spec[2]
             spectra_to_simulate['spec_%s'%n]['res'] = indiv_spec[3]
-            spectra_to_simulate['spec_%s'%n]['Stnfile'] = indiv_spec[4]
+            if gen_array == 'no':
+                spectra_to_simulate['spec_%s'%n]['Stnfile'] = indiv_spec[4]
             n += 1
 
         return spectra_to_simulate, bands_to_simulate, specs_noise
@@ -491,7 +506,8 @@ class check_prepare:
         '''
         ###check basessp
         if Temp['BaseSSP']:
-            if os.path.isfile(Temp['BaseSSP']):
+            fullpath = os.path.join(self.inputdir, 'LIBS', Temp['BaseSSP'])
+            if os.path.isfile(fullpath):
                 MTU.Info('BaseSSP found', 'No')
             else:
                 MTU.Error('BaseSSP not found ... exit', 'Yes')
@@ -502,7 +518,8 @@ class check_prepare:
 
         ###Dust Use
         if Temp['DustUse']:
-            if os.path.isfile(Temp['DustUse']):
+            fullpathdust = os.path.join(self.inputdir, 'EXT', Temp['DustUse'])
+            if os.path.isfile(fullpathdust):
                 MTU.Info('Dust file found (DustUse)', 'No')
             else:
                 MTU.Error('Dust file not found (DustUse) ... exit', 'Yes')
@@ -522,8 +539,9 @@ class check_prepare:
 
         ##IGM Use
         if Temp['IGMtype']:
+            fullpathigm = os.path.join(self.inputdir, 'IGM', Temp['IGMUse'])
             MTU.Info('IGM file: %s'%Temp['IGMUse'], 'No')
-            if os.path.isfile(Temp['IGMUse']):
+            if os.path.isfile(fullpathigm):
                 MTU.Info('IGM file found', 'No')
             else:
                 MTU.Error('IGM file not found', 'Yes')

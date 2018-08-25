@@ -86,8 +86,15 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#first-start-up">First start up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-command-line-interface">The command line interface</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="photo.html">Photometric Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Spectro.html">Spectroscopic Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="full.html">Full Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Outputs</a></li>
 </ul>
 
@@ -157,6 +164,12 @@
 <div class="section" id="getting-started">
 <h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
+<div class="section" id="first-start-up">
+<h2>First start up<a class="headerlink" href="#first-start-up" title="Permalink to this headline">¶</a></h2>
+<p>Once you installed SEDobs, you can start it with the sedobs command. Since it is your first start it will ask you to give the absolute path of the input SEDobs file directory. This files are crucial for the functionning of SEDobs (see <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page for more information). Once you write it sedobs will create a file in the home directory: <strong>~/.sedobs_conf</strong> containing this path. This file will be used by SEDobs to localize all the files. It is a human readable file and you can change the path inside it with any text editor.</p>
+</div>
+<div class="section" id="the-command-line-interface">
+<h2>The command line interface<a class="headerlink" href="#the-command-line-interface" title="Permalink to this headline">¶</a></h2>
 <p>You start SEDobs from a terminal. SEDobs comes with a command line interface which includes a ‘help’ that you can display in your terminal using the help command. It must be called like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[user@machine]$ sedobs --help
 </pre></div>
@@ -188,6 +201,7 @@
 <li>use - -version: Display in terminal the current version of the software.</li>
 </ul>
 <p>The command line interface is made using the argparse library (part of the standard python library).</p>
+</div>
 </div>
 
 

@@ -228,9 +228,33 @@ These are not being computed on the fly which save a lot of time in the simulati
 <li><strong>Project_name</strong>: This is the name of your project. All the files created in the <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a> writing part of the code will use this name as prefix. For example if you name your project ‘my_simulation’, all the files will start by ‘’my_simulation+ending.txt’‘. <strong>It must not contain any space.</strong></li>
 <li><strong>Author</strong>: This is your name. Here you can write whatever you want (like name + date). This is not use anywhere in the code. <strong>It is more for a personnal note</strong>.</li>
 <li><strong>Project Directory</strong>: This is the (absolute) path of the directory where you want SEDobs to write all the outputs. Usually it is the directory where the configuration file is located. All the files an directory that are created by SEDobs will be written in that directory.</li>
-<li><strong>Nobj</strong>: This is the number of objects you want SEDobs to create. Here you have to be careful. If you give a full array (see above), this parameter will not be taken into account. And SEDobs will simulate the number of object you have in the full_array file.</li>
+<li><strong>full_array</strong>: This is a file containing all the properties of the galaxies you want to simulate. This is optionnal (redshift, normalisation magnitude and signal to noise ratios). SEDobs will simulate exactly what is in this file. See the tutorial for more informations.</li>
+<li><strong>z_distribution</strong>: Only if you do not use the previous ‘’full_array’’ option. This file contains the distribution of redshift you want to mimick. It is a one column catalog with redshift values (with 4 decimal maximum).</li>
+<li><strong>Nobj</strong>: Only if you do not use the previous ‘’full_array’’ option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the <strong>z_distribution</strong> option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution.</li>
 <li><strong>filter_file</strong>: This file is one of the additional data of SEDobs that you MUST download. You can download it here <a class="reference download internal" href="_downloads/SEDobs_filters.hdf5" download=""><code class="xref download docutils literal notranslate"><span class="pre">SEDobs_filters.hdf5</span></code></a>. It contains more than 100 filters. You can find details in the <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page.</li>
 </ul>
+<p>An example of the version with the <strong>full_array</strong> option:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
+<span class="nv">Project_name</span><span class="o">=</span> HST_VUDS_simu_Brian_v2
+<span class="nv">Author</span><span class="o">=</span> R. THOMAS
+<span class="nv">Project_Directory</span><span class="o">=</span> /home/alien/Documents/SEDSIM/TESTS
+<span class="nv">full_array</span> <span class="o">=</span> final_array_z_StN_mag.txt
+<span class="nv">z_distribution</span> <span class="o">=</span>
+<span class="nv">Nobj</span> <span class="o">=</span>
+<span class="nv">filter_file</span> <span class="o">=</span> /home/alien/Documents/SEDSIM/inputs/SPARTAN_filters.hdf5
+</pre></div>
+</div>
+<p>An example without it:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
+<span class="nv">Project_name</span><span class="o">=</span> HST_VUDS_simu_Brian_v2
+<span class="nv">Author</span><span class="o">=</span> R. THOMAS
+<span class="nv">Project_Directory</span><span class="o">=</span> /home/alien/Documents/SEDSIM/TESTS
+<span class="nv">full_array</span> <span class="o">=</span>
+<span class="nv">z_distribution</span> <span class="o">=</span> redshift.txt
+<span class="nv">Nobj</span> <span class="o">=</span> <span class="m">10000</span>
+<span class="nv">filter_file</span> <span class="o">=</span> /home/alien/Documents/SEDSIM/inputs/SPARTAN_filters.hdf5
+</pre></div>
+</div>
 </div>
 <div class="section" id="data-type">
 <h2>Data_type<a class="headerlink" href="#data-type" title="Permalink to this headline">¶</a></h2>
@@ -248,7 +272,7 @@ These are not being computed on the fly which save a lot of time in the simulati
 <ul>
 <li><p class="first"><strong>Norm_band</strong>: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page for all the filters available).</p>
 </li>
-<li><p class="first"><strong>Norm_distribution</strong>: If you are not using the full_array option, the is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the band you gave in the <strong>Norm_band</strong> entry.</p>
+<li><p class="first"><strong>Norm_distribution</strong>: Only if you do not use the previous <strong>full_array</strong> option. This is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the same band you gave in the <strong>Norm_band</strong> entry.</p>
 </li>
 <li><p class="first"><strong>Nband</strong>: The number of photometric band you want to be computed for a given simulation.</p>
 </li>
@@ -262,9 +286,18 @@ These are not being computed on the fly which save a lot of time in the simulati
 </div></blockquote>
 </li>
 </ul>
-<p>An example is given below:</p>
+<p>An example is given below, without full array:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> r-megacam
 <span class="nv">Norm_distribution</span> <span class="o">=</span> magnorm.txt
+<span class="nv">Nband</span> <span class="o">=</span> <span class="m">10</span>
+<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
+.0, <span class="m">0</span>.23, <span class="m">0</span>.12<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
+cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06<span class="o">)</span>
+</pre></div>
+</div>
+<p>And with it</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> r-megacam
+<span class="nv">Norm_distribution</span> <span class="o">=</span>
 <span class="nv">Nband</span> <span class="o">=</span> <span class="m">10</span>
 <span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
 .0, <span class="m">0</span>.23, <span class="m">0</span>.12<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
@@ -282,28 +315,37 @@ cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p"
 </li>
 <li><p class="first"><strong>Noise_reg</strong>: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.</p>
 </li>
-<li><p class="first"><strong>Norm_distribution</strong>: You must give the normalisation file (see above for photometry). If you use the full_array option this can be ignored.</p>
+<li><p class="first"><strong>Norm_distribution</strong>: Only if you do not use the <strong>full_array</strong> option. You must give the normalisation file (see above for photometry).</p>
 </li>
-<li><p class="first"><strong>types</strong>: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: <strong>l1, l2, dl, R, SNR.txt</strong>:</p>
+<li><p class="first"><strong>types</strong>: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: <strong>l1, l2, dl, R [,SNR.txt]</strong>:</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>l1</strong>: The starting wavelength of your spectrum</li>
 <li><strong>l2</strong>: The end wavelength of your spectrum</li>
 <li><strong>dl</strong>: The delta lambda of your spectrum</li>
 <li><strong>R</strong>: The spectral resolution of your spectrum</li>
-<li><strong>SNR.txt</strong>: The file containing the Signal to noise ratio distribution</li>
+<li><strong>SNR.txt</strong>: Only if you do not use the <strong>full_array</strong> option. The file containing the Signal to noise ratio distribution (one column catalog).</li>
 </ul>
 </div></blockquote>
 </li>
 </ul>
 <p>You must repeat that for each spectrum.</p>
-<p>An example of this section is given below.</p>
+<p>An example of this section is given below without full array option.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Spectro<span class="o">]</span>
 <span class="nv">NSpec</span> <span class="o">=</span> <span class="m">2</span>
 <span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>i-megacam,0.0, <span class="m">0</span>.1, <span class="m">0</span>.03<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.2, <span class="m">0</span>.08<span class="o">)</span>
 <span class="nv">Noise_reg</span> <span class="o">=</span> <span class="o">(</span><span class="m">1080</span>,1170<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">3580</span>,3680<span class="o">)</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span> magnorm.txt
 <span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,opt.txt<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,16000,46.5,130,NIR.txt<span class="o">)</span>
+</pre></div>
+</div>
+<p>And with it</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Spectro<span class="o">]</span>
+<span class="nv">NSpec</span> <span class="o">=</span> <span class="m">2</span>
+<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>i-megacam,0.0, <span class="m">0</span>.1, <span class="m">0</span>.03<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.2, <span class="m">0</span>.08<span class="o">)</span>
+<span class="nv">Noise_reg</span> <span class="o">=</span> <span class="o">(</span><span class="m">1080</span>,1170<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">3580</span>,3680<span class="o">)</span>
+<span class="nv">Norm_distribution</span> <span class="o">=</span>
+<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,16000,46.5,130<span class="o">)</span>
 </pre></div>
 </div>
 </div>
@@ -321,6 +363,71 @@ An example of this section is given below:</p>
 </div>
 <div class="section" id="templates">
 <h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
+<p>This is the section where you tell SEDobs what kind of templates you want to choose from to make the simulations. In order to speed-up the simulation process different types of templates and extinction have been pre-computed. You must download these files here [LINK]. Be carefull of the file size as some files are more than 1Gb. The directories are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Directory EXT: Contains different dust extinction laws. You can freely add yours.</li>
+<li>Directory EmLine: Contains emission lines related files.</li>
+<li>Directory IGM: Contains all the IGM curves (in HDF5 format).</li>
+<li>Directory LIBS: Contains pre-computed CSPs with different SFH, IGM and metallicities.</li>
+</ul>
+</div></blockquote>
+<p>It is very important to keep all these directories in the same parent directory (SEDobs has relative paths to that parent directory hardcoded). The layout should look like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Parent_directory
+    <span class="p">|</span>_IGM
+    <span class="p">|</span>_EXT
+    <span class="p">|</span>_LIBS
+    <span class="p">|</span>_EmLine
+</pre></div>
+</div>
+<p>The path to the parent directory is the one you have to give when you start the SEDobs for the first time (see <a class="reference internal" href="usage.html"><span class="doc">Getting started</span></a>).</p>
+<p>Once you have all the extra input files you can fill the template section:</p>
+<ul>
+<li><p class="first"><strong>BaseSSP</strong>: This is the basic files with pre-computed templates. They are located in the LIBS input directory. Their format are LIB_BC03_[ SFH type ]_[ Resolution ]_[ IMF ]_SPARTAN.hdf5.</p>
+<blockquote>
+<div><ul class="simple">
+<li>SFH type are for the moment exponentially delayed and exponentially declining.</li>
+<li>Resolution: LR = low resolution; HR = high resolution</li>
+<li>IMF:  Chab for Chabrier IMG, Salp for Salpeter IMF.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>Dust Use</strong>: The dust extinction files that you want to use (located in the EXT directory).</p>
+</li>
+<li><p class="first"><strong>IGMUse</strong>: The IGM prescription you want to use. You can choose from Meiskin+06 and Madau+95.</p>
+</li>
+<li><p class="first"><strong>IGMtype</strong>: The type of IGM you want to use. Both previous extinction have been upgraded to allow 7 different IGM curves at a given redshift (see Thomas+17a). Here you can say <strong>mean</strong> or <strong>free</strong>. Mean means that you just want to use the mean IGM value at each redshift, free means that you allow SEDobs to apply one of the 7 IGM transmission curves at any redshift. Each file in the IGM directory contain all the 7 curves at any redshift from 1.5 to 7 (so 5500 redshift x 7 curves = 38500 curves).</p>
+</li>
+<li><p class="first"><strong>EmLine</strong>: yes or no if you want to add emission line to your templates (Presription of Schaerer+05).</p>
+</li>
+<li><p class="first"><strong>LyaFrac</strong>: As the Lyman alpha line can be both in emission and absorption we leave the user the choice of fraction of Lyman alpha emitters in the simulation. If you enter 1, it means that Lyman alpha will always be added to the template. If you put 0, it will never be added. If you write 0.5 it will be added 50% of the time.</p>
+</li>
+</ul>
+<p>Physical parameters:
+Each pre-computed library comes with already defined range of values for the galactic ages, SFH timescales amd metallity.</p>
+<ul class="simple">
+<li><strong>Age</strong>: The ages that you want SEDobs to consider. The range of age is defined from 1e+06yr to 1.5e+10yr. You can five any age between these two limits. SEDobs will interpolate between the existing ages to match your list.</li>
+<li><strong>TAU</strong>: The same as for the ages. TAUs are defined (for both delayed and declining) from 0.1Gyr to 9.9Gyr. You can give any values between these two limits.</li>
+<li><strong>MET</strong>: Unlike the other parameters, SEDobs will not interpolate between existing values. Therefore you have to give one (or more) of these metallicites (in Z(solar) unit): 0.02;0.2;0.4;1.0;2.5.</li>
+<li><strong>EBVList</strong>: The color excess values you want to apply. They must be positive (or equal to 0).</li>
+</ul>
+<p>For each list of parameters you have to separate values by ‘;’ wihout spaces.</p>
+<p>En example of such section is given here:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Templates<span class="o">]</span>
+<span class="nv">BaseSSP</span><span class="o">=</span>LIB_BC03_Delayed_LR_Chab_SPARTAN.hdf5
+<span class="nv">DustUse</span><span class="o">=</span>calzetti.dat
+<span class="nv">EBVList</span><span class="o">=</span><span class="m">0</span>.0<span class="p">;</span><span class="m">0</span>.05<span class="p">;</span><span class="m">0</span>.1<span class="p">;</span><span class="m">0</span>.15<span class="p">;</span><span class="m">0</span>.2<span class="p">;</span><span class="m">0</span>.25<span class="p">;</span><span class="m">0</span>.30<span class="p">;</span><span class="m">0</span>.35<span class="p">;</span><span class="m">0</span>.4<span class="p">;</span><span class="m">0</span>.45<span class="p">;</span><span class="m">0</span>.50
+<span class="nv">IGMUse</span> <span class="o">=</span>SPARTAN_Meiksin_Free_7curves.hdf5
+<span class="c1">###IGM type free or mean or empty</span>
+<span class="nv">IGMtype</span> <span class="o">=</span> free
+<span class="nv">EMline</span><span class="o">=</span> yes
+<span class="nv">Lyafrac</span> <span class="o">=</span> <span class="m">0</span>.5
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">0</span>.1e+09<span class="p">;</span><span class="m">0</span>.2e+09<span class="p">;</span><span class="m">0</span>.3e+09<span class="p">;</span><span class="m">0</span>.4e+09<span class="p">;</span><span class="m">0</span>.5e+09<span class="p">;</span><span class="m">0</span>.6e+09<span class="p">;</span><span class="m">0</span>.7e+09<span class="p">;</span><span class="m">0</span>.8e+09<span class="p">;</span><span class="m">0</span>.9e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.1e
++09<span class="p">;</span><span class="m">1</span>.2e+09<span class="p">;</span><span class="m">1</span>.3e+09<span class="p">;</span><span class="m">1</span>.4e+09<span class="p">;</span><span class="m">1</span>.5e+09
+<span class="nv">TAU</span> <span class="o">=</span> <span class="m">0</span>.10<span class="p">;</span><span class="m">0</span>.2<span class="p">;</span><span class="m">0</span>.3<span class="p">;</span><span class="m">0</span>.4<span class="p">;</span><span class="m">0</span>.5<span class="p">;</span><span class="m">0</span>.6<span class="p">;</span><span class="m">0</span>.7<span class="p">;</span><span class="m">0</span>.8<span class="p">;</span><span class="m">0</span>.9<span class="p">;</span><span class="m">1</span>.0
+<span class="nv">MET</span> <span class="o">=</span> <span class="m">0</span>.4<span class="p">;</span><span class="m">1</span>.0<span class="p">;</span><span class="m">2</span>.5
+</pre></div>
+</div>
 </div>
 </div>
 

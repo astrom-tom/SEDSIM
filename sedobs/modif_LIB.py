@@ -12,14 +12,16 @@ Module dealing with library ingredients during the fit
 ####Python General Libraries
 import os
 import time
+from pathlib import Path
 
 
+####Third party
 import numpy
 import h5py
 from   scipy import interpolate
 import scipy
 
-####SPARTAN moduls
+####Local modules
 from . import messages as MTU
 from . import units
 from . import Check_plots
@@ -31,8 +33,12 @@ class DUSTlib:
     '''
     def __init__(self):
         '''
-        class creation, empty for the moment
+        class creation, define the input file directory
         '''
+        home = str(Path.home())
+        fileconf = os.path.join(home, '.sedobs_conf')
+        self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
+
     def Dust_for_fit(self, Dustfile, wave_models, EBVlist):
         '''
         Method that prepares the final extinction curve to be used
@@ -51,8 +57,9 @@ class DUSTlib:
         if Dustfile == 'none' or Dustfile == '':
             DUSTdict['Use'] = 'No'
         else:
+            dustfile = os.path.join(self.inputdir, 'EXT', Dustfile)
             ##1- We extract the extinction curve
-            WaveDust, CoefDust = numpy.loadtxt(Dustfile).T
+            WaveDust, CoefDust = numpy.loadtxt(dustfile).T
             ##2- Then we regrid to the model 
             DUSTdict['Use'] = 'Yes'
             DUSTdict['Coef'] = numpy.interp(wave_models, WaveDust, CoefDust)
@@ -133,6 +140,13 @@ class IGMlib:
     '''
     Class preparing the IGM for the fit
     '''
+    def __init__(self):
+        '''
+        class creation, define the input file directory
+        '''
+        home = str(Path.home())
+        fileconf = os.path.join(home, '.sedobs_conf')
+        self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
 
     def IGM_for_fit(self, IGMfile, Redshift, Wave_final, typeIGM):
         '''
@@ -155,7 +169,8 @@ class IGMlib:
 
         else:
             IGM_dict['Use'] = 'Yes'
-            IGM_dict['Curves'] = self.take_curve(IGMfile, Redshift, Wave_final, typeIGM) 
+            igmfile = os.path.join(self.inputdir, 'IGM', IGMfile)
+            IGM_dict['Curves'] = self.take_curve(igmfile, Redshift, Wave_final, typeIGM) 
 
         return IGM_dict
 

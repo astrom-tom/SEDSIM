@@ -13,6 +13,7 @@
 
 ##### Python General Libraries
 import os
+from pathlib import Path
 
 #####Third party
 import numpy
@@ -90,6 +91,9 @@ class from_SSP:
         """
         Class Constructor
         """
+        home = str(Path.home())
+        fileconf = os.path.join(home, '.sedobs_conf')
+        self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
 
     def main(self, conf):
         '''
@@ -97,7 +101,7 @@ class from_SSP:
         with the parameters given by the user
         '''
         ## 1- extract name of the baseSSP in the configuration
-        basessp = conf.Template['BaseSSP']
+        basessp = os.path.join(self.inputdir, 'LIBS', conf.Template['BaseSSP']) 
         head, tail = os.path.split(basessp)
         ## 2 -go get the parameters of the basessp
         Param_final = self.get_parameters(tail, basessp)

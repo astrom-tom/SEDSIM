@@ -23,6 +23,15 @@ Getting started
 ---------------
 ---------------
 
+First start up
+^^^^^^^^^^^^^^
+
+Once you installed SEDobs, you can start it with the sedobs command. Since it is your first start it will ask you to give the absolute path of the input SEDobs file directory. This files are crucial for the functionning of SEDobs (see :doc:`configuration` page for more information). Once you write it sedobs will create a file in the home directory: **~/.sedobs_conf** containing this path. This file will be used by SEDobs to localize all the files. It is a human readable file and you can change the path inside it with any text editor. 
+
+
+The command line interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 You start SEDobs from a terminal. SEDobs comes with a command line interface which includes a 'help' that you can display in your terminal using the help command. It must be called like this::
 
            [user@machine]$ sedobs --help
@@ -54,7 +63,8 @@ SEDobs has 5 optionnal arguments. You can start SEDobs without any argument. Few
 * use - -docs: Display in the web browser the documentation of the code. If you have a valid internet connection it will open the online documentation, if not it will open the local documentation.
 * use - -version: Display in terminal the current version of the software.
 
-
 The command line interface is made using the argparse library (part of the standard python library).
+
+
 
 

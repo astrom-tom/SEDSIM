@@ -15,6 +15,7 @@
 import sys
 import os
 import socket
+from pathlib import Path
 from subprocess import call
 
 ###Local modules
@@ -34,12 +35,61 @@ def main():
     main window.
     It does not take any argument nor return anything
     '''
+    ####first of all we check if the global configuration path is defined in the home directory 
+    ##check if file exists
+    home = str(Path.home())
+    fileconf = os.path.join(home, '.sedobs_conf')
+    if not os.path.isfile(fileconf):
+        #if we do not find it, we ask to create it
+        dirok = 'no'
+        while dirok in ['no', 'not found']:
+
+            if dirok == 'not found':
+                path_conf = input('Directory not found, try again (give ABSOLUTE path) : ')
+            else:
+                path_conf = input('Where are the input files located? (give ABSOLUTE path) : ')
+
+            if os.path.isdir(path_conf) == True:
+                dirok = 'yes'
+            else:
+                dirok = 'not found'
+
+
+        with open(fileconf, 'w') as F:
+            line0 = '#Path to input files\n'
+            F.write(line0)
+            line = 'inputfile\t%s\n'%( path_conf)
+            F.write(line)
+
+
+
     ###load the command line interface
     args = cli.CLI().arguments
 
-    if args.docs == False and args.version == False and args.project == None:
-        MTU.Info('\tNothing was asked...quit...', 'No')
+    if args.docs == False and args.version == False and \
+            args.project == None and args.test == False:
+        MTU.Info('\tNo argument was passed ... sedobs --help will help you ... quit...\n', 'Yes')
         sys.exit()
+
+    ###if test:
+    if args.test == True:
+        MTU.Info('\t Test run :', 'Yes')
+        testok = 'no'
+        while testok in ['no', 'wrong']:
+            if testok == 'no':
+                test = input('Choose your test run [photometric, spectroscopic, multispectro, full]:   ')
+            else:
+                test = input('Name of the test not entered correctly, retry:   ')
+
+            if test not in ['photometric', 'spectroscopic', 'multispectro', 'full']:
+                testok = 'wrong'
+            else:
+                testok = 'ok'
+                MTU.Info('You choosed to run the %s run test...starting...'%test, 'No')
+
+
+
+
 
     ###if the user wants to display the version
     if args.version == True:
@@ -88,7 +138,7 @@ def main():
             MTU.Info('SPARTAN SIM will simulate %s objects'%len(mag), 'No')
 
         ###Prepare Cosmological module
-        MTU.Info('Prepare comology module', 'Yes')
+        MTU.Info('Prepare cosmology module', 'Yes')
         COSMOS = cosmo.Cosmology(final.config.COSMO['Ho'], \
                final.config.COSMO['Omega_m'], \
                final.config.COSMO['Omega_L'])
