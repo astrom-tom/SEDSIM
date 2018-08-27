@@ -35,9 +35,10 @@ class DUSTlib:
         '''
         class creation, define the input file directory
         '''
-        home = str(Path.home())
-        fileconf = os.path.join(home, '.sedobs_conf')
+        self.home = str(Path.home())
+        fileconf = os.path.join(self.home, '.sedobs/','sedobs_conf')
         self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
+        self.hide_dir = os.path.join(self.home,'.sedobs/')
 
     def Dust_for_fit(self, Dustfile, wave_models, EBVlist):
         '''
@@ -144,9 +145,10 @@ class IGMlib:
         '''
         class creation, define the input file directory
         '''
-        home = str(Path.home())
-        fileconf = os.path.join(home, '.sedobs_conf')
+        self.home = str(Path.home())
+        fileconf = os.path.join(self.home, '.sedobs/','sedobs_conf')
         self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
+        self.hide_dir = os.path.join(self.home,'.sedobs/')
 
     def IGM_for_fit(self, IGMfile, Redshift, Wave_final, typeIGM):
         '''

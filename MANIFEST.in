@@ -2,3 +2,4 @@ include README.md
 include LICENSE
 include sedobs/emlines/*
 recursive-include sedobs/docs *
+recursive-include sedobs/test_data *

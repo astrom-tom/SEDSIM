@@ -91,9 +91,11 @@ class from_SSP:
         """
         Class Constructor
         """
-        home = str(Path.home())
-        fileconf = os.path.join(home, '.sedobs_conf')
+        self.home = str(Path.home())
+        fileconf = os.path.join(self.home, '.sedobs/','sedobs_conf')
         self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
+        self.hide_dir = os.path.join(self.home,'.sedobs/')
+
 
     def main(self, conf):
         '''

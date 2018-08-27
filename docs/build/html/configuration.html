@@ -182,7 +182,6 @@ These are not being computed on the fly which save a lot of time in the simulati
 <span class="nv">full_array</span><span class="o">=</span>
 <span class="nv">z_distribution</span><span class="o">=</span>
 <span class="nv">Nobj</span><span class="o">=</span>
-<span class="nv">filter_file</span><span class="o">=</span>
 
 <span class="o">[</span>Data_Type<span class="o">]</span>
 <span class="nv">Photometry</span><span class="o">=</span>
@@ -231,28 +230,25 @@ These are not being computed on the fly which save a lot of time in the simulati
 <li><strong>full_array</strong>: This is a file containing all the properties of the galaxies you want to simulate. This is optionnal (redshift, normalisation magnitude and signal to noise ratios). SEDobs will simulate exactly what is in this file. See the tutorial for more informations.</li>
 <li><strong>z_distribution</strong>: Only if you do not use the previous ‘’full_array’’ option. This file contains the distribution of redshift you want to mimick. It is a one column catalog with redshift values (with 4 decimal maximum).</li>
 <li><strong>Nobj</strong>: Only if you do not use the previous ‘’full_array’’ option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the <strong>z_distribution</strong> option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution.</li>
-<li><strong>filter_file</strong>: This file is one of the additional data of SEDobs that you MUST download. You can download it here <a class="reference download internal" href="_downloads/SEDobs_filters.hdf5" download=""><code class="xref download docutils literal notranslate"><span class="pre">SEDobs_filters.hdf5</span></code></a>. It contains more than 100 filters. You can find details in the <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page.</li>
 </ul>
 <p>An example of the version with the <strong>full_array</strong> option:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
-<span class="nv">Project_name</span><span class="o">=</span> HST_VUDS_simu_Brian_v2
+<span class="nv">Project_name</span><span class="o">=</span> Test_run_v2
 <span class="nv">Author</span><span class="o">=</span> R. THOMAS
-<span class="nv">Project_Directory</span><span class="o">=</span> /home/alien/Documents/SEDSIM/TESTS
+<span class="nv">Project_Directory</span><span class="o">=</span> /home/alien/Documents/SEDOBS/TESTS
 <span class="nv">full_array</span> <span class="o">=</span> final_array_z_StN_mag.txt
 <span class="nv">z_distribution</span> <span class="o">=</span>
 <span class="nv">Nobj</span> <span class="o">=</span>
-<span class="nv">filter_file</span> <span class="o">=</span> /home/alien/Documents/SEDSIM/inputs/SPARTAN_filters.hdf5
 </pre></div>
 </div>
 <p>An example without it:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
-<span class="nv">Project_name</span><span class="o">=</span> HST_VUDS_simu_Brian_v2
+<span class="nv">Project_name</span><span class="o">=</span> Test_run_v2
 <span class="nv">Author</span><span class="o">=</span> R. THOMAS
-<span class="nv">Project_Directory</span><span class="o">=</span> /home/alien/Documents/SEDSIM/TESTS
+<span class="nv">Project_Directory</span><span class="o">=</span> /home/alien/Documents/SEDOBS/TESTS
 <span class="nv">full_array</span> <span class="o">=</span>
 <span class="nv">z_distribution</span> <span class="o">=</span> redshift.txt
 <span class="nv">Nobj</span> <span class="o">=</span> <span class="m">10000</span>
-<span class="nv">filter_file</span> <span class="o">=</span> /home/alien/Documents/SEDSIM/inputs/SPARTAN_filters.hdf5
 </pre></div>
 </div>
 </div>
@@ -370,6 +366,7 @@ An example of this section is given below:</p>
 <li>Directory EmLine: Contains emission lines related files.</li>
 <li>Directory IGM: Contains all the IGM curves (in HDF5 format).</li>
 <li>Directory LIBS: Contains pre-computed CSPs with different SFH, IGM and metallicities.</li>
+<li>File: SPARTAN_filters.hdf5 contains all the photometric filters curves.</li>
 </ul>
 </div></blockquote>
 <p>It is very important to keep all these directories in the same parent directory (SEDobs has relative paths to that parent directory hardcoded). The layout should look like this:</p>
@@ -378,6 +375,7 @@ An example of this section is given below:</p>
     <span class="p">|</span>_EXT
     <span class="p">|</span>_LIBS
     <span class="p">|</span>_EmLine
+    <span class="p">|</span>_SPARTAN_filters.hdf5
 </pre></div>
 </div>
 <p>The path to the parent directory is the one you have to give when you start the SEDobs for the first time (see <a class="reference internal" href="usage.html"><span class="doc">Getting started</span></a>).</p>

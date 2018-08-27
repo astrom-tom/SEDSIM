@@ -13,6 +13,7 @@
 
 ##### Python standard
 import os
+from pathlib import Path
 import random
 
 #python third party
@@ -38,12 +39,17 @@ class Main:
         the name of the output files and directories
         '''
 
+        self.home = str(Path.home())
+        fileconf = os.path.join(self.home, '.sedobs/','sedobs_conf')
+        self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
+ 
         
         self.conf = conf
         self.full_array = conf.General['full_array']
         self.final_dir = conf.General['PDir']
-        self.filter_file = conf.General['filter_file']
+        self.filter_file = os.path.join(self.inputdir, 'SPARTAN_filters.hdf5') 
         self.DataT = conf.DataT
+
         ##directories and summary files
         if self.DataT == 'Combined' or self.DataT == 'Photo':
             self.PhotoDir = conf.General['PDir'] + '/photo_indiv'
@@ -164,15 +170,14 @@ class Main:
 
             #### g - Normalize the template
             MTU.Info('Normalize Template', 'No')
-            Photo = Photometry.Photometry(self.conf.General['filter_file'])
+            Photo = Photometry.Photometry(self.filter_file)
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Normfluxsim, Normalisation = Photo.Normalise_template(Wave_at_z, simFlux, \
                         self.conf.PHOT['Norm_band'], NormMag)
 
             if self.DataT == 'Spectro':
                 blist = list(self.conf.SPEC['Norm_band'].keys())
-                Normfluxsim, Normalisation = \
-                        Photometry(self.conf.General['filter_file']).Normalise_template(Wave_at_z, \
+                Normfluxsim, Normalisation = Photometry(self.filter_file).Normalise_template(Wave_at_z, \
                         simFlux, blist[0], NormMag)
 
             ###add the normalisation to the mass and SFR

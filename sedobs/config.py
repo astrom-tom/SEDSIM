@@ -13,14 +13,18 @@ for the simulations
 @License: GPL v3.0 - see LICENCE.txt
 '''
 
+###Python standard library
 import os
 import sys
 from pathlib import Path
+from shutil import copyfile
 import configparser
 
+###third party
 import numpy
 import scipy.interpolate as interpolate
 
+###local import
 from . import messages as MTU
 from . import filters
 
@@ -63,7 +67,6 @@ class read_config:
         General['N_obj']=config.get('General', 'Nobj')
         if General['N_obj'] != '':
             General['N_obj'] = int(General['N_obj'])
-        General['filter_file'] = config.get('General', 'filter_file')
         self.General = General
 
         #####Data type
@@ -116,16 +119,17 @@ class check_prepare:
     This class check and prepare the program
     """
 
-    def __init__(self, config):
+    def __init__(self, config, testarg, testtype):
         """
         Class Constructor
         """
         self.config = config
-
-        home = str(Path.home())
-        fileconf = os.path.join(home, '.sedobs_conf')
+        self.testarg = testarg
+        self.testtype = testtype
+        self.home = str(Path.home())
+        fileconf = os.path.join(self.home, '.sedobs/','sedobs_conf')
         self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
-
+        self.hide_dir = os.path.join(self.home,'.sedobs/')
 
         ### 1- We check the general section
         MTU.Info('-1-###Check general section###---','No')
@@ -145,7 +149,8 @@ class check_prepare:
         MTU.Info('-4-###Check fake observation configuration section###---','Yes')
         if dtype == 'Photo' or dtype == 'Combined':
             MTU.Info('------###Check Photometric configuration###---','No')
-            bands = self.check_PHOT(self.config, gen_array, self.config.General['filter_file'])
+            bands = self.check_PHOT(self.config, gen_array, os.path.join(self.inputdir, \
+                    'SPARTAN_filters.hdf5'))
             self.config.PHOT['Band_list'] = bands
             if not os.path.isdir(self.config.General['PDir']+'/photo_indiv'):
                  os.makedirs(self.config.General['PDir']+'/photo_indiv')
@@ -187,6 +192,9 @@ class check_prepare:
 
         ###check Project Directory
         if General['PDir']:
+            if General['PDir'][0] == '~':
+                General['PDir'] = os.path.join(self.home, General['PDir'][2:])
+
             MTU.Info('Project Directory: %s' % General['PDir'],'No')
             if os.path.isdir(General['PDir']):
                 MTU.Info('----> Project Directory already exists','No')
@@ -201,16 +209,16 @@ class check_prepare:
             sys.exit()
 
         ###check filter file
-        if General['filter_file']:
-            if os.path.isfile(General['filter_file']):
-                MTU.Info('filter file found','No')
-            else:
-                ###if it does not exist we create it
-                MTU.Info('filter file not found','No')
+        if os.path.isfile(os.path.join(self.inputdir, 'SPARTAN_filters.hdf5')):
+            MTU.Info('Filter file found','No')
         else:
-            MTU.Error('No filter file given...exit', 'Yes')
+            ###if it does not exist we create it
+            MTU.Info('Filter file not found','No')
             sys.exit()
 
+        ###if test we dispatch the files in the directory
+        if self.testarg:
+            self.test_move_files(General['PDir'])
 
         ###if full array given (z, STN, mag) then we don't
         ###need the Stn or z distribution
@@ -248,6 +256,12 @@ class check_prepare:
 
         return  genarray
 
+    def test_move_files(self, directory):
+
+        if self.testtype == 'photometric':
+            listfile = ['dist_mag.txt', 'dist_z.txt']
+            for i in listfile:
+                copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
     def check_dataT(self, dataT):
         '''
@@ -381,7 +395,8 @@ class check_prepare:
             sys.exit()
 
         ##extract list of filter from the filter file
-        list_filt = filters.Retrieve_Filter_inf(filter_file).filter_list()
+        list_filt = filters.Retrieve_Filter_inf(os.path.join(self.inputdir, \
+                'SPARTAN_filters.hdf5').filter_list())
 
         ##check if the normalisation filter is in the filter file
         if SPEC['Norm_band']:
@@ -594,10 +609,17 @@ class prepare_dis:
     This class check and prepare the program
     """
 
-    def __init__(self,):
+    def __init__(self, testarg, test):
         """
         Class Constructor
         """
+        self.testarg = testarg
+        self.test = test
+        self.home = str(Path.home())
+        fileconf = os.path.join(self.home, '.sedobs/','sedobs_conf')
+        self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
+        self.hide_dir = os.path.join(self.home,'.sedobs/')
+
 
     def full_array(self, conf):
         '''
@@ -667,16 +689,18 @@ class prepare_dis:
             Nsim = conf.General['N_obj']
 
             ####we start by the redshift distribution
-            zdistuser = numpy.loadtxt(conf.General['z_dist'])
+            zdistuser = numpy.loadtxt(os.path.join(conf.General['PDir'], conf.General['z_dist']))
             new_zdist = self.dist_from_user_dist(zdistuser,Nsim,int(len(zdistuser)/10))
             #plot().two_dist(zdistuser,20,'user, N=%s'%len(zdistuser), new_zdist, 20,\
             #        'final dist, N=%s'%Nsim, 'Redshift z')
 
             ##then the magnitudes 
             if conf.DataT in ['Combined', 'Photo']:
-                Norm_distuser = numpy.loadtxt(conf.PHOT['Norm_distribution'])
+                Norm_distuser = numpy.loadtxt(os.path.join(conf.General['PDir'], \
+                        conf.PHOT['Norm_distribution']))
             else:
-                Norm_distuser = numpy.loadtxt(conf.SPEC['Norm_distribution'])
+                Norm_distuser = numpy.loadtxt(os.path.join(conf.General['PDir'], \
+                        conf.SPEC['Norm_distribution']))
 
             new_Normdist = self.dist_from_user_dist(Norm_distuser,Nsim,int(len(Norm_distuser)/10))
             ##then the StN
@@ -694,6 +718,9 @@ class prepare_dis:
 
             ##and write it down
             File = self.write_down_full_array(new_zdist, Ndist, new_Normdist, conf)
+            return self.full_array(conf.General['PDir']+'/final_array_z_StN_mag.txt')
+
+
 
     def write_down_full_array(self, z, Stn, Norm, conf):
         '''

@@ -42,7 +42,6 @@ In order to make a simulation run with SEDobs, a configuration file must be fill
     full_array=
     z_distribution= 
     Nobj= 
-    filter_file= 
 
     [Data_Type]
     Photometry= 
@@ -99,36 +98,29 @@ The general section is the first of the configuration file. It is composed of 7 
 
 * **Nobj**: Only if you do not use the previous ''full_array'' option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the **z_distribution** option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution. 
 
-* **filter_file**: This file is one of the additional data of SEDobs that you MUST download. You can download it here :download:`SEDobs_filters.hdf5 <./files/SEDobs_filters.hdf5>`. It contains more than 100 filters. You can find details in the :doc:`filters` page.
-
 An example of the version with the **full_array** option:
 
 .. code-block:: shell
 
     [General]
-    Project_name= HST_VUDS_simu_Brian_v2
+    Project_name= Test_run_v2
     Author= R. THOMAS
-    Project_Directory= /home/alien/Documents/SEDSIM/TESTS
+    Project_Directory= /home/alien/Documents/SEDOBS/TESTS
     full_array = final_array_z_StN_mag.txt
     z_distribution =
     Nobj =
-    filter_file = /home/alien/Documents/SEDSIM/inputs/SPARTAN_filters.hdf5
 
 An example without it:
 
 .. code-block:: shell
 
     [General]
-    Project_name= HST_VUDS_simu_Brian_v2
+    Project_name= Test_run_v2
     Author= R. THOMAS
-    Project_Directory= /home/alien/Documents/SEDSIM/TESTS
+    Project_Directory= /home/alien/Documents/SEDOBS/TESTS
     full_array = 
     z_distribution = redshift.txt
     Nobj = 10000
-    filter_file = /home/alien/Documents/SEDSIM/inputs/SPARTAN_filters.hdf5
-
-
-
 
 
 Data_type
@@ -245,6 +237,7 @@ This is the section where you tell SEDobs what kind of templates you want to cho
     * Directory EmLine: Contains emission lines related files.
     * Directory IGM: Contains all the IGM curves (in HDF5 format).
     * Directory LIBS: Contains pre-computed CSPs with different SFH, IGM and metallicities.
+    * File: SPARTAN_filters.hdf5 contains all the photometric filters curves.
 
 It is very important to keep all these directories in the same parent directory (SEDobs has relative paths to that parent directory hardcoded). The layout should look like this:
 
@@ -255,6 +248,7 @@ It is very important to keep all these directories in the same parent directory 
         |_EXT
         |_LIBS
         |_EmLine
+        |_SPARTAN_filters.hdf5
 
 The path to the parent directory is the one you have to give when you start the SEDobs for the first time (see :doc:`usage`).
 

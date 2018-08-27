@@ -16,6 +16,7 @@ import sys
 import os
 import socket
 from pathlib import Path
+from shutil import copyfile
 from subprocess import call
 
 ###Local modules
@@ -35,11 +36,20 @@ def main():
     main window.
     It does not take any argument nor return anything
     '''
-    ####first of all we check if the global configuration path is defined in the home directory 
+    ####first of all we check if the global configuration 
+    ####path is defined in the home directory 
     ##check if file exists
     home = str(Path.home())
-    fileconf = os.path.join(home, '.sedobs_conf')
+    hide_dir = os.path.join(home,'.sedobs/')
+    fileconf = os.path.join(hide_dir, 'sedobs_conf')
+    
+    if not os.path.isdir(hide_dir):
+        MTU.Info('Create hidden directory for configuration and test files: ~/.sedobs', 'Yes')
+        os.mkdir(hide_dir)
+
+
     if not os.path.isfile(fileconf):
+        MTU.Info('Create configuration file: ~/.sedobs/sedobs_conf', 'No')
         #if we do not find it, we ask to create it
         dirok = 'no'
         while dirok in ['no', 'not found']:
@@ -61,7 +71,16 @@ def main():
             line = 'inputfile\t%s\n'%( path_conf)
             F.write(line)
 
+        MTU.Info('Hidden directory and configuration file created', 'No')
+        ##copy test files
+        ###list all files in the tests directory
+        dirname = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_data')
+        allfiles = os.listdir(dirname)
+        for i in allfiles:
+            copyfile(os.path.join(dirname,i), os.path.join(hide_dir,i))
 
+        MTU.Info('Test files copied in hidden directory\n', 'No')
+        sys.exit()
 
     ###load the command line interface
     args = cli.CLI().arguments
@@ -87,9 +106,21 @@ def main():
                 testok = 'ok'
                 MTU.Info('You choosed to run the %s run test...starting...'%test, 'No')
 
+        if test == 'photometric':
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_photo.conf') 
 
+        if test == 'spectroscopic':
+            args.project = os.path.join(hide_dir,'SEDobs_Test_run_spectro.conf')
+            
+        if test == 'multispectro':
+            args.project = os.path.join(hide_dir,'SEDobs_Test_run_multispectro.conf')
 
+        if test == 'full':
+            args.project = os.path.join(hide_dir,'SEDobs_Test_run_full.conf')  
 
+    else:
+        ##no test
+        test = 'notest'
 
     ###if the user wants to display the version
     if args.version == True:
@@ -124,17 +155,17 @@ def main():
         print('----------------------------------------------------------')
         MTU.Info('LOAD: %s\n'%args.project, 'No')
         full_conf = config.read_config(args.project)
-        final = config.check_prepare(full_conf)
+        final = config.check_prepare(full_conf, args.test, test)
         print('----------------------------------------------------------')
 
         ###### Prepare the distribution of z, StN, mag
         if final.config.General['gen_array'] == 'no':
             MTU.Info('Prepare distributions (stn, mag, z) for the %s objects'\
                 %(final.config.General['N_obj']),'Yes') 
-            redshift, StN, mag = config.prepare_dis().indiv_dist(final.config)
+            redshift, StN, mag = config.prepare_dis(args.test, test).indiv_dist(final.config)
         else:
             MTU.Info('Extract full array', 'Yes')
-            redshift, StN, mag = config.prepare_dis().full_array(final.config)
+            redshift, StN, mag = config.prepare_dis(args.test, test).full_array(final.config)
             MTU.Info('SPARTAN SIM will simulate %s objects'%len(mag), 'No')
 
         ###Prepare Cosmological module
