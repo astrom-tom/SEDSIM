@@ -636,8 +636,7 @@ class prepare_dis:
         mag         list, of normalisation magnitude
         '''
         
-
-        A = numpy.loadtxt(conf.General['full_array']).T        
+        A = numpy.loadtxt(os.path.join(conf.General['PDir'], conf.General['full_array'])).T        
         
         redshift = A[0]
         mag = A[1]
@@ -666,7 +665,7 @@ class prepare_dis:
         StN         list, of Signal to noise
         mag         list, of normalisation magnitude
         '''
-        File = conf.General['PDir']+'/final_array_z_StN_mag.txt'
+        File = os.path.join(conf.General['PDir'],'final_array_z_StN_mag.txt')
         ###if it already exists then we have been there already
         if os.path.isfile(File):
             MTU.Info('final_array_z_StN_mag.txt already exist, load it', 'No')
@@ -718,7 +717,8 @@ class prepare_dis:
 
             ##and write it down
             File = self.write_down_full_array(new_zdist, Ndist, new_Normdist, conf)
-            return self.full_array(conf.General['PDir']+'/final_array_z_StN_mag.txt')
+            conf.General['full_array'] =  'final_array_z_StN_mag.txt'
+            return self.full_array(conf)
 
 
 
