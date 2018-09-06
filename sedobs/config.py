@@ -160,7 +160,7 @@ class check_prepare:
         if dtype == 'Spectro' or dtype == 'Combined':
             MTU.Info('------###Check Spectroscoptic configuration###---','No')
             spectra, specnorm, specs_noise = self.check_SPECTRO(self.config, \
-                    gen_array, self.config.General['filter_file'])
+                    gen_array, os.path.join(self.inputdir, 'SPARTAN_filters.hdf5'))
 
             self.config.SPEC['types'] = spectra
             self.config.SPEC['Norm_band'] = specnorm
@@ -262,6 +262,14 @@ class check_prepare:
             listfile = ['dist_mag.txt', 'dist_z.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
+
+        if self.testtype == 'spectroscopic':
+            listfile = ['dist_mag.txt', 'dist_zspec.txt']
+            for i in listfile:
+                copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
+
+
+
 
     def check_dataT(self, dataT):
         '''
