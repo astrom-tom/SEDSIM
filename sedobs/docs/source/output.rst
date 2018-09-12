@@ -90,6 +90,6 @@ Few example of simulated data are shown below:
     :alt: GUI
 
 .. note:: 
-    All the plots have been made using the photon program: https://astrom-tom.github.io/Photon/build/html/index.html  
+    All the plots have been made using the photon program: http://photon-plot.readthedocs.io/en/latest/index.html  
 
 

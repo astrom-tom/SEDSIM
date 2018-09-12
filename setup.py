@@ -1,4 +1,4 @@
-from setuptools import setup  # Always prefer setuptools over distutils
+from setuptools import setup  
 import sedobs.__info__ as sed
 
 setup(

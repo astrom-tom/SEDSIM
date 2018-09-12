@@ -38,6 +38,9 @@ Content
    installation
    usage
    configuration
+   photo
+   Spectro
+   full
    output 
 
 

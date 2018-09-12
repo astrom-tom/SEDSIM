@@ -31,12 +31,27 @@ class Spectroscopy:
     def simu_spec_main(self, conf, wave, flux, STN, redshift, N):
         '''
         Main of the spectroscopic simulation
+        it loops over each spectrum to be simulated
+
+        Parameters:
+        ------------
+        conf        global configuration of the project
+        wave        1d array, template wavelength
+        flux        1d array, template flux
+        STN         float, required SNR
+        redshift    float, redshift of the object
+        N           int, number of the simulation
+
+        Return
+        ------
+        spec_final  dict, with spectroscopic simulation
+
         '''
         spec_final = {}
         for i in range(int(conf.SPEC['NSpec'])):
             spec_indiv = {}
             blist = list(conf.SPEC['Norm_band'].keys())
-            spec_indiv['Norm_band'] = blist[i]
+            #spec_indiv['Norm_band'] = blist[i]
             spec_indiv['Noise_reg'] = conf.SPEC['Noise_reg'][i]
             spec_indiv['l0'] = conf.SPEC['types']['spec_%s'%str(i+1)]['l0']
             spec_indiv['lf'] = conf.SPEC['types']['spec_%s'%str(i+1)]['lf']
@@ -57,8 +72,27 @@ class Spectroscopy:
 
     def simu_one_single_spec(self, spec_conf, wave, flux, redshift, conf):
         '''
-        wefw
+        This function simulate the spectrum,
+                #change the resolution
+                #cut it
+                #add noise
+            All thes steps are in different function
+
+        Parameters
+        ----------
+        spec_conf   dict, with spectral configuration for this spectru
+        wave        1d array with wavelength
+        flux        1d array with template flux
+        redshift    float, redshift
+        conf        global configuration
+
+        Return
+        ------
+        wave_cut    1d array with spectral wavelegnth
+        flux_noised 1d array with noisy flux
+        noise_spec  1d array with noise spectrum
         '''
+
         ###1 - Change the resolution
         ##### a - retrieve the resolution of the models
         Rmodel = self.model_res(conf.Template['BaseSSP']) 
@@ -74,6 +108,20 @@ class Spectroscopy:
 
     def add_noise(self, wave, flux, specconf, Redshift):
         '''
+        This function add noise to the spectrum
+
+        Parameter
+        ---------
+        wave    1d array with awvelength
+        flux    1d array with flux
+        specconf dictionnary with spectral configuration for this spectrum
+        Redshift    float, redshift of the object
+        
+
+        Return
+        -------
+        flux_noised     1d array with noised flux
+        noised_spectrum 1d array with noise spectrum
         '''
         
         ####first we extract the region where we compute the StN

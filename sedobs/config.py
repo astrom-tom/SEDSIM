@@ -264,7 +264,12 @@ class check_prepare:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
         if self.testtype == 'spectroscopic':
-            listfile = ['dist_mag.txt', 'dist_zspec.txt']
+            listfile = ['dist_mag.txt', 'dist_zspec.txt', 'dist_SNR1.txt']
+            for i in listfile:
+                copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
+
+        if self.testtype == 'multispectro':
+            listfile = ['dist_mag.txt', 'dist_zspec_multi.txt', 'dist_SNR1.txt', 'dist_SNR2.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
@@ -403,8 +408,7 @@ class check_prepare:
             sys.exit()
 
         ##extract list of filter from the filter file
-        list_filt = filters.Retrieve_Filter_inf(os.path.join(self.inputdir, \
-                'SPARTAN_filters.hdf5').filter_list())
+        list_filt = filters.Retrieve_Filter_inf(filter_file).filter_list()
 
         ##check if the normalisation filter is in the filter file
         if SPEC['Norm_band']:
@@ -502,15 +506,16 @@ class check_prepare:
                 sys.exit()
            
             if indiv_spec[3] < 0:
-                MTU.Error('Rsolving power must be > 0 ... exit', 'Yes')
+                MTU.Error('Resolving power must be > 0 ... exit', 'Yes')
                 sys.exit()
 
             if gen_array == 'no':
+                print(os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])))
                 if os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])):
+                    MTU.Info('StN file for spectra #%s found'%n, 'Yes')
+                else:
                     MTU.Error('StN file for spectra #%s not found... exit'%n, 'Yes')
                     sys.exit()
-                else:
-                    MTU.Info('StN file for spectra #%s... exit'%n, 'Yes')
 
             spectra_to_simulate['spec_%s'%n] = {}
             spectra_to_simulate['spec_%s'%n]['l0'] = indiv_spec[0]
@@ -715,7 +720,8 @@ class prepare_dis:
                 specs = list(conf.SPEC['types'])
                 Ndist = []
                 for i in range(int(conf.SPEC['NSpec'])):
-                    StN_distuser = numpy.loadtxt(conf.SPEC['types'][specs[i]]['Stnfile'])
+                    StN_distuser = numpy.loadtxt(os.path.join(conf.General['PDir'], \
+                            conf.SPEC['types'][specs[i]]['Stnfile']))
                     new_StNdist = self.dist_from_user_dist(StN_distuser,Nsim,int(len(StN_distuser)/10))
                     #plot().two_dist(StN_distuser,20,'user, N=%s'%len(StN_distuser), new_StNdist, 20,\
                     #'final dist, N=%s'%Nsim, 'Signa-to-noise ratio')  

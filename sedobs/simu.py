@@ -177,7 +177,7 @@ class Main:
 
             if self.DataT == 'Spectro':
                 blist = list(self.conf.SPEC['Norm_band'].keys())
-                Normfluxsim, Normalisation = Photometry(self.filter_file).Normalise_template(Wave_at_z, \
+                Normfluxsim, Normalisation = Photo.Normalise_template(Wave_at_z, \
                         simFlux, blist[0], NormMag)
 
             ###add the normalisation to the mass and SFR
@@ -193,8 +193,7 @@ class Main:
                 #plot().template_and_mags(Wave_at_z, Normfluxsim, Photo_sim, z)
 
             if self.DataT == 'Spectro':
-                spectro_sim = Spectroscopy.Spectroscopy.simu_spec_main(self.conf, \
-                        Wave_at_z, Normfluxsim, StN, z, i[0])
+                spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, StN, z, i[0])
                 MTU.Info('Spectroscopy has been simulated', 'No')
                 Photo_sim_spec = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
                         self.conf.SPEC['Norm_band'])
@@ -219,7 +218,7 @@ class Main:
                 out.add_to_output_param_file(z, Name_photo, simPara, self.final_param_file, NormMag)
 
             if self.DataT == 'Spectro':
-                out.add_to_output_param_file(z, Name_photo, simPara, self.final_param_file, NormMag)
+                out.add_to_output_param_file(z, Name_spectro, simPara, self.final_param_file, NormMag)
                 out.add_to_final_spec_file(Name_spectro, spectro_sim, Photo_sim_spec, \
                         z, self.Spectrofinalfile, self.SpectraDir)
 
