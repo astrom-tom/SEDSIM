@@ -1,0 +1,21 @@
+####################
+####################
+####################
+### Emission line ##
+###    list       ##
+###     for       ##
+###  estimation  ###
+###      of       ##
+###  EW and line  ##
+###     flux      ##
+####################
+
+##   Name     wave(rf-Angstrom)
+Lya             1215
+[OII]           3727
+[OIIIa]         5007
+[OIIIb]         4959
+Ha              6562
+Hb              4861
+[SII]           6716
+
