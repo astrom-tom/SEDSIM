@@ -36,6 +36,15 @@ def main():
     main window.
     It does not take any argument nor return anything
     '''
+
+    ###load the command line interface
+    args = cli.CLI().arguments
+
+    ###if the user wants to display the version
+    if args.version == True:
+        MTU.Info('\tSEDobs version %s'%info.__version__, 'No')
+        sys.exit()
+
     ####first of all we check if the global configuration 
     ####path is defined in the home directory 
     ##check if file exists
@@ -82,9 +91,6 @@ def main():
         MTU.Info('Test files copied in hidden directory\n', 'No')
         sys.exit()
 
-    ###load the command line interface
-    args = cli.CLI().arguments
-
     if args.docs == False and args.version == False and \
             args.project == None and args.test == False:
         MTU.Info('\tNo argument was passed ... sedobs --help will help you ... quit...\n', 'Yes')
@@ -121,11 +127,6 @@ def main():
     else:
         ##no test
         test = 'notest'
-
-    ###if the user wants to display the version
-    if args.version == True:
-        MTU.Info('\tSEDobs version %s'%info.__version__, 'No')
-        sys.exit()
 
     ###if the user wants to display the internal documentation
     if args.docs == True:
