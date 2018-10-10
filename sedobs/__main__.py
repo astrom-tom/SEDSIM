@@ -116,13 +116,13 @@ def main():
             args.project = os.path.join(hide_dir, 'SEDobs_Test_run_photo.conf') 
 
         if test == 'spectroscopic':
-            args.project = os.path.join(hide_dir,'SEDobs_Test_run_spectro.conf')
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_spectro.conf')
             
-        if test == 'multispectro':
-            args.project = os.path.join(hide_dir,'SEDobs_Test_run_multispectro.conf')
+        if test in ['multispectro']:
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_multispectro.conf')
 
         if test == 'full':
-            args.project = os.path.join(hide_dir,'SEDobs_Test_run_full.conf')  
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_full.conf')  
 
     else:
         ##no test

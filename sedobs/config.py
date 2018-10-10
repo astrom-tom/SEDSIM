@@ -268,12 +268,10 @@ class check_prepare:
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
-        if self.testtype == 'multispectro':
+        if self.testtype in ['multispectro', 'full']:
             listfile = ['dist_mag.txt', 'dist_zspec_multi.txt', 'dist_SNR1.txt', 'dist_SNR2.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
-
-
 
 
     def check_dataT(self, dataT):
@@ -386,8 +384,8 @@ class check_prepare:
                 MTU.Error('%s not found in filter file ... exit'%name, 'Yes')
                 print(list_filt)
                 sys.exit()
-            bands_to_simulate[name] = [float(indiv_band[1]),float(indiv_band[2]), float(indiv_band[3])]
-            #print(bands_to_simulate[name])
+            bands_to_simulate[name] = [float(indiv_band[1]), \
+                    float(indiv_band[2]), float(indiv_band[3])]
 
         return bands_to_simulate
 
@@ -510,9 +508,8 @@ class check_prepare:
                 sys.exit()
 
             if gen_array == 'no':
-                print(os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])))
                 if os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])):
-                    MTU.Info('StN file for spectra #%s found'%n, 'Yes')
+                    MTU.Info('StN file for spectra #%s found'%n, 'No')
                 else:
                     MTU.Error('StN file for spectra #%s not found... exit'%n, 'Yes')
                     sys.exit()

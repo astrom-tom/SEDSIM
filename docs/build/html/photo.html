@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -240,7 +241,7 @@ The configuration we use is the one given below:</p>
 <dl class="docutils">
 <dt>After this checks, SEDobs is going to prepare the extra files:</dt>
 <dd><ul class="first last simple">
-<li>The final redshift and normalisation magnitude distributions. From the two files given, two new distribution will be created, matching the shape of the original one with the number of object you want to create. Examples are given below for this run:</li>
+<li>The final redshift and normalisation magnitude distributions. From the two files given, two new distributions will be created (see above), matching the shape of the original ones with the number of object you want to create. Examples are given below for this run:</li>
 </ul>
 </dd>
 </dl>
@@ -250,14 +251,14 @@ The configuration we use is the one given below:</p>
 <p>These two distributions will joined in one file called ‘final_array_z_StN_mag.txt’ and placed in your project directory. This file can be re-used for another run using the <em>final array option</em>.</p>
 <blockquote>
 <div><ul class="simple">
-<li>From the Ages, Tau and metallicities that you give in your configuration SEDobs recompute a library of templates and save it in <em>SEDobs_Test_run_photometry.hdf5</em>.</li>
-<li>SEDobs starts to create the output files (with header). In this case it will be the parameter file, and the photometric file. It also creates the photo_indiv and original_template sub-directories</li>
+<li>From the Ages, Tau and metallicities that you give in your configuration SEDobs recompute a library of templates and save it in <em>SEDobs_Test_run_photometry.hdf5</em> (this name depends on the name of your project).</li>
+<li>SEDobs starts to create the output files (with header). In this case it will be the parameter file, and the photometric file. It also creates the photo_indiv and original_template sub-directories.</li>
 </ul>
 </div></blockquote>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">if you change some of the template parameter (Age, Tau, met) you must delete the <em>.hdf5 file that was created previously because SEDobs try to look for an already computed library of template before creating one.
-It is the same for the *final_array_z_StN_mag.txt</em> file. If you change your redshift distribution of your normalisation band distribution you have to delete this file. SEDobs try to look for it to check if one is already here. If it finds it it will not recalculate it.</p>
+<p>if you change some of the template parameters (Age, Tau, met) you must delete the <a href="#id1"><span class="problematic" id="id2">*</span></a>.hdf5 file that was created previously because SEDobs try to look for an already computed library of template before creating one.</p>
+<p class="last">It is the same for the <em>final_array_z_StN_mag.txt</em> file. If you change your redshift distribution of your normalisation band distribution you have to delete this file. SEDobs try to look for it to check if one is already here. If it finds it it will not recalculate it.</p>
 </div>
 </div>
 <div class="section" id="simulation">
@@ -332,7 +333,10 @@ It is the same for the *final_array_z_StN_mag.txt</em> file. If you change your 
 
   
 
-  <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {

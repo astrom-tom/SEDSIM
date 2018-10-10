@@ -106,7 +106,7 @@ Preparation
 ^^^^^^^^^^^
 
 After this checks, SEDobs is going to prepare the extra files:
-    * The final redshift and normalisation magnitude distributions. From the two files given, two new distribution will be created, matching the shape of the original one with the number of object you want to create. Examples are given below for this run:
+    * The final redshift and normalisation magnitude distributions. From the two files given, two new distributions will be created (see above), matching the shape of the original ones with the number of object you want to create. Examples are given below for this run:
 
 .. figure:: ./pics/both_images.png
     :width: 750px
@@ -115,13 +115,15 @@ After this checks, SEDobs is going to prepare the extra files:
 
 These two distributions will joined in one file called 'final_array_z_StN_mag.txt' and placed in your project directory. This file can be re-used for another run using the *final array option*.
 
-    * From the Ages, Tau and metallicities that you give in your configuration SEDobs recompute a library of templates and save it in *SEDobs_Test_run_photometry.hdf5*. 
+    * From the Ages, Tau and metallicities that you give in your configuration SEDobs recompute a library of templates and save it in *SEDobs_Test_run_photometry.hdf5* (this name depends on the name of your project). 
 
 
-    * SEDobs starts to create the output files (with header). In this case it will be the parameter file, and the photometric file. It also creates the photo_indiv and original_template sub-directories
+    * SEDobs starts to create the output files (with header). In this case it will be the parameter file, and the photometric file. It also creates the photo_indiv and original_template sub-directories.
+
 .. warning::
     
-    if you change some of the template parameter (Age, Tau, met) you must delete the *.hdf5 file that was created previously because SEDobs try to look for an already computed library of template before creating one.
+    if you change some of the template parameters (Age, Tau, met) you must delete the *.hdf5 file that was created previously because SEDobs try to look for an already computed library of template before creating one.
+
     It is the same for the *final_array_z_StN_mag.txt* file. If you change your redshift distribution of your normalisation band distribution you have to delete this file. SEDobs try to look for it to check if one is already here. If it finds it it will not recalculate it. 
 
 

@@ -40,6 +40,7 @@ Content
    configuration
    photo
    Spectro
+   MultiSpectro
    full
    output 
 
