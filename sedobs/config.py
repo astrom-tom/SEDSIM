@@ -82,6 +82,8 @@ class read_config:
         SPEC['Noise_reg'] = config.get('Spectro', 'Noise_reg')
         SPEC['Norm_distribution'] = config.get('Spectro', 'Norm_distribution')
         SPEC['types'] = config.get('Spectro', 'types')
+        SPEC['flux_unit'] = config.get('Spectro', 'flux_unit')
+        SPEC['wave_unit'] = config.get('Spectro', 'wave_unit')
         self.SPEC = SPEC
 
         ###Photo information
@@ -90,6 +92,8 @@ class read_config:
         PHOT['Norm_distribution'] = config.get('Photo', 'Norm_distribution')
         PHOT['Nband'] = config.get('Photo', 'Nband')
         PHOT['Band_list'] = config.get('Photo', 'Band_list')
+        PHOT['flux_unit'] = config.get('Photo', 'flux_unit')
+        PHOT['wave_unit'] = config.get('Photo', 'wave_unit')
         self.PHOT = PHOT
 
         ###Cosmology
@@ -387,6 +391,22 @@ class check_prepare:
             bands_to_simulate[name] = [float(indiv_band[1]), \
                     float(indiv_band[2]), float(indiv_band[3])]
 
+        if PHOT['flux_unit'] == 'Jy':
+            MTU.Info('Flux unit will be Jansky', 'No')
+
+        if PHOT['flux_unit'] == 'muJy':
+            MTU.Info('Flux unit will be micro Jansky', 'No')
+
+        if PHOT['flux_unit'] == '':
+            MTU.Info('Flux unit will be erg/s/cm2/A', 'No')
+
+        if PHOT['wave_unit'] == '':
+            MTU.Info('Wavelength will be in Angtrom', 'No')
+        
+        if PHOT['wave_unit'] == 'log_ang':
+            MTU.Info('Wavelength will be log(Angstrom)', 'No')
+ 
+
         return bands_to_simulate
 
     def check_SPECTRO(self, config, gen_array, filter_file):
@@ -523,6 +543,21 @@ class check_prepare:
                 spectra_to_simulate['spec_%s'%n]['Stnfile'] = indiv_spec[4]
             n += 1
 
+        if SPEC['flux_unit'] == 'Jy':
+            MTU.Info('Flux unit will be Jansky', 'No')
+
+        if SPEC['flux_unit'] == 'muJy':
+            MTU.Info('Flux unit will be micro Jansky', 'No')
+
+        if SPEC['flux_unit'] == '':
+            MTU.Info('Flux unit will be erg/s/cm2/A', 'No')
+
+        if SPEC['wave_unit'] == '':
+            MTU.Info('Wavelength will be in Angtrom', 'No')
+        
+        if SPEC['wave_unit'] == 'log_ang':
+            MTU.Info('Wavelength will be log(Angstrom)', 'No')
+ 
         return spectra_to_simulate, bands_to_simulate, specs_noise
 
     def check_Template(self, Temp):

@@ -14,8 +14,10 @@
 
 ##### Python General Libraries
 import os
+
+##third party
 import numpy
-import time
+import scipy.constants as const
 
 ##### SPARTAN modules
 from . import messages as MTU
@@ -46,7 +48,7 @@ class Output:
             os.remove(param_file)
 
         MTU.Info('Output Parameter file does not exist, we create it', 'No')
-        Header = '#ID_sim\tredshift\tMag\tSNR\tMet\tTAU\tAGE\tMass\tSFR\tEBV\tTrLya'
+        Header = '#ID_sim\tredshift\tMag\tMet\tTAU\tAGE\tMass\tSFR\tEBV\tTrLya'
         par_file = open(param_file, 'w')
         par_file.write(Header)
         par_file.close()
@@ -163,7 +165,6 @@ class Output:
         Header = '# ident\tredshift\t'
         for i in enumerate(listspec):
             Header += 'spec%s\t%s\t%s_err\t'%(i[0]+1, i[1], i[1])
-
         spec_file = open(spectro_file, 'w')
         spec_file.write(Header)
         spec_file.close()
@@ -304,7 +305,7 @@ class Output:
 
 
 
-    def create_original_template(self, wave, flux, name, dire):
+    def create_original_template(self, wave, flux, name, dire, conf):
         '''
         Method that creates the file with the original template
 
@@ -314,7 +315,23 @@ class Output:
         flux    list, of flux
         name    str, name
         dir     str, directory
+        conf    str, spectral confioguration (for unit)
         '''
+        ##speed of light
+        c = const.c
+        ##to angstrom/s
+        ca = c * 1e10
+        #factor from l*l*F(l) to F(J)
+        toJy = 1e23/ca
+
+        if conf['flux_unit'] == 'Jy':
+            flux = flux * wave * wave * toJy 
+
+        if conf['flux_unit'] == 'muJy':
+            flux = flux * wave * wave * toJy * 1e6 
+            
+        if conf['wave_unit'] == 'log_ang':
+            wave = numpy.log10(wave)
 
         name = name + '_original.dat'
         fullname = os.path.join(dire, name)

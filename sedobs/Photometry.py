@@ -11,6 +11,8 @@ Modul dealing with the photometric computation
 
 ####Python General Libraries
 import numpy
+import scipy.constants as const
+
 
 ##SPARTAN libraries
 from . import units
@@ -29,7 +31,13 @@ class Photometry:
 
         self. Filterfile    The location of the filter file, and the file
         """
-
+        ###unit convertor
+        ##speed of light
+        c = const.c
+        ##to angstrom/s
+        ca = c * 1e10
+        #factor from l*l*F(l) to F(J)
+        self.toJy = 1e23/ca
         self.filterfile = filterfile
 
     def Normalise_template(self, wave, flux, band, Norm):
@@ -57,7 +65,7 @@ class Photometry:
 
         return Norm_flux, r
 
-    def simulate_photo(self, wave, flux, band_list):
+    def simulate_photo(self, wave, flux, band_list, conf):
         '''
         Method that simulate the photometry. First we compute
         the magnitude in the bands and then the errors
@@ -66,6 +74,7 @@ class Photometry:
         wave        list, of observed wavelength
         flux        list, of observed flux (normalised) 
         band_list   list, of band and error
+        conf        dict, of configuration from user configuration
         '''
         ###extract band names from the the list
         band_names = band_list.keys()
@@ -86,6 +95,27 @@ class Photometry:
             ###add the error to the measurement
             magABzp =  magAB+zp
             fluxABzp = self.mag2flux(magABzp, Leff)
+            flux_err = numpy.abs(err)*fluxAB*numpy.log(10)/2.5
+
+
+            ###take care of unit conversion, is neeeded
+            if conf['flux_unit'] == 'Jy':
+                flux_errp = (fluxAB + flux_err) * Leff * Leff * self.toJy
+                flux_errm = (fluxAB - flux_err) * Leff * Leff * self.toJy
+                flux_err = (flux_errp-flux_errm)/2
+                fluxAB = fluxAB * Leff * Leff * self.toJy
+                fluxABzp = fluxABzp * Leff * Leff * self.toJy
+
+            if conf['flux_unit'] == 'muJy':
+                flux_errp = (fluxAB + flux_err) * Leff * Leff * self.toJy * 1e6
+                flux_errm = (fluxAB - flux_err) * Leff * Leff * self.toJy * 1e6
+                flux_err = (flux_errp-flux_errm)/2 
+                fluxAB = fluxAB * Leff * Leff * self.toJy * 1e6
+                fluxABzp = fluxABzp * Leff * Leff * self.toJy * 1e6
+
+            if conf['wave_unit'] == 'log_ang':
+                FWHM = numpy.log10(Leff + FWHM/2) - numpy.log10(Leff-FWHM/2)
+                Leff = numpy.log10(Leff)
 
             ##and save it
             Photo_sim[i]['Measori'] = magAB  ##Template real magnitude
@@ -93,7 +123,7 @@ class Photometry:
             Photo_sim[i]['Meas'] = magABzp  ##magnitude with offset
             Photo_sim[i]['Flux'] = fluxABzp ## flux with offset
             Photo_sim[i]['Err']  = numpy.abs(err) ##err on the magnitude
-            Photo_sim[i]['FluxErr'] = numpy.abs(err)*fluxAB*numpy.log(10)/2.5###error on the flux
+            Photo_sim[i]['FluxErr'] = flux_err###error on the flux
             Photo_sim[i]['Leff'] = Leff ### effective wavelength of the filter 
             Photo_sim[i]['wave_err'] = FWHM / 2. 
 

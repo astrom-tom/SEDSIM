@@ -157,11 +157,14 @@ class Main:
                     z, COSMO_obj)
 
             simFlux = Templates_at_z
-            simPara = Cosmo_Parameters[Nrandom]
+
+            ###adjust parameter list. In case no IGM we create IGM parameters anyway and
+            ###put them at -99.9
+            simPara = list(Cosmo_Parameters[Nrandom])
             if appliedIGM == 'no':
-                simPara.append(0.0)
-                simPara.append(0.0)
-                simPara.append(0.0)
+                simPara.append(-99.9)
+                simPara.append(-99.9)
+                simPara.append(-99.9)
                 IGM_param_names.append('LyaTr')
                 IGM_param_names.append('LybTr')
                 IGM_param_names.append('LygTr')
@@ -187,7 +190,8 @@ class Main:
             ### h - simulate
             spectro = Spectroscopy.Spectroscopy()
             if self.DataT == 'Photo' or self.DataT == 'Combined':
-                Photo_sim = Photo.simulate_photo(Wave_at_z, Normfluxsim, self.conf.PHOT['Band_list'])
+                Photo_sim = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
+                        self.conf.PHOT['Band_list'], self.conf.PHOT)
                 MTU.Info('Photometry has been simulated', 'No')
                 ####chekc with plot
                 #plot().template_and_mags(Wave_at_z, Normfluxsim, Photo_sim, z)
@@ -196,7 +200,7 @@ class Main:
                 spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, StN, z, i[0])
                 MTU.Info('Spectroscopy has been simulated', 'No')
                 Photo_sim_spec = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
-                        self.conf.SPEC['Norm_band'])
+                        self.conf.SPEC['Norm_band'], self.conf.SPEC)
                 #plot().spec_template_mag(Wave_at_z, Normfluxsim, spectro_sim, Photo_sim_spec, z)
 
             if self.DataT == 'Combined':
@@ -204,11 +208,10 @@ class Main:
                 MTU.Info('Spectroscopy has been simulated', 'No')
                 #Photo_sim_spec = spec().combined_spectro_photometry(Photo_sim, self.conf)
                 Photo_sim_spec = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
-                        self.conf.SPEC['Norm_band'])
+                        self.conf.SPEC['Norm_band'], self.conf.SPEC)
 
                 #Check_plots.plot().combined_template_mag(Wave_at_z, \
                         #Normfluxsim, spectro_sim, Photo_sim, z)
-
 
             ### i - and write them down
             out = simu_output.Output()
@@ -230,10 +233,16 @@ class Main:
                 out.add_to_final_comb_file(Name_Combined, spectro_sim, Photo_sim_spec, Photo_sim, \
                         z, self.Combinedfinalfile, self.SpectraDir)
                 out.add_to_output_param_file(z, Name_Combined, simPara, self.final_param_file, NormMag)
+
             ### h - write parameters in file
             Name_file_para = '%s_N%s'%(self.conf.General['PName'], N)
-            out.create_original_template(Wave_at_z, Normfluxsim, Name_file_para, \
-                    self.original_template_dir)
+            if self.DataT == 'Photo':
+                out.create_original_template(Wave_at_z, Normfluxsim, Name_file_para, \
+                        self.original_template_dir, self.conf.PHOT)
+            else:
+                out.create_original_template(Wave_at_z, Normfluxsim, Name_file_para, \
+                        self.original_template_dir, self.conf.SPEC)
+ 
 
             #time.sleep(1)
 

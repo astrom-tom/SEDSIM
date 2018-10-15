@@ -15,7 +15,9 @@ import time
 
 ##third party
 import numpy
+import scipy.constants as const
 from scipy.ndimage.filters import gaussian_filter, generic_filter
+
 
 ##local
 from . import messages as MTU
@@ -26,7 +28,13 @@ class Spectroscopy:
         """
         Class Constructor defining one attributes:
         """
-
+        ###unit convertor
+        ##speed of light
+        c = const.c
+        ##to angstrom/s
+        ca = c * 1e10 
+        #factor from l*l*F(l) to F(J)
+        self.toJy = 1e23/ca
 
     def simu_spec_main(self, conf, wave, flux, STN, redshift, N):
         '''
@@ -62,6 +70,17 @@ class Spectroscopy:
             wavespec, fluxnoised, noise_spec = self.simu_one_single_spec(spec_indiv, \
                     wave, flux, redshift, conf)     
             spec_final[i+1] = {}
+            if conf.SPEC['flux_unit'] == 'Jy':
+                fluxnoised = fluxnoised * wavespec * wavespec * self.toJy 
+                noise_spec = noise_spec * wavespec * wavespec * self.toJy 
+
+            if conf.SPEC['flux_unit'] == 'muJy':
+                fluxnoised = fluxnoised * wavespec * wavespec * self.toJy * 1e6 
+                noise_spec = noise_spec * wavespec * wavespec * self.toJy * 1e6
+                
+            if conf.SPEC['wave_unit'] == 'log_ang':
+                wavespec = numpy.log10(wavespec)
+
             spec_final[i+1]['wave'] = wavespec
             spec_final[i+1]['flux'] = fluxnoised
             spec_final[i+1]['noise'] = noise_spec
@@ -143,7 +162,7 @@ class Spectroscopy:
         sigma = mu / specconf['SNR']
 
         ##generate the error
-        N = numpy.random.normal(0, sigma, len(wave))
+        N = numpy.random.normal(0, numpy.abs(sigma), len(wave))
 
         ##and add it to the flux
         flux_noised = N + flux 
