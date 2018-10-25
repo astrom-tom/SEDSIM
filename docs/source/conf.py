@@ -40,6 +40,7 @@ release = '0.1.2'
 # ones.
 extensions = [
     'sphinx.ext.githubpages',
+    'sphinx.ext.mathjax',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -106,8 +107,9 @@ htmlhelp_basename = 'SEDobsdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
-
-latex_elements = {
+latex_engine = 'xelatex'
+latex_elements = {'\usepackage{amsmath}\n\usepackage{amssymb}\n'}
+#latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -123,7 +125,7 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
-}
+#}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,

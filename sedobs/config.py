@@ -68,6 +68,7 @@ class read_config:
         if General['N_obj'] != '':
             General['N_obj'] = int(General['N_obj'])
         self.General = General
+        General['sizegal'] = config.get('General', 'sizegal')
 
         #####Data type
         DataT = {}
@@ -107,7 +108,8 @@ class read_config:
         Template = {}
         Template['BaseSSP'] = config.get('Templates', 'BaseSSP')
         Template['DustUse'] = config.get('Templates', 'DustUse')
-        Template['EBVList'] = config.get('Templates', 'EBVList')
+        Template['EBVsList'] = config.get('Templates', 'EBVsList')
+        Template['EBVnList'] = config.get('Templates', 'EBVnList')
         Template['IGMtype'] = config.get('Templates', 'IGMType').lower()
         Template['IGMUse'] = config.get('Templates', 'IGMUse')
         Template['EMline'] = config.get('Templates', 'EMline').lower()
@@ -136,23 +138,23 @@ class check_prepare:
         self.hide_dir = os.path.join(self.home,'.sedobs/')
 
         ### 1- We check the general section
-        MTU.Info('-1-###Check general section###---','No')
+        MTU.Info('\033[91m'+'-1-###Check general section###---'+'\033[0m','No')
         gen_array = self.check_general(self.config.General)
         self.config.General['gen_array'] = gen_array 
 
         ### 2- Then the data types to simulate
-        MTU.Info('-2-###Check data type section###---','Yes')
+        MTU.Info('\033[91m'+'-2-###Check data type section###---'+'\033[0m','Yes')
         dtype = self.check_dataT(self.config.DataT)
         self.config.DataT = dtype
 
         ### 3 - Check the cosmological module
-        MTU.Info('-3-###Check Cosmo section###---','Yes')
+        MTU.Info('\033[91m'+'-3-###Check Cosmo section###---'+'\033[0m','Yes')
         self.check_COSMO(self.config.COSMO)
         
         ## 4- simulated observation configuration
-        MTU.Info('-4-###Check fake observation configuration section###---','Yes')
+        MTU.Info('\033[91m'+'-4-###Check fake observation configuration section###---'+'\033[0m','Yes')
         if dtype == 'Photo' or dtype == 'Combined':
-            MTU.Info('------###Check Photometric configuration###---','No')
+            MTU.Info('\033[94m'+'------###Check Photometric configuration###---'+'\033[0m','Yes')
             bands = self.check_PHOT(self.config, gen_array, os.path.join(self.inputdir, \
                     'SPARTAN_filters.hdf5'))
             self.config.PHOT['Band_list'] = bands
@@ -162,7 +164,7 @@ class check_prepare:
                 MTU.Info('Photometric directory was already created', 'No') 
 
         if dtype == 'Spectro' or dtype == 'Combined':
-            MTU.Info('------###Check Spectroscoptic configuration###---','No')
+            MTU.Info('\033[94m'+'------###Check Spectroscoptic configuration###---'+'\033[0m','Yes')
             spectra, specnorm, specs_noise = self.check_SPECTRO(self.config, \
                     gen_array, os.path.join(self.inputdir, 'SPARTAN_filters.hdf5'))
 
@@ -261,6 +263,18 @@ class check_prepare:
         return  genarray
 
     def test_move_files(self, directory):
+        '''
+        This function moves the test files into the hidden directory (in the home)
+        
+        Parameter
+        ---------
+        directory
+                    str, path to the test project directory
+
+        Returns
+        -------
+        None
+        '''
 
         if self.testtype == 'photometric':
             listfile = ['dist_mag.txt', 'dist_z.txt']
@@ -360,7 +374,6 @@ class check_prepare:
                 MTU.Error('No Normalisation magnitude given... exit', 'Yes')
                 sys.exit()
  
-
         ###then we check the number of band
         if PHOT['Nband'] != '':
             MTU.Info('N=%s bands will be computed in each simulated object'%(PHOT['Nband']),'No')
@@ -371,14 +384,18 @@ class check_prepare:
         ###and then check the list of band
         bandlist = PHOT['Band_list'].split(';')
         if len(bandlist) != int(PHOT['Nband']):
-            MTU.Error('Nband different from the number in band list ... exit', 'Yes')
+            MTU.Error('Nband different from the number in given in band list ... exit', 'Yes')
             sys.exit()
 
         bands_to_simulate = {}
         for i in bandlist:
             indiv_band= i.strip("()").split(',')
-            if len(indiv_band) != 4:
-                MTU.Error('band configuration must be of the form (name, offset,mean_err, sigma_err) ... exit', 'Yes')
+            ###each band configuration has 6 values:
+            ###name, offset, mean error, sigme arror, atmosphere
+            ###the two last are predefined
+            if len(indiv_band) != 5:   
+                MTU.Error('band configuration must be of the form \
+                        (name,offset,mean_err,sigma_err,Atmosphere) ... exit', 'Yes')
                 sys.exit()
 
             name = indiv_band[0]
@@ -386,10 +403,15 @@ class check_prepare:
                 MTU.Info('%s found in filter file'%name,'No') 
             else:
                 MTU.Error('%s not found in filter file ... exit'%name, 'Yes')
-                print(list_filt)
+                print('The list of available filter is:',list_filt)
                 sys.exit()
-            bands_to_simulate[name] = [float(indiv_band[1]), \
-                    float(indiv_band[2]), float(indiv_band[3])]
+            if indiv_band[-1] not in ['none', 'low', 'int', 'high']:
+                MTU.Error('Wrong Atmospheric parameter. Must be none or low or int or high ... exit', \
+                        'Yes')
+                sys.exit()
+            else:
+                bands_to_simulate[name] = [float(indiv_band[1]), \
+                    float(indiv_band[2]), float(indiv_band[3]), indiv_band[-1]]
 
         if PHOT['flux_unit'] == 'Jy':
             MTU.Info('Flux unit will be Jansky', 'No')
@@ -440,7 +462,8 @@ class check_prepare:
             for i in specs_norm:
                 indiv_band= i.strip("()").split(',')
                 if len(indiv_band) !=4:
-                    MTU.Error('Normalisation band configuration must be of the form (name,offset,mean_err,sigma_err) ... exit', 'Yes')
+                    MTU.Error('Normalisation band configuration must be of the form \
+                            (name,offset,mean_err,sigma_err) ... exit', 'Yes')
                     sys.exit()
 
                 name = indiv_band[0]
@@ -498,12 +521,14 @@ class check_prepare:
             indiv_spec= i.strip("()").split(',')
 
             if gen_array == 'no':
-                if len(indiv_spec) != 5:
-                    MTU.Error('Spectral type must be of the form (li,lf,dl,res,StNfile) ... exit', 'Yes')
+                if len(indiv_spec) != 6:
+                    MTU.Error('Spectral type must be of the form \
+                            (li,lf,dl,res,StNfile,Atmosphere) ... exit', 'Yes')
                     sys.exit()
             else:
-                if len(indiv_spec) != 4:
-                    MTU.Error('Spectral type must be of the form (li,lf,dl,res) ... exit', 'Yes')
+                if len(indiv_spec) != 6:
+                    MTU.Error('Spectral type must be of the form (li,lf,dl,res,Atmosphere) ... exit'\
+                            , 'Yes')
                     sys.exit()
 
             indiv_spec[0] = float(indiv_spec[0])
@@ -516,7 +541,7 @@ class check_prepare:
                 sys.exit()
             
             if indiv_spec[0] >= indiv_spec[1]:
-                MTU.Error('l0 must be < lf ... exit', 'Yes')
+                MTU.Error('lf must be > l0 ... exit', 'Yes')
                 sys.exit()
             
             if indiv_spec[2] < 0:
@@ -527,6 +552,11 @@ class check_prepare:
                 MTU.Error('Resolving power must be > 0 ... exit', 'Yes')
                 sys.exit()
 
+            if indiv_spec[-1] not in ['none', 'low', 'int', 'high']:
+                MTU.Error('Wrong Atmospheric parameter. Must be none or low or int or high ... exit', \
+                        'Yes')
+                sys.exit()
+ 
             if gen_array == 'no':
                 if os.path.isfile(os.path.join(General['PDir'], indiv_spec[4])):
                     MTU.Info('StN file for spectra #%s found'%n, 'No')
@@ -539,6 +569,7 @@ class check_prepare:
             spectra_to_simulate['spec_%s'%n]['lf'] = indiv_spec[1]
             spectra_to_simulate['spec_%s'%n]['dl'] = indiv_spec[2]
             spectra_to_simulate['spec_%s'%n]['res'] = indiv_spec[3]
+            spectra_to_simulate['spec_%s'%n]['Atm'] = indiv_spec[-1]
             if gen_array == 'no':
                 spectra_to_simulate['spec_%s'%n]['Stnfile'] = indiv_spec[4]
             n += 1
@@ -587,9 +618,9 @@ class check_prepare:
  
             MTU.Info('Dust extinction used: %s'%Temp['DustUse'], 'No')
 
-            if Temp['EBVList']:
-                MTU.Info('%s E(B-V); list: %s'%(len(Temp['EBVList'].split(';')), Temp['EBVList'].split(';')), 'No')
-                Temp['EBVList'] = Temp['EBVList'].split(';')
+            if Temp['EBVsList']:
+                MTU.Info('%s E(B-V); list: %s'%(len(Temp['EBVsList'].split(';')), Temp['EBVsList'].split(';')), 'No')
+                Temp['EBVsList'] = Temp['EBVsList'].split(';')
             else:
                 MTU.Error('no E(B-V) list given ... exit', 'No')
                 sys.exit()

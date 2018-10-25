@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Photometric Simulation" href="photo.html" />
+    <link rel="next" title="Atmospheric effects" href="atmospheric.html" />
     <link rel="prev" title="Getting started" href="usage.html" /> 
 
   
@@ -96,6 +96,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="photo.html">Photometric Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Spectro.html">Spectroscopic Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiSpectro.html">Multi-Spectroscopic Simulation</a></li>
@@ -273,12 +274,13 @@ These are not being computed on the fly which save a lot of time in the simulati
 </li>
 <li><p class="first"><strong>Nband</strong>: The number of photometric band you want to be computed for a given simulation.</p>
 </li>
-<li><p class="first"><strong>Band_list</strong>: This is where you give the photometric configuration for each band. For each of them you must give multiple information <strong>(name,offset,mean,sigma)</strong>:</p>
+<li><p class="first"><strong>Band_list</strong>: This is where you give the photometric configuration for each band. For each of them you must give multiple information <strong>(name,offset,mean,sigma,atm)</strong>:</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>name</strong>: This is the name of the filter</li>
 <li><strong>offset</strong>: This is the offset of the band (in magnitude) that will be applied in all the magnitudes</li>
 <li><strong>mean</strong> and <strong>sigma</strong>: To compute the errors on the band, SEDobs created a gaussian and randomely select in that gaussian to create the simulated error. You must give for each band the mean and sigma of that gaussian.</li>
+<li><strong>atm</strong>: This let SEDOBS know if this band is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effects</span></a> for details).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -287,18 +289,18 @@ These are not being computed on the fly which save a lot of time in the simulati
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> r-megacam
 <span class="nv">Norm_distribution</span> <span class="o">=</span> magnorm.txt
 <span class="nv">Nband</span> <span class="o">=</span> <span class="m">10</span>
-<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
-.0, <span class="m">0</span>.23, <span class="m">0</span>.12<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
-cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06<span class="o">)</span>
+<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
+.0, <span class="m">0</span>.23, <span class="m">0</span>.12,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
+cam,0.0,0.55, <span class="m">0</span>.41,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04,none<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06,none<span class="o">)</span>
 </pre></div>
 </div>
 <p>And with it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> r-megacam
 <span class="nv">Norm_distribution</span> <span class="o">=</span>
 <span class="nv">Nband</span> <span class="o">=</span> <span class="m">10</span>
-<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
-.0, <span class="m">0</span>.23, <span class="m">0</span>.12<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
-cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06<span class="o">)</span>
+<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
+.0, <span class="m">0</span>.23, <span class="m">0</span>.12,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
+cam,0.0,0.55,0.41,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04,none<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06,none<span class="o">)</span>
 </pre></div>
 </div>
 </div>
@@ -314,7 +316,7 @@ cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p"
 </li>
 <li><p class="first"><strong>Norm_distribution</strong>: Only if you do not use the <strong>full_array</strong> option. You must give the normalisation file (see above for photometry).</p>
 </li>
-<li><p class="first"><strong>types</strong>: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: <strong>l1, l2, dl, R [,SNR.txt]</strong>:</p>
+<li><p class="first"><strong>types</strong>: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: <strong>l1, l2, dl, R [,SNR.txt], atm</strong>:</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>l1</strong>: The starting wavelength of your spectrum</li>
@@ -322,6 +324,7 @@ cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p"
 <li><strong>dl</strong>: The delta lambda of your spectrum</li>
 <li><strong>R</strong>: The spectral resolution of your spectrum</li>
 <li><strong>SNR.txt</strong>: Only if you do not use the <strong>full_array</strong> option. The file containing the Signal to noise ratio distribution (one column catalog).</li>
+<li><strong>atm</strong>: This let SEDOBS know if this spectrum is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effects</span></a> for details).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -333,7 +336,7 @@ cam,0.0,0.55, <span class="m">0</span>.41<span class="o">)</span><span class="p"
 <span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>i-megacam,0.0, <span class="m">0</span>.1, <span class="m">0</span>.03<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.2, <span class="m">0</span>.08<span class="o">)</span>
 <span class="nv">Noise_reg</span> <span class="o">=</span> <span class="o">(</span><span class="m">1080</span>,1170<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">3580</span>,3680<span class="o">)</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span> magnorm.txt
-<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,opt.txt<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,16000,46.5,130,NIR.txt<span class="o">)</span>
+<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,opt.txt,low<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,16000,46.5,130,NIR.txt,none<span class="o">)</span>
 </pre></div>
 </div>
 <p>And with it</p>
@@ -438,7 +441,7 @@ Each pre-computed library comes with already defined range of values for the gal
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="photo.html" class="btn btn-neutral float-right" title="Photometric Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="atmospheric.html" class="btn btn-neutral float-right" title="Atmospheric effects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="usage.html" class="btn btn-neutral" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -483,6 +486,7 @@ Each pre-computed library comes with already defined range of values for the gal
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

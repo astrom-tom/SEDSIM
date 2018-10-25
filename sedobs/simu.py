@@ -26,6 +26,7 @@ from . import units
 from . import modif_LIB
 from . import Photometry
 from . import Spectroscopy
+from . import atmosphere as atm
 from . import Check_plots
 
 class Main:
@@ -120,7 +121,7 @@ class Main:
 
             ##2 Dust
             DUST_dict = modif_LIB.DUSTlib().Dust_for_fit(self.conf.Template['DustUse'], wave_rf,\
-                self.conf.Template['EBVList'])
+                self.conf.Template['EBVsList'])
             Dusted_template, Dusted_Parameters, \
                 Dust_param_names = modif_LIB.DUSTlib().Make_dusted_library(Templates_emLine, \
                 DUST_dict, parameters, param_names, wave_rf)
@@ -187,8 +188,13 @@ class Main:
             simPara[3] = numpy.log10(simPara[3]*Normalisation)
             simPara[4] = numpy.log10(simPara[4]*Normalisation)
 
-            ### h - simulate
-            spectro = Spectroscopy.Spectroscopy()
+            ### h - get atsmophere
+            AMrange = atm.required_atmosphere(self.conf)
+            sim_sky = atm.sky(self.conf, AMrange).get_sky()
+
+
+            ### i - simulate
+            spectro = Spectroscopy.Spectroscopy() 
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Photo_sim = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
                         self.conf.PHOT['Band_list'], self.conf.PHOT)
@@ -213,7 +219,7 @@ class Main:
                 #Check_plots.plot().combined_template_mag(Wave_at_z, \
                         #Normfluxsim, spectro_sim, Photo_sim, z)
 
-            ### i - and write them down
+            ### j - and write them down
             out = simu_output.Output()
             if self.DataT == 'Photo':
                 out.add_to_final_mag_file(Name_photo, self.PhotoDir, Photo_sim, \
@@ -234,7 +240,7 @@ class Main:
                         z, self.Combinedfinalfile, self.SpectraDir)
                 out.add_to_output_param_file(z, Name_Combined, simPara, self.final_param_file, NormMag)
 
-            ### h - write parameters in file
+            ### k - write parameters in file
             Name_file_para = '%s_N%s'%(self.conf.General['PName'], N)
             if self.DataT == 'Photo':
                 out.create_original_template(Wave_at_z, Normfluxsim, Name_file_para, \

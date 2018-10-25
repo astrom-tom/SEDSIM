@@ -26,9 +26,9 @@ def Error(message, toline):
 
     """
     if toline == 'Yes':
-        print('\n'+ '\033[1m' + '[ERROR]:\t' + message + '\033[0m')
+        print('\n'+ '\033[1m' + '\033[91m' + '[ERROR]:\t' + message + '\033[0m')
     else:
-        print('\033[1m' + '[ERROR]:\t' + message + '\033[0m')
+        print('\033[1m' + '\033[91m' + '[ERROR]:\t' + message + '\033[0m')
 
 def Warning(message, toline):
     """
