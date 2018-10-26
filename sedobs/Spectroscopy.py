@@ -21,6 +21,7 @@ from scipy.ndimage.filters import gaussian_filter, generic_filter
 
 ##local
 from . import messages as MTU
+from . import Check_plots as plot
 
 class Spectroscopy:
 
@@ -36,7 +37,7 @@ class Spectroscopy:
         #factor from l*l*F(l) to F(J)
         self.toJy = 1e23/ca
 
-    def simu_spec_main(self, conf, wave, flux, STN, redshift, N):
+    def simu_spec_main(self, conf, wave, flux, STN, redshift, N, sky):
         '''
         Main of the spectroscopic simulation
         it loops over each spectrum to be simulated
@@ -49,6 +50,7 @@ class Spectroscopy:
         STN         float, required SNR
         redshift    float, redshift of the object
         N           int, number of the simulation
+        sky         obj, sky properties for the current object
 
         Return
         ------
@@ -65,18 +67,22 @@ class Spectroscopy:
             spec_indiv['lf'] = conf.SPEC['types']['spec_%s'%str(i+1)]['lf']
             spec_indiv['dl'] = conf.SPEC['types']['spec_%s'%str(i+1)]['dl']
             spec_indiv['res'] = conf.SPEC['types']['spec_%s'%str(i+1)]['res']
+            spec_indiv['Atm'] = conf.SPEC['types']['spec_%s'%str(i+1)]['Atm']
             spec_indiv['SNR'] = STN[i][N]
              
-            wavespec, fluxnoised, noise_spec = self.simu_one_single_spec(spec_indiv, \
-                    wave, flux, redshift, conf)     
+            wavespec, fluxnoised, noise_spec, telluric, OH = self.simu_one_single_spec(spec_indiv, \
+                    wave, flux, redshift, conf, sky)     
+
             spec_final[i+1] = {}
             if conf.SPEC['flux_unit'] == 'Jy':
                 fluxnoised = fluxnoised * wavespec * wavespec * self.toJy 
                 noise_spec = noise_spec * wavespec * wavespec * self.toJy 
+                OH = OH * wavespec * wavespec * self.toJy
 
             if conf.SPEC['flux_unit'] == 'muJy':
                 fluxnoised = fluxnoised * wavespec * wavespec * self.toJy * 1e6 
                 noise_spec = noise_spec * wavespec * wavespec * self.toJy * 1e6
+                OH = OH * wavespec * wavespec * self.toJy * 1e6
                 
             if conf.SPEC['wave_unit'] == 'log_ang':
                 wavespec = numpy.log10(wavespec)
@@ -84,12 +90,14 @@ class Spectroscopy:
             spec_final[i+1]['wave'] = wavespec
             spec_final[i+1]['flux'] = fluxnoised
             spec_final[i+1]['noise'] = noise_spec
+            spec_final[i+1]['ext'] = telluric
+            spec_final[i+1]['OH'] = OH
 
             MTU.Info('Spectrum #%s with STN %s have been simulated'%(i+1, STN[i][N]), 'No')
 
         return spec_final
 
-    def simu_one_single_spec(self, spec_conf, wave, flux, redshift, conf):
+    def simu_one_single_spec(self, spec_conf, wave, flux, redshift, conf, sky):
         '''
         This function simulate the spectrum,
                 #change the resolution
@@ -104,6 +112,7 @@ class Spectroscopy:
         flux        1d array with template flux
         redshift    float, redshift
         conf        global configuration
+        sky         obj, sky properties
 
         Return
         ------
@@ -115,15 +124,38 @@ class Spectroscopy:
         ###1 - Change the resolution
         ##### a - retrieve the resolution of the models
         Rmodel = self.model_res(conf.Template['BaseSSP']) 
-        smoothed_template = self.change_resolution(flux, wave,  redshift, Rmodel, spec_conf)           
+        smoothed_template = self.change_resolution(flux, wave, redshift, Rmodel, spec_conf)           
 
         ###2 - we cut the template in the regions of interest
         wave_cut, flux_cut = self.cut_spec(wave, smoothed_template, spec_conf['l0'],\
                 spec_conf['lf'], spec_conf['dl'])
+
+        ####3 - if sky is required, we change the resolution of the sky as well
+        if spec_conf['Atm'] != 'none':
+            ###OH emission
+            Rsky = [[11500, 10., 100000.]]
+            skywave = sky.sky[spec_conf['Atm']]['OH'][0]
+            skyOH = sky.sky[spec_conf['Atm']]['OH'][1] 
+            smoothed_sky = self.change_resolution(skyOH, skywave, 0, Rsky, spec_conf)           
+            wave_cutsky, flux_cutsky = self.cut_spec(skywave, smoothed_sky, spec_conf['l0'],\
+                spec_conf['lf'], spec_conf['dl'])
+            ###tell absorption
+            tellwave = sky.sky[spec_conf['Atm']]['tell'][0]
+            tellext = sky.sky[spec_conf['Atm']]['tell'][1] 
+            wave_ext, ext_cut = self.cut_spec(tellwave, tellext, spec_conf['l0'],\
+                spec_conf['lf'], spec_conf['dl'])
+            #plot.plot().spec_sim(skywave, skyOH, wave_cutsky, flux_cutsky, 0, spec_conf)
+            MTU.Info('Atmospheric effect were applied', 'No')
+        else:
+            ext_cut = numpy.ones(len(flux_cut))
+            flux_cutsky = numpy.zeros(len(flux_cut))
+
+        flux_cut = flux_cut*ext_cut + flux_cutsky
+
         #plot().spec_sim(wave, flux, wave_cut, flux_cut, redshift, spec_conf)
-        ###3 - we compute the noise 
+        ###4 - we compute the noise 
         flux_noised, noise_spec = self.add_noise(wave_cut, flux_cut, spec_conf, redshift)
-        return wave_cut, flux_noised, noise_spec 
+        return wave_cut, flux_noised, noise_spec, ext_cut, flux_cutsky
 
     def add_noise(self, wave, flux, specconf, Redshift):
         '''
@@ -218,7 +250,6 @@ class Spectroscopy:
         --------
         flux_res        list of flux at the right resolution (same wave grid as original)
         '''
-
         
         minw = specconf['l0']
         maxw = specconf['lf']
@@ -243,8 +274,6 @@ class Spectroscopy:
                 #if this is the case we does not move anything
                 N = 'ok'
                 Rlist.append(i[0])
-
-
             else:
                 if N !='ok':##if it is not ok we increment N
                     if (minRw<minw/(1+Redshift)<maxRw):

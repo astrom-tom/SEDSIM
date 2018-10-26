@@ -355,10 +355,10 @@ class check_prepare:
 
         ##check if the normalisation filter is in the filter file
         if PHOT['Norm_band']:
-            if PHOT['Norm_band'] in list_filt:
+            if PHOT['Norm_band'].strip("()").split(',')[0] in list_filt:
                 MTU.Info('%s for normalisation found in filter file'%PHOT['Norm_band'],'No') 
             else:
-                MTU.Error('%s not found in filter file ... exit'%PHOT['Norm_band'], 'Yes')
+                MTU.Error('%s for normalisation not found in filter file ... exit'%PHOT['Norm_band'], 'Yes')
                 sys.exit()
 
         ##then we check if the user gave a general array
@@ -410,7 +410,7 @@ class check_prepare:
                         'Yes')
                 sys.exit()
             else:
-                bands_to_simulate[name] = [float(indiv_band[1]), \
+                bands_to_simulate[name] = [indiv_band[0], float(indiv_band[1]), \
                     float(indiv_band[2]), float(indiv_band[3]), indiv_band[-1]]
 
         if PHOT['flux_unit'] == 'Jy':
@@ -461,9 +461,9 @@ class check_prepare:
             bands_to_simulate = {}
             for i in specs_norm:
                 indiv_band= i.strip("()").split(',')
-                if len(indiv_band) !=4:
+                if len(indiv_band) !=5:
                     MTU.Error('Normalisation band configuration must be of the form \
-                            (name,offset,mean_err,sigma_err) ... exit', 'Yes')
+                            (name,offset,mean_err,sigma_err,atm) ... exit', 'Yes')
                     sys.exit()
 
                 name = indiv_band[0]
@@ -472,8 +472,8 @@ class check_prepare:
                 else:
                     MTU.Error('%s not found in filter file ... exit'%name, 'Yes')
                     sys.exit()
-                bands_to_simulate[name] = [float(indiv_band[1]),\
-                        float(indiv_band[2]), float(indiv_band[3])]
+                bands_to_simulate[name] = [indiv_band[0], float(indiv_band[1]),\
+                        float(indiv_band[2]), float(indiv_band[3]), indiv_band[-1]]
 
             for i in bands_to_simulate:
                 if i in list_filt:

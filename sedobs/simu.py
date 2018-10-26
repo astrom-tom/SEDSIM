@@ -85,7 +85,6 @@ class Main:
         MTU.Info('2 - Start simulations!!', 'Yes')
 
         for i in enumerate(z):
-
             #######
             z = i[1]
             NormMag = mag[i[0]]
@@ -172,12 +171,17 @@ class Main:
 
             ##simPara -> MET, TAU, age, M*, SFR, EBV, Lya, Lyb, Lyg
 
-            #### g - Normalize the template
+            ### g - get atsmophere
+            AMrange = atm.required_atmosphere(self.conf)
+            sim_sky = atm.sky(self.conf)
+            sim_sky.get_sky(AMrange)
+
+            #### h - Normalize the template
             MTU.Info('Normalize Template', 'No')
             Photo = Photometry.Photometry(self.filter_file)
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Normfluxsim, Normalisation = Photo.Normalise_template(Wave_at_z, simFlux, \
-                        self.conf.PHOT['Norm_band'], NormMag)
+                        self.conf.PHOT['Norm_band'], NormMag, sim_sky)
 
             if self.DataT == 'Spectro':
                 blist = list(self.conf.SPEC['Norm_band'].keys())
@@ -188,33 +192,30 @@ class Main:
             simPara[3] = numpy.log10(simPara[3]*Normalisation)
             simPara[4] = numpy.log10(simPara[4]*Normalisation)
 
-            ### h - get atsmophere
-            AMrange = atm.required_atmosphere(self.conf)
-            sim_sky = atm.sky(self.conf, AMrange).get_sky()
-
-
             ### i - simulate
             spectro = Spectroscopy.Spectroscopy() 
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Photo_sim = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
-                        self.conf.PHOT['Band_list'], self.conf.PHOT)
+                        self.conf.PHOT['Band_list'], self.conf.PHOT, sim_sky)
                 MTU.Info('Photometry has been simulated', 'No')
                 ####chekc with plot
                 #plot().template_and_mags(Wave_at_z, Normfluxsim, Photo_sim, z)
 
             if self.DataT == 'Spectro':
-                spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, StN, z, i[0])
+                spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, \
+                        StN, z, i[0], sim_sky)
                 MTU.Info('Spectroscopy has been simulated', 'No')
                 Photo_sim_spec = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
-                        self.conf.SPEC['Norm_band'], self.conf.SPEC)
+                        self.conf.SPEC['Norm_band'], self.conf.SPEC, sim_sky)
                 #plot().spec_template_mag(Wave_at_z, Normfluxsim, spectro_sim, Photo_sim_spec, z)
 
             if self.DataT == 'Combined':
-                spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, StN, z, i[0])
+                spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, StN, z, \
+                        i[0], sim_sky)
                 MTU.Info('Spectroscopy has been simulated', 'No')
                 #Photo_sim_spec = spec().combined_spectro_photometry(Photo_sim, self.conf)
                 Photo_sim_spec = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
-                        self.conf.SPEC['Norm_band'], self.conf.SPEC)
+                        self.conf.SPEC['Norm_band'], self.conf.SPEC, sim_sky)
 
                 #Check_plots.plot().combined_template_mag(Wave_at_z, \
                         #Normfluxsim, spectro_sim, Photo_sim, z)

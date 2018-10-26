@@ -40,13 +40,13 @@ class Photometry:
         self.toJy = 1e23/ca
         self.filterfile = filterfile
 
-    def Normalise_template(self, wave, flux, band, Norm):
+    def Normalise_template(self, wave, flux, band, Norm, sky):
         '''
         this methods normalise the template (wave, flux) to the
         maganitude (Norm) in the given band
         '''
         ##1 - Compute the magnitude
-        magAB, fluxmag, Leff, FWHM = self.Compute_mag_from_template(wave, flux, band)
+        magAB, fluxmag, Leff, FWHM = self.Compute_mag_from_template(wave, flux, band, sky)
 
         ##2 - Convert the normalisation magnitude to flux
         fluxNormmag = self.mag2flux(Norm, Leff)
@@ -65,7 +65,7 @@ class Photometry:
 
         return Norm_flux, r
 
-    def simulate_photo(self, wave, flux, band_list, conf):
+    def simulate_photo(self, wave, flux, band_list, conf, sky):
         '''
         Method that simulate the photometry. First we compute
         the magnitude in the bands and then the errors
@@ -75,6 +75,7 @@ class Photometry:
         flux        list, of observed flux (normalised) 
         band_list   list, of band and error
         conf        dict, of configuration from user configuration
+        sim_sky     obj, sky atmosphere properties
         '''
         ###extract band names from the the list
         band_names = band_list.keys()
@@ -84,19 +85,18 @@ class Photometry:
         for i in band_names:
             Photo_sim[i] = {}
             ##compute the magnitude in the band
-            magAB, fluxAB, Leff, FWHM= self.Compute_mag_from_template(wave, flux, i)
+            magAB, fluxAB, Leff, FWHM= self.Compute_mag_from_template(wave, flux, band_list[i], sky)
 
             ###and simulate the error
-            err = self.simulate_error_phot(band_list[i][1], band_list[i][2] )
+            err = self.simulate_error_phot(band_list[i][2], band_list[i][3] )
 
             ###simulate offset
-            zp = band_list[i][0]
+            zp = band_list[i][1]
 
             ###add the error to the measurement
             magABzp =  magAB+zp
             fluxABzp = self.mag2flux(magABzp, Leff)
             flux_err = numpy.abs(err)*fluxAB*numpy.log(10)/2.5
-
 
             ###take care of unit conversion, is neeeded
             if conf['flux_unit'] == 'Jy':
@@ -143,26 +143,59 @@ class Photometry:
         return s[0]
 
 
-    def Compute_mag_from_template(self, wave, flux, band):
+    def Compute_mag_from_template(self, wave, flux, band, sky):
         '''
         This method compute the magnitude from a template (wave, flux)
 
         Parameter:
+        sky     obj,  sky configuration for this simulation
         ----------
         wave    list, of redshifted wavelength
         flux    list, of redshifted flux
         band    str,  name of the band in which we want to normalize the template
+        sky     obj,  sky properties of this simulation
 
         Return:
         -------
         flux_Norm list, of normlized and redshifted flux
         '''
+        if isinstance(band, str):  #<--the case if call from normaliation
+            usesky = band.strip('()').split(',')[-1].strip()
+            bandname = band.strip('()').split(',')[0].strip()
+        else: ##<---normal case during simulation
+            usesky = band[-1]
+            bandname = band[0]
+
+        ##check if we need to apply sky
+        if usesky != 'none':
+            ##we apply the sky absorption and emission
+            ###regrid sky on template wavelength
+            ###first with the telluric
+            tell = sky.sky[usesky]['tell']
+            indexs = numpy.where((tell[0] >= wave[0]) & (tell[0] <= wave[-1]))[0]
+            tellw = tell[0][indexs]
+            tellext = tell[1][indexs]
+            telltemp = numpy.interp(wave, tell[0], tell[1])
+            
+            #then with the sky spectrum
+            OH = sky.sky[usesky]['OH'] 
+            indexs = numpy.where((OH[0] >= wave[0]) & (OH[0] <= wave[-1]))[0]
+            OHw = OH[0][indexs]
+            OHext = OH[1][indexs] 
+            OHtemp = numpy.interp(wave, OH[0], OH[1])
+
+            ##applu everything
+            flux_final = flux*telltemp + OHtemp
+
+        else:
+            flux_final = flux
 
         ###convert template to frequence space
-        freqTemp, Template_hz = self.convert_wave_to_freq(wave, flux)
+        freqTemp, Template_hz = self.convert_wave_to_freq(wave, flux_final)
 
         ###retrieve filter information
-        Lambda, Tran, Leff, FWHM = filters.Retrieve_Filter_inf(self.filterfile).retrieve_one_filter(band)
+        Lambda, Tran, Leff, \
+                FWHM = filters.Retrieve_Filter_inf(self.filterfile).retrieve_one_filter(bandname)
 
         ##interpolate the filter throughput to the wavelength grid
         Trans_wave_model = numpy.interp(wave, Lambda, Tran)

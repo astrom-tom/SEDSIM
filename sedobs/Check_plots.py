@@ -31,8 +31,6 @@ class plot:
     plot maker
     '''
 
-
-
     def two_dist(self, dist1, bin1, legend1, dist2, bin2, legend2, xaxis):
         '''
         Module that plots 2 different distribution on top of
