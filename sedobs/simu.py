@@ -97,12 +97,15 @@ class Main:
             ### a - create simulation names and check presence of files
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Name_photo = '%s_Photometry_N%s.dat'%(self.conf.General['PName'], N)
+                Name_photo_sky = '%s_Photometry_sky_N%s.dat'%(self.conf.General['PName'], N)
 
             if self.DataT == 'Spectro' or self.DataT == 'Combined':
                 Name_spectro = '%s_spectro_N%s.dat'%(self.conf.General['PName'], N)
+                Name_spectro_sky = '%s_spectro_sky_N%s.dat'%(self.conf.General['PName'], N)
 
             if self.DataT == 'Combined':
                 Name_Combined = '%s_comb_N%s.dat'%(self.conf.General['PName'], N)
+                Name_Combined_sky = '%s_comb_sky_N%s.dat'%(self.conf.General['PName'], N)
 
             ####update library with emline and 
             ##1 Emission line
@@ -229,16 +232,16 @@ class Main:
 
             if self.DataT == 'Spectro':
                 out.add_to_output_param_file(z, Name_spectro, simPara, self.final_param_file, NormMag)
-                out.add_to_final_spec_file(Name_spectro, spectro_sim, Photo_sim_spec, \
+                out.add_to_final_spec_file(Name_spectro, Name_spectro_sky, spectro_sim, Photo_sim_spec, \
                         z, self.Spectrofinalfile, self.SpectraDir)
 
             if self.DataT == 'Combined':
                 out.add_to_final_mag_file(Name_Combined, self.PhotoDir, Photo_sim, \
                         z, self.Photofinalfile)
-                out.add_to_final_spec_file(Name_Combined, spectro_sim, Photo_sim_spec, \
-                        z, self.Spectrofinalfile, self.SpectraDir)
-                out.add_to_final_comb_file(Name_Combined, spectro_sim, Photo_sim_spec, Photo_sim, \
-                        z, self.Combinedfinalfile, self.SpectraDir)
+                out.add_to_final_spec_file(Name_Combined, Name_Combined_sky, spectro_sim, \
+                        Photo_sim_spec, z, self.Spectrofinalfile, self.SpectraDir)
+                out.add_to_final_comb_file(Name_Combined, Name_Combined_sky, spectro_sim,\
+                        Photo_sim_spec, Photo_sim, z, self.Combinedfinalfile, self.SpectraDir)
                 out.add_to_output_param_file(z, Name_Combined, simPara, self.final_param_file, NormMag)
 
             ### k - write parameters in file
@@ -250,8 +253,6 @@ class Main:
                 out.create_original_template(Wave_at_z, Normfluxsim, Name_file_para, \
                         self.original_template_dir, self.conf.SPEC)
  
-
-            #time.sleep(1)
 
     def prepare_files(self):
         '''

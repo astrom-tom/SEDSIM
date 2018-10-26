@@ -8,6 +8,8 @@ Modul dealing with the photometric computation
 @place  UV/LAM/UCBJ
 @License: GNU public licence v3.0 - see LICENCE.txt
 '''
+###standard library
+import copy
 
 ####Python General Libraries
 import numpy
@@ -79,13 +81,14 @@ class Photometry:
         '''
         ###extract band names from the the list
         band_names = band_list.keys()
-
+        
         ###loop over each band
         Photo_sim = {}
         for i in band_names:
             Photo_sim[i] = {}
             ##compute the magnitude in the band
-            magAB, fluxAB, Leff, FWHM= self.Compute_mag_from_template(wave, flux, band_list[i], sky)
+            magAB, fluxAB, Leff, FWHM= self.Compute_mag_from_template(wave, flux, \
+                    band_list[i], sky)
 
             ###and simulate the error
             err = self.simulate_error_phot(band_list[i][2], band_list[i][3] )
@@ -159,25 +162,23 @@ class Photometry:
         -------
         flux_Norm list, of normlized and redshifted flux
         '''
+
         if isinstance(band, str):  #<--the case if call from normaliation
-            usesky = band.strip('()').split(',')[-1].strip()
+            usesky = band.strip('()').split(',')[-2].strip()
+            skysub = band.strip('()').split(',')[-1].strip()
             bandname = band.strip('()').split(',')[0].strip()
         else: ##<---normal case during simulation
-            usesky = band[-1]
+            usesky = band[-2]
+            skysub = band[-1]
             bandname = band[0]
+
+        fluxcp = copy.copy(flux)
 
         ##check if we need to apply sky
         if usesky != 'none':
-            ##we apply the sky absorption and emission
+            ##we apply the sky emission
             ###regrid sky on template wavelength
-            ###first with the telluric
-            tell = sky.sky[usesky]['tell']
-            indexs = numpy.where((tell[0] >= wave[0]) & (tell[0] <= wave[-1]))[0]
-            tellw = tell[0][indexs]
-            tellext = tell[1][indexs]
-            telltemp = numpy.interp(wave, tell[0], tell[1])
-            
-            #then with the sky spectrum
+            #Sky spectrum
             OH = sky.sky[usesky]['OH'] 
             indexs = numpy.where((OH[0] >= wave[0]) & (OH[0] <= wave[-1]))[0]
             OHw = OH[0][indexs]
@@ -185,13 +186,15 @@ class Photometry:
             OHtemp = numpy.interp(wave, OH[0], OH[1])
 
             ##applu everything
-            flux_final = flux*telltemp + OHtemp
+            flux_final = (fluxcp + OHtemp) 
+            ###remove sky given by sky substraction accuracy
+            flux_skysub = flux_final - skysub * OHtemp
 
         else:
-            flux_final = flux
+            flux_skysub = fluxcp
 
         ###convert template to frequence space
-        freqTemp, Template_hz = self.convert_wave_to_freq(wave, flux_final)
+        freqTemp, Template_hz = self.convert_wave_to_freq(wave, flux_skysub)
 
         ###retrieve filter information
         Lambda, Tran, Leff, \

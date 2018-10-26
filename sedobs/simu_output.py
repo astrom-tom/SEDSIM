@@ -169,7 +169,8 @@ class Output:
         spec_file.write(Header)
         spec_file.close()
 
-    def add_to_final_spec_file(self, Name, Spectrosim, Photosim, redshift, Filemag, spectrodir):
+    def add_to_final_spec_file(self, Name, Namesky, Spectrosim, Photosim, \
+            redshift, Filemag, spectrodir):
         '''
         This method allows to add a file to the spectroscopic file
         '''
@@ -178,7 +179,8 @@ class Output:
         N = 1
         for i, j in zip(Photosim, Spectrosim):
             name = Name[:-4]+'_%s'%N+'.spec'
-            self.create_indiv_spec_files(name, spectrodir, Spectrosim[j])
+            namesky = Namesky[:-4]+'_%s'%N+'.spec'
+            self.create_indiv_spec_files(name, namesky, spectrodir, Spectrosim[j])
             line += '\t' + name + '\t%.4f\t%.4f'%(Photosim[i]['Meas'], Photosim[i]['Err'])
             N += 1
 
@@ -225,7 +227,7 @@ class Output:
         comb_file.write(Header)
         comb_file.close()
 
-    def add_to_final_comb_file(self, Name, Spectrosim, Photosimspec, \
+    def add_to_final_comb_file(self, Name, Namesky, Spectrosim, Photosimspec, \
             Photosim, redshift, File, spectrodir):
         '''
         This method allows to add a file to the spectroscopic file
@@ -236,7 +238,8 @@ class Output:
         N = 1
         for i, j in zip(Photosimspec, Spectrosim):
             name = Name[:-4]+'_%s'%N+'.spec'
-            self.create_indiv_spec_files(name, spectrodir, Spectrosim[j])
+            namesky = Namesky[:-4]+'_%s'%N+'.spec'
+            self.create_indiv_spec_files(name, namesky, spectrodir, Spectrosim[j])
             line += '\t' + name + '\t%.4f\t%.4f'%(Photosimspec[i]['Meas'], Photosimspec[i]['Err'])
             N += 1
 
@@ -281,12 +284,13 @@ class Output:
 
 
 
-    def create_indiv_spec_files(self, name, folder, spectro):
+    def create_indiv_spec_files(self, name, namesky, folder, spectro):
         '''
         Method that writes down the spectrum as ascii data
         parameter:
         ---------
         name    str, name of the spectrum --> name of the file
+        namesky str, name of the spectrum --> name of the file
         folder  str, folder where the spectra will be stored
         spectro dict, with spectroscopic simuation
         '''
@@ -301,6 +305,18 @@ class Output:
                 f = flux[i[0]]
                 n = noise[i[0]]
                 line = '%s\t\t%s\t\t%s\n'%(w, f, n)
+                ff.write(line)
+
+        namedirsky = os.path.join(folder, namesky)
+        wave = spectro['wave']
+        fluxwithsky = spectro['flux_withsky']
+        sky = spectro['OH']
+        with open(namedirsky, 'w') as ff:
+            for i in enumerate(wave):
+                w = wave[i[0]]
+                f = fluxwithsky[i[0]]
+                s = sky[i[0]]
+                line = '%s\t\t%s\t\t%s\n'%(w, f, s)
                 ff.write(line)
 
 

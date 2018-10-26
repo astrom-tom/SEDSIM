@@ -345,7 +345,13 @@ class check_prepare:
         PHOT        dict, with PHOT configuration fromn config file
         gen_array   str, yes or no to use full array. If no, we use individual
                          distribution
+        filter_file str, path/and/file to the filter file
+
+        Return
+        -------
+        bands_to_simulate dict, with the configuration of all the bands 
         '''
+
         ##extract from configuration
         PHOT = config.PHOT
         General = config.General
@@ -356,7 +362,7 @@ class check_prepare:
         ##check if the normalisation filter is in the filter file
         if PHOT['Norm_band']:
             if PHOT['Norm_band'].strip("()").split(',')[0] in list_filt:
-                MTU.Info('%s for normalisation found in filter file'%PHOT['Norm_band'],'No') 
+                MTU.Info('%s for normalisation found in filter file'%PHOT['Norm_band'].strip("()").split(',')[0],'No') 
             else:
                 MTU.Error('%s for normalisation not found in filter file ... exit'%PHOT['Norm_band'], 'Yes')
                 sys.exit()
@@ -391,11 +397,11 @@ class check_prepare:
         for i in bandlist:
             indiv_band= i.strip("()").split(',')
             ###each band configuration has 6 values:
-            ###name, offset, mean error, sigme arror, atmosphere
-            ###the two last are predefined
-            if len(indiv_band) != 5:   
-                MTU.Error('band configuration must be of the form \
-                        (name,offset,mean_err,sigma_err,Atmosphere) ... exit', 'Yes')
+            ###name, offset, mean error, sigme arror, atmosphere,skysub
+            ###the two last are predefined,
+            if len(indiv_band) != 6:   
+                MTU.Error('band configuration must be of the form '+ \
+                        '(name,offset,mean_err,sigma_err,Atmosphere,skysub) ... exit', 'Yes')
                 sys.exit()
 
             name = indiv_band[0]
@@ -405,13 +411,14 @@ class check_prepare:
                 MTU.Error('%s not found in filter file ... exit'%name, 'Yes')
                 print('The list of available filter is:',list_filt)
                 sys.exit()
-            if indiv_band[-1] not in ['none', 'low', 'int', 'high']:
+            if indiv_band[-2] not in ['none', 'low', 'int', 'high']:
                 MTU.Error('Wrong Atmospheric parameter. Must be none or low or int or high ... exit', \
                         'Yes')
                 sys.exit()
             else:
                 bands_to_simulate[name] = [indiv_band[0], float(indiv_band[1]), \
-                    float(indiv_band[2]), float(indiv_band[3]), indiv_band[-1]]
+                    float(indiv_band[2]), float(indiv_band[3]), indiv_band[-2], \
+                    float(indiv_band[-1])/100]
 
         if PHOT['flux_unit'] == 'Jy':
             MTU.Info('Flux unit will be Jansky', 'No')
@@ -427,8 +434,7 @@ class check_prepare:
         
         if PHOT['wave_unit'] == 'log_ang':
             MTU.Info('Wavelength will be log(Angstrom)', 'No')
- 
-
+        
         return bands_to_simulate
 
     def check_SPECTRO(self, config, gen_array, filter_file):
@@ -461,9 +467,9 @@ class check_prepare:
             bands_to_simulate = {}
             for i in specs_norm:
                 indiv_band= i.strip("()").split(',')
-                if len(indiv_band) !=5:
-                    MTU.Error('Normalisation band configuration must be of the form \
-                            (name,offset,mean_err,sigma_err,atm) ... exit', 'Yes')
+                if len(indiv_band) !=6:
+                    MTU.Error('Normalisation band configuration must be of the form'+ \
+                            '(name,offset,mean_err,sigma_err,atm,skysub) ... exit', 'Yes')
                     sys.exit()
 
                 name = indiv_band[0]
@@ -473,7 +479,8 @@ class check_prepare:
                     MTU.Error('%s not found in filter file ... exit'%name, 'Yes')
                     sys.exit()
                 bands_to_simulate[name] = [indiv_band[0], float(indiv_band[1]),\
-                        float(indiv_band[2]), float(indiv_band[3]), indiv_band[-1]]
+                        float(indiv_band[2]), float(indiv_band[3]), indiv_band[-2], \
+                        float(indiv_band[-1])/100]
 
             for i in bands_to_simulate:
                 if i in list_filt:
@@ -521,13 +528,14 @@ class check_prepare:
             indiv_spec= i.strip("()").split(',')
 
             if gen_array == 'no':
-                if len(indiv_spec) != 6:
-                    MTU.Error('Spectral type must be of the form \
-                            (li,lf,dl,res,StNfile,Atmosphere) ... exit', 'Yes')
+                if len(indiv_spec) != 7:
+                    MTU.Error('Spectral type must be of the form '+ \
+                            '(li,lf,dl,res,StNfile,Atmosphere,skysub) ... exit', 'Yes')
                     sys.exit()
             else:
                 if len(indiv_spec) != 6:
-                    MTU.Error('Spectral type must be of the form (li,lf,dl,res,Atmosphere) ... exit'\
+                    MTU.Error('Spectral type must be of the form '+\
+                            '(li,lf,dl,res,Atmosphere,skysub) ... exit'\
                             , 'Yes')
                     sys.exit()
 
@@ -552,7 +560,7 @@ class check_prepare:
                 MTU.Error('Resolving power must be > 0 ... exit', 'Yes')
                 sys.exit()
 
-            if indiv_spec[-1] not in ['none', 'low', 'int', 'high']:
+            if indiv_spec[-2] not in ['none', 'low', 'int', 'high']:
                 MTU.Error('Wrong Atmospheric parameter. Must be none or low or int or high ... exit', \
                         'Yes')
                 sys.exit()
@@ -569,7 +577,8 @@ class check_prepare:
             spectra_to_simulate['spec_%s'%n]['lf'] = indiv_spec[1]
             spectra_to_simulate['spec_%s'%n]['dl'] = indiv_spec[2]
             spectra_to_simulate['spec_%s'%n]['res'] = indiv_spec[3]
-            spectra_to_simulate['spec_%s'%n]['Atm'] = indiv_spec[-1]
+            spectra_to_simulate['spec_%s'%n]['Atm'] = indiv_spec[-2]
+            spectra_to_simulate['spec_%s'%n]['skysub'] = float(indiv_spec[-1])/100
             if gen_array == 'no':
                 spectra_to_simulate['spec_%s'%n]['Stnfile'] = indiv_spec[4]
             n += 1
@@ -588,7 +597,7 @@ class check_prepare:
         
         if SPEC['wave_unit'] == 'log_ang':
             MTU.Info('Wavelength will be log(Angstrom)', 'No')
- 
+
         return spectra_to_simulate, bands_to_simulate, specs_noise
 
     def check_Template(self, Temp):

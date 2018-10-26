@@ -41,7 +41,7 @@ def required_atmosphere(conf):
     AMrange = []
     for i in conf.PHOT['Band_list']:
         ##look at all the bands and get the airmass range
-        am = conf.PHOT['Band_list'][i][-1]
+        am = conf.PHOT['Band_list'][i][-2]
         ##if we do not have it in the AMrange list we add it
         if am not in AMrange:
             AMrange.append(am)
@@ -106,14 +106,15 @@ class sky(object):
                 #select the randomely the AM
                 AMsim = random.choice(self.rangesAM[i])
                 self.sky[i]['AM'] = AMsim
+                MTU.Info('AM=%s for %s airmass range'%(AMsim, i), 'No')
                 ###retrieve right curves
                 ##get tell absorption
-                alltell = pickle.load(open(os.path.join(self.inputdir, 'Atmos', \
-                        'telluric_abs.pickle'), 'rb'))
+                #alltell = pickle.load(open(os.path.join(self.inputdir, 'Atmos', \
+                #        'telluric_abs.pickle'), 'rb'))
                 #get right index 
-                indextell = numpy.where(numpy.array(alltell['AM']) == AMsim)[0]
+                #indextell = numpy.where(numpy.array(alltell['AM']) == AMsim)[0]
                 ###get the right curve
-                self.sky[i]['tell'] = [alltell['wave'], alltell['array'][indextell][0]]
+                #self.sky[i]['tell'] = [alltell['wave'], alltell['array'][indextell][0]]
 
                 ##same for skylines
                 allOH = pickle.load(open(os.path.join(self.inputdir, 'Atmos', \

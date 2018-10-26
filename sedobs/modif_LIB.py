@@ -789,7 +789,7 @@ class COSMO_lib:
     def Make_cosmological_Lib(self, Cosmo_obj, template, Parameters, Param_name, COSMO_conf):
         '''
         This method makes the cosmological library, i-e, it removes the ages above
-        of the age of the universe from the given library.
+        of the age of the universe from the given redshifted library .
 
         Parameter
         ---------
@@ -803,7 +803,7 @@ class COSMO_lib:
         ##first we check if we must use the cosmology
         if COSMO_conf['UseCo'].lower() == 'no':
             MTU.Info('No cosmological constraints applied', 'No')
-            return Template, Parameters
+            return template, Parameters
         else:
             ##first we find the age position in the list of parameters
             Index_age = Param_name.index('age')
