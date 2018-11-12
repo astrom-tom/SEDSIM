@@ -38,6 +38,7 @@ Content
    installation
    usage
    configuration
+   atmospheric
    photo
    Spectro
    MultiSpectro

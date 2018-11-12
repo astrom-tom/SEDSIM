@@ -78,12 +78,12 @@ class Spectroscopy:
 
             spec_final[i+1] = {}
             if conf.SPEC['flux_unit'] == 'Jy':
-                fluxnoised = fluxnoised * wavespec * wavespec * self.toJy 
+                fluxnoised_skysub = fluxnoised_skysub * wavespec * wavespec * self.toJy 
                 noise_spec = noise_spec * wavespec * wavespec * self.toJy 
                 OH = OH * wavespec * wavespec * self.toJy
 
             if conf.SPEC['flux_unit'] == 'muJy':
-                fluxnoised = fluxnoised * wavespec * wavespec * self.toJy * 1e6 
+                fluxnoised_skysub = fluxnoised_skysub * wavespec * wavespec * self.toJy * 1e6 
                 noise_spec = noise_spec * wavespec * wavespec * self.toJy * 1e6
                 OH = OH * wavespec * wavespec * self.toJy * 1e6
                 

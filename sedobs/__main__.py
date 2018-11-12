@@ -110,7 +110,7 @@ def main():
                         '[PG] Photometric with global configuration\n' + \
                         '[SG] Spectroscopic with global configuration\n' + \
                         '[MG] Multispectro with global configuration\n' + \
-                        '[FG] Photometric with global configuration:\n' + \
+                        '[FG] Full with global configuration:\n' + \
                         'p, s, m, f, pg, sg, mg, fg:   ')
             else:
                 test = input('Name of the test not entered correctly, retry:   ')

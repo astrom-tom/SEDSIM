@@ -19,9 +19,9 @@
    :target: https://www.scipy.org/
 
 
-Atmospheric effects
--------------------
--------------------
+Atmospheric effect
+------------------
+------------------
 
 In the spirit of making SEDOBS as complete as possible we implemented the sky emission. This has been made based on model computed for the Paranal Observatory. These modelisations are public and maintained by the European Southern Observatory (ESO). We use the v2.0.4 Cerro Paranal Advanced Sky Model (Available `here <http://www.eso.org/observing/etc/bin/gen/form?INS.MODE=swspectr+INS.NAME=SKYCALC>`_).
 We detail below this effect and how it was implemented in SEDOBS in the following sections.

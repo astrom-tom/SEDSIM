@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Atmospheric effects" href="atmospheric.html" />
+    <link rel="next" title="Atmospheric effect" href="atmospheric.html" />
     <link rel="prev" title="Getting started" href="usage.html" /> 
 
   
@@ -96,7 +96,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="photo.html">Photometric Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Spectro.html">Spectroscopic Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiSpectro.html">Multi-Spectroscopic Simulation</a></li>
@@ -239,7 +239,7 @@ These are not being computed on the fly which save a lot of time in the simulati
 <li><strong>full_array</strong>: This is a file containing all the properties of the galaxies you want to simulate. This is optionnal (redshift, normalisation magnitude and signal to noise ratios). SEDobs will simulate exactly what is in this file. See the tutorial for more informations.</li>
 <li><strong>z_distribution</strong>: Only if you do not use the previous ‘’full_array’’ option. This file contains the distribution of redshift you want to mimick. It is a one column catalog with redshift values (with 4 decimal maximum).</li>
 <li><strong>Nobj</strong>: Only if you do not use the previous ‘’full_array’’ option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the <strong>z_distribution</strong> option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution.</li>
-<li><strong>sizegal</strong>: Averaged angular size of the galaxies that will be simulate, in arcsec. This is used to scale up the OH skyline spectrum (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effects</span></a> for more details). The default size is 1’‘.</li>
+<li><strong>sizegal</strong>: Averaged angular size of the galaxies that will be simulated, in arcsec. This is used to scale up the OH skyline spectrum (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details). The default size is 1’‘.</li>
 </ul>
 <p>An example of the version with the <strong>full_array</strong> option:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
@@ -290,8 +290,8 @@ These are not being computed on the fly which save a lot of time in the simulati
 <li><strong>name</strong>: This is the name of the filter</li>
 <li><strong>offset</strong>: This is the offset of the band (in magnitude) that will be applied in all the magnitudes</li>
 <li><strong>mean</strong> and <strong>sigma</strong>: To compute the errors on the band, SEDobs created a gaussian and randomely select in that gaussian to create the simulated error. You must give for each band the mean and sigma of that gaussian.</li>
-<li><strong>atm</strong>: This let SEDOBS know if this band is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effects</span></a> for details).</li>
-<li><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effects</span></a> for more details.</li>
+<li><strong>atm</strong>: This let SEDOBS know if this band is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for details).</li>
+<li><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details.</li>
 </ul>
 </div></blockquote>
 </li>
@@ -341,8 +341,8 @@ cam,0.0,0.55,0.41,low<span class="o">)</span><span class="p">;</span><span class
 <li><strong>dl</strong>: The delta lambda of your spectrum</li>
 <li><strong>R</strong>: The spectral resolution of your spectrum</li>
 <li><strong>SNR.txt</strong>: Only if you do not use the <strong>full_array</strong> option. The file containing the Signal to noise ratio distribution (one column catalog).</li>
-<li><strong>atm</strong>: This let SEDOBS know if this spectrum is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effects</span></a> for details).</li>
-<li><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effects</span></a> for more details.</li>
+<li><strong>atm</strong>: This let SEDOBS know if this spectrum is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for details).</li>
+<li><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details.</li>
 </ul>
 </div></blockquote>
 </li>
@@ -469,7 +469,7 @@ Each pre-computed library comes with already defined range of values for the gal
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="atmospheric.html" class="btn btn-neutral float-right" title="Atmospheric effects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="atmospheric.html" class="btn btn-neutral float-right" title="Atmospheric effect" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="usage.html" class="btn btn-neutral" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

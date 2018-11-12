@@ -105,7 +105,7 @@ The general section is the first of the configuration file. It is composed of 7 
 
 * **Nobj**: Only if you do not use the previous ''full_array'' option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the **z_distribution** option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution. 
 
-* **sizegal**: Averaged angular size of the galaxies that will be simulate, in arcsec. This is used to scale up the OH skyline spectrum (see :doc:`atmospheric` for more details). The default size is 1''.
+* **sizegal**: Averaged angular size of the galaxies that will be simulated, in arcsec. This is used to scale up the OH skyline spectrum (see :doc:`atmospheric` for more details). The default size is 1''.
 
 An example of the version with the **full_array** option:
 
