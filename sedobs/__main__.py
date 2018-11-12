@@ -102,27 +102,50 @@ def main():
         testok = 'no'
         while testok in ['no', 'wrong']:
             if testok == 'no':
-                test = input('Choose your test run [photometric, spectroscopic, multispectro, full]:   ')
+                test = input('Choose your test run (first letter needed)\n' + \
+                        '[P]hotometric with single distribution option\n' + \
+                        '[S]pectroscopic with single distribution option\n' + \
+                        '[M]ultispectro with single distribution option\n' + \
+                        '[F]ull with single distribution option\n' + \
+                        '[PG] Photometric with global configuration\n' + \
+                        '[SG] Spectroscopic with global configuration\n' + \
+                        '[MG] Multispectro with global configuration\n' + \
+                        '[FG] Photometric with global configuration:\n' + \
+                        'p, s, m, f, pg, sg, mg, fg:   ')
             else:
                 test = input('Name of the test not entered correctly, retry:   ')
 
-            if test not in ['photometric', 'spectroscopic', 'multispectro', 'full']:
+            if test.lower() not in ['p', 'pg', 's', 'sg', 'm', 'mg', 'f', 'fg']:
                 testok = 'wrong'
             else:
                 testok = 'ok'
                 MTU.Info('You choosed to run the %s run test...starting...'%test, 'No')
 
-        if test == 'photometric':
+        if test.lower() == 'p':
             args.project = os.path.join(hide_dir, 'SEDobs_Test_run_photo.conf') 
 
-        if test == 'spectroscopic':
+        if test.lower() == 'pg':
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_photo_FA.conf') 
+
+        if test.lower() == 's':
             args.project = os.path.join(hide_dir, 'SEDobs_Test_run_spectro.conf')
             
-        if test in ['multispectro']:
+        if test.lower() == 'sg':
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_spectro_FA.conf')
+ 
+        if test.lower() == 'm':
             args.project = os.path.join(hide_dir, 'SEDobs_Test_run_multispectro.conf')
 
-        if test == 'full':
+        if test.lower() == 'mg':
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_multispectro_FA.conf')
+
+        if test.lower() == 'f':
             args.project = os.path.join(hide_dir, 'SEDobs_Test_run_full.conf')  
+
+        if test.lower() == 'fg':
+            args.project = os.path.join(hide_dir, 'SEDobs_Test_run_full_FA.conf')  
+
+
 
     else:
         ##no test
@@ -156,7 +179,7 @@ def main():
         print('----------------------------------------------------------')
         MTU.Info('LOAD: %s\n'%args.project, 'No')
         full_conf = config.read_config(args.project)
-        final = config.check_prepare(full_conf, args.test, test)
+        final = config.check_prepare(full_conf, args.test, test.lower())
         print('----------------------------------------------------------')
 
         ###### Prepare the distribution of z, StN, mag
@@ -188,9 +211,18 @@ def main():
             wave, template, parameters, param_names = library.from_SSP().main(final.config)
             MTU.Info('Library created : %s'%Name_LIB, 'Yes')
 
-        start = input('Start Simulation? [Press enter for Yes]')
+        try:
+            start = input('Start Simulation? [Press enter for Yes]')
+        except KeyboardInterrupt:
+            MTU.Info('You quitted the simulation....exit sedobs...', 'Yes')
+            sys.exit()
+
         if start == '':
             #start simulating
             SIM = simu.Main(final.config)
-            SIM.main(redshift, StN, mag, wave, template, parameters, param_names, COSMOS)
+            try:
+                SIM.main(redshift, StN, mag, wave, template, parameters, param_names, COSMOS)
+            except KeyboardInterrupt:
+                MTU.Info('You quitted the simulation....exit sedobs...', 'Yes')
+                sys.exit()
 

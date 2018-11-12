@@ -178,8 +178,8 @@ class Output:
         line = '\n%s\t%s'%(Name[0:-4], redshift)
         N = 1
         for i, j in zip(Photosim, Spectrosim):
-            name = Name[:-4]+'_%s'%N+'.spec'
-            namesky = Namesky[:-4]+'_%s'%N+'.spec'
+            name = Name[:-4] + '_%s'%N + '.spec'
+            namesky = Namesky + '_%s'%N + '.spec'
             self.create_indiv_spec_files(name, namesky, spectrodir, Spectrosim[j])
             line += '\t' + name + '\t%.4f\t%.4f'%(Photosim[i]['Meas'], Photosim[i]['Err'])
             N += 1
@@ -237,8 +237,8 @@ class Output:
         line = '\n%s\t%s'%(Name[0:-4], redshift)
         N = 1
         for i, j in zip(Photosimspec, Spectrosim):
-            name = Name[:-4]+'_%s'%N+'.spec'
-            namesky = Namesky[:-4]+'_%s'%N+'.spec'
+            name = Name[:-4] + '_%s'%N + '.spec'
+            namesky = Namesky + '_%s'%N + '.spec'
             self.create_indiv_spec_files(name, namesky, spectrodir, Spectrosim[j])
             line += '\t' + name + '\t%.4f\t%.4f'%(Photosimspec[i]['Meas'], Photosimspec[i]['Err'])
             N += 1
@@ -307,16 +307,15 @@ class Output:
                 line = '%s\t\t%s\t\t%s\n'%(w, f, n)
                 ff.write(line)
 
-        namedirsky = os.path.join(folder, namesky)
+        namedirsky = os.path.join(folder, namesky+'.dat')
         wave = spectro['wave']
         fluxwithsky = spectro['flux_withsky']
         sky = spectro['OH']
         with open(namedirsky, 'w') as ff:
             for i in enumerate(wave):
                 w = wave[i[0]]
-                f = fluxwithsky[i[0]]
                 s = sky[i[0]]
-                line = '%s\t\t%s\t\t%s\n'%(w, f, s)
+                line = '%s\t\t%s\n'%(w, s)
                 ff.write(line)
 
 
@@ -356,3 +355,62 @@ class Output:
                 line = '%s\t%s\n'%(wave[i], flux[i])
                 FF.write(line)
 
+##############SKY########################
+    def create_sky(self, sky, skydir, Name_sky_file, Photo_sim, conf):
+        '''
+        This method writes down the sky spectra used for the simulation
+        This is done only if the photometry was simulated. In the case of 
+        spectroscopy the skyspectrum, at the right resolution is saved 
+        automatically
+        Parameters
+        ----------
+        sky
+                obj, sky configuration
+        skydir
+                str, path to the sky directory
+        Name_sky_file
+                str, name of the sky file
+        Photo_sim
+                dict, with photometric simuation
+        conf
+                dict, photometric configuration
+        '''
+        ###unit convertor
+        ##speed of light
+        c = const.c
+        ##to angstrom/s
+        ca = c * 1e10
+        #factor from l*l*F(l) to F(J)
+        toJy = 1e23/ca
+
+        ##get limit of photometry
+        allLeff = []
+        for i in Photo_sim:
+            band = Photo_sim[i]
+            allLeff.append(band['Leff'])
+
+        wmin = min(allLeff) - 1000
+        wmax = max(allLeff) + 1000
+
+        ##loop over sky configuration
+        for i in sky.sky:
+            if i != 'none':
+                name = Name_sky_file + i + '.dat'
+                header = '#For %s AM=%s\n'%(Name_sky_file, sky.sky[i]['AM'])
+                wave = sky.sky[i]['OH'][0]
+                flux = sky.sky[i]['OH'][1]
+
+                if conf['flux_unit'] == 'Jy':
+                    flux = flux * wave * wave * toJy 
+
+                if conf['flux_unit'] == 'muJy':
+                    flux = flux * wave * wave * toJy * 1e6 
+                    
+                if conf['wave_unit'] == 'log_ang':
+                    wave = numpy.log10(wave)
+
+                with open(os.path.join(skydir, name), 'w') as f:
+                    f.write(header)
+                    for j in range(len(wave)):
+                        if wmin < wave[j] < wmax:
+                            f.write('%s\t%s\n'%(wave[j], flux[j]))

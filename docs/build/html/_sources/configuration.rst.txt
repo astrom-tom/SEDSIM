@@ -31,52 +31,59 @@ Configuration
         These are not being computed on the fly which save a lot of time in the simulating process. See details below on how to use them. 
 
 
-In order to make a simulation run with SEDobs, a configuration file must be filled. An example is given below:
+In order to make a simulation run with SEDobs, a configuration file must be filled. An example is given below (filled fields are default values):
 
 .. code-block:: shell
 
-    [General]
-    Project_name=
-    Author= 
-    Project_Directory= 
-    full_array=
-    z_distribution= 
-    Nobj= 
+	[General]
+	Project_name = 
+	Author = 
+	Project_Directory= 
+	full_array =  
+	z_distribution = 
+	Nobj =  
+	sizegal = 1
 
-    [Data_Type]
-    Photometry= 
-    Spectro= 
+	[Data_Type]
+	Photometry = 
+	Spectro = 
 
-    [Spectro]
-    NSpec= 
-    Norm_band= 
-    Noise_reg= 
-    Norm_distribution= 
-    types= 
+	[Spectro]
+	NSpec = 
+	Norm_band =
+	Noise_reg = 
+	Norm_distribution = 
+	types = 
+	flux_unit = 
+	wave_unit =
 
-    [Photo]
-    Norm_band= 
-    Norm_distribution= 
-    Nband= 
-    Band_list= 
+	[Photo]
+	Norm_band = 
+	Norm_distribution = 
+	Nband = 
+	Band_list = 
+	flux_unit = 
+	wave_unit =
+	savesky = No
 
-    [Cosmo]
-    Ho=
-    Omega_m= 
-    Omega_L= 
-    Use_Cosmo= 
+	[Cosmo]
+	Ho=70
+	Omega_m=0.27
+	Omega_L=0.73
+	Use_Cosmo=Yes
 
-    [Templates]
-    BaseSSP= 
-    DustUse= 
-    EBVList= 
-    IGMUse= 
-    IGMtype= 
-    EMline= 
-    Lyafrac= 
-    Age= 
-    TAU= 
-    MET= 
+	[Templates]
+	BaseSSP = 
+	DustUse = 
+	EBVsList = 
+	IGMUse = 
+	IGMtype =  
+	EMline= 
+	EBVnList =
+	Lyafrac = 
+	Age = 
+	TAU = 
+	MET = 
 
 
 This configuration file is composed of 6 mandatory sections. If one is missing, SEDobs can not run. We detail them below.
@@ -98,6 +105,8 @@ The general section is the first of the configuration file. It is composed of 7 
 
 * **Nobj**: Only if you do not use the previous ''full_array'' option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the **z_distribution** option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution. 
 
+* **sizegal**: Averaged angular size of the galaxies that will be simulate, in arcsec. This is used to scale up the OH skyline spectrum (see :doc:`atmospheric` for more details). The default size is 1''.
+
 An example of the version with the **full_array** option:
 
 .. code-block:: shell
@@ -109,6 +118,7 @@ An example of the version with the **full_array** option:
     full_array = final_array_z_StN_mag.txt
     z_distribution =
     Nobj =
+    sizegal = 1
 
 An example without it:
 
@@ -121,6 +131,7 @@ An example without it:
     full_array = 
     z_distribution = redshift.txt
     Nobj = 10000
+    sizegal = 1
 
 
 Data_type
@@ -142,12 +153,17 @@ This is where you tell SEDOBS what photometric data to simulate:
 * **Norm_band**: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see :doc:`filters` page for all the filters available).
 * **Norm_distribution**: Only if you do not use the previous **full_array** option. This is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the same band you gave in the **Norm_band** entry.
 * **Nband**: The number of photometric band you want to be computed for a given simulation.
-* **Band_list**: This is where you give the photometric configuration for each band. For each of them you must give multiple information **(name,offset,mean,sigma,atm)**:
+* **Band_list**: This is where you give the photometric configuration for each band. For each of them you must give multiple information **(name,offset,mean,sigma,atm,skysub)**:
 
     * **name**: This is the name of the filter
     * **offset**: This is the offset of the band (in magnitude) that will be applied in all the magnitudes
     * **mean** and **sigma**: To compute the errors on the band, SEDobs created a gaussian and randomely select in that gaussian to create the simulated error. You must give for each band the mean and sigma of that gaussian.
     * **atm**: This let SEDOBS know if this band is affected by atmsopherical effects. It can take four values: none, low, int, high (see :doc:`atmospheric` for details).
+    * **skysub**: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See :doc:`atmospheric` for more details.
+
+* **flux_unit**: This is the unit of the output photometry. If empty it will be erg/s/cm2/A. You can also give *Jy* and *muJy* (micro Jensky).
+* **wave_unit**: This is the unit of the wavelength of the output photometry. If empty it will be Angstrom. You can also give *log_ang* to get directly the logarithm (base 10) of the wavelength.
+* **savesky**: Yes or No. This is if you want to save the full OHlines spectrum (this can take some disk space, to use wisely).
 
 An example is given below, without full array:
 
@@ -175,13 +191,13 @@ And with it
 
 Spectro
 ^^^^^^^
-This is where you precise the spectroscopic information of the simulations. Five entries are needed:
+This is where you precise the spectroscopic information of the simulations. Seven entries are needed:
 
 * **NSpec**: This is the number of spectroscopy per simulated galaxy you want to create. For a given template, randomely chosen in the library, you can ask to have 1, 2 or N spectra to be created (for example sdss-like and HST-like).
-* **Norm_band**: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above), you must give an offset, and information about errors on that band. 
+* **Norm_band**: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above), you must give an offset, and information about errors on that band as well atsmopheric parameters.
 * **Noise_reg**: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.
 * **Norm_distribution**: Only if you do not use the **full_array** option. You must give the normalisation file (see above for photometry). 
-* **types**: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: **l1, l2, dl, R [,SNR.txt], atm**:
+* **types**: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: **l1, l2, dl, R [,SNR.txt], atm, skysub**:
     
     * **l1**: The starting wavelength of your spectrum
     * **l2**: The end wavelength of your spectrum
@@ -189,6 +205,10 @@ This is where you precise the spectroscopic information of the simulations. Five
     * **R**: The spectral resolution of your spectrum
     * **SNR.txt**: Only if you do not use the **full_array** option. The file containing the Signal to noise ratio distribution (one column catalog).
     * **atm**: This let SEDOBS know if this spectrum is affected by atmsopherical effects. It can take four values: none, low, int, high (see :doc:`atmospheric` for details).
+    * **skysub**: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See :doc:`atmospheric` for more details.
+
+* **flux_unit**: This is the unit of the output spectrum. If empty it will be erg/s/cm2/A. You can also give *Jy* and *muJy* (micro Jensky).
+* **wave_unit**: This is the unit of the wavelength of the output spectrum. If empty it will be Angstrom. You can also give *log_ang* to get directly the logarithm (base 10) of the wavelength.
 
 You must repeat that for each spectrum.
 
@@ -196,23 +216,28 @@ An example of this section is given below without full array option.
 
 .. code-block:: shell
 
-    [Spectro]
-    NSpec = 2 
-    Norm_band = (i-megacam,0.0, 0.1, 0.03);(J-wircam, 0.0, 0.2, 0.08)
-    Noise_reg = (1080,1170);(3580,3680)
-    Norm_distribution = magnorm.txt
-    types = (3500,9500,7.25,240,opt.txt,low);(12000,16000,46.5,130,NIR.txt,none)
+    	[Spectro]
+	NSpec = 2 
+	Norm_band = (r-megacam, 0.0, 0.1, 0.03,low,90);(J-wircam, 0.0, 0.68, 0.45,none,100)
+	Noise_reg =  (1080,1170);(3600,3700)
+	Norm_distribution = dist_mag.txt 
+	types = (3500,9500,7.25,240,dist_SNR1.txt,low,90);(12000,15000,50,100,dist_SNR2.txt,none,100)
+	flux_unit = 
+	wave_unit =
+
 
 And with it
 
 .. code-block:: shell
 
-    [Spectro]
-    NSpec = 2 
-    Norm_band = (i-megacam,0.0, 0.1, 0.03);(J-wircam, 0.0, 0.2, 0.08)
-    Noise_reg = (1080,1170);(3580,3680)
-    Norm_distribution = 
-    types = (3500,9500,7.25,240);(12000,16000,46.5,130)
+    	[Spectro]
+	NSpec = 2 
+	Norm_band = (r-megacam, 0.0, 0.1, 0.03,low,90);(J-wircam, 0.0, 0.68, 0.45,none,100)
+	Noise_reg =  (1080,1170);(3600,3700)
+	Norm_distribution = dist_mag.txt 
+	types = (3500,9500,7.25,240,low,90);(12000,15000,50,100,none,100)
+	flux_unit = 
+	wave_unit =
 
 
 Cosmo
@@ -238,6 +263,7 @@ This is the section where you tell SEDobs what kind of templates you want to cho
     * Directory EmLine: Contains emission lines related files.
     * Directory IGM: Contains all the IGM curves (in HDF5 format).
     * Directory LIBS: Contains pre-computed CSPs with different SFH, IGM and metallicities.
+    * Directory Atmos: Contains pre-computed sky emission spectra.
     * File: SPARTAN_filters.hdf5 contains all the photometric filters curves.
 
 It is very important to keep all these directories in the same parent directory (SEDobs has relative paths to that parent directory hardcoded). The layout should look like this:
@@ -249,6 +275,7 @@ It is very important to keep all these directories in the same parent directory 
         |_EXT
         |_LIBS
         |_EmLine
+	|_Atmos
         |_SPARTAN_filters.hdf5
 
 The path to the parent directory is the one you have to give when you start the SEDobs for the first time (see :doc:`usage`).

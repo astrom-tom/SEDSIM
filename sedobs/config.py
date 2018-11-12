@@ -67,8 +67,8 @@ class read_config:
         General['N_obj']=config.get('General', 'Nobj')
         if General['N_obj'] != '':
             General['N_obj'] = int(General['N_obj'])
+        General['sizegal'] = config.getfloat('General', 'sizegal')
         self.General = General
-        General['sizegal'] = config.get('General', 'sizegal')
 
         #####Data type
         DataT = {}
@@ -95,6 +95,7 @@ class read_config:
         PHOT['Band_list'] = config.get('Photo', 'Band_list')
         PHOT['flux_unit'] = config.get('Photo', 'flux_unit')
         PHOT['wave_unit'] = config.get('Photo', 'wave_unit')
+        PHOT['savesky'] = config.get('Photo', 'savesky').lower()
         self.PHOT = PHOT
 
         ###Cosmology
@@ -276,21 +277,40 @@ class check_prepare:
         None
         '''
 
-        if self.testtype == 'photometric':
+        if self.testtype == 'p':
             listfile = ['dist_mag.txt', 'dist_z.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
-        if self.testtype == 'spectroscopic':
+        if self.testtype == 'pg':
+            listfile = ['SEDobs_Test_run_photo_full_array.txt']
+            for i in listfile:
+                copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
+
+        if self.testtype == 's':
             listfile = ['dist_mag.txt', 'dist_zspec.txt', 'dist_SNR1.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
-        if self.testtype in ['multispectro', 'full']:
+        if self.testtype == 'sg':
+            listfile = ['SEDobs_Test_run_spectro_full_array.txt']
+            for i in listfile:
+                copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
+
+        if self.testtype in ['m', 'f']:
             listfile = ['dist_mag.txt', 'dist_zspec_multi.txt', 'dist_SNR1.txt', 'dist_SNR2.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
+        if self.testtype == 'mg':
+            listfile = ['SEDobs_Test_run_multispectro_full_array.txt']
+            for i in listfile:
+                copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
+
+        if self.testtype == 'fg':
+            listfile = ['SEDobs_Test_run_full_full_array.txt']
+            for i in listfile:
+                copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
     def check_dataT(self, dataT):
         '''
@@ -435,6 +455,10 @@ class check_prepare:
         if PHOT['wave_unit'] == 'log_ang':
             MTU.Info('Wavelength will be log(Angstrom)', 'No')
         
+        if PHOT['savesky'] not in ['yes', 'no']:
+            MTU.Error('Save sky data?...exit\n', 'Yes')
+            sys.exit()
+
         return bands_to_simulate
 
     def check_SPECTRO(self, config, gen_array, filter_file):
@@ -773,11 +797,14 @@ class prepare_dis:
             Nsim = conf.General['N_obj']
 
             ####we start by the redshift distribution
-            zdistuser = numpy.loadtxt(os.path.join(conf.General['PDir'], conf.General['z_dist']))
-            new_zdist = self.dist_from_user_dist(zdistuser,Nsim,int(len(zdistuser)/10))
+            zdistuser = numpy.genfromtxt(os.path.join(conf.General['PDir'], conf.General['z_dist']))
+            if zdistuser.size == 1:
+                new_zdist = zdistuser * numpy.ones(Nsim)
+            else:
+                new_zdist = self.dist_from_user_dist(zdistuser,Nsim,int(len(zdistuser)/10))
             #plot().two_dist(zdistuser,20,'user, N=%s'%len(zdistuser), new_zdist, 20,\
             #        'final dist, N=%s'%Nsim, 'Redshift z')
-
+            print(new_zdist)
             ##then the magnitudes 
             if conf.DataT in ['Combined', 'Photo']:
                 Norm_distuser = numpy.loadtxt(os.path.join(conf.General['PDir'], \
@@ -786,7 +813,10 @@ class prepare_dis:
                 Norm_distuser = numpy.loadtxt(os.path.join(conf.General['PDir'], \
                         conf.SPEC['Norm_distribution']))
 
-            new_Normdist = self.dist_from_user_dist(Norm_distuser,Nsim,int(len(Norm_distuser)/10))
+            if Norm_distuser.size == 1:
+                new_Normdist = Norm_distuser * numpy.ones(Nsim)
+            else:
+                new_Normdist = self.dist_from_user_dist(Norm_distuser,Nsim,int(len(Norm_distuser)/10))
             ##then the StN
             if conf.DataT == 'Combined' or conf.DataT == 'Spectro':
                 specs = list(conf.SPEC['types'])
@@ -794,7 +824,11 @@ class prepare_dis:
                 for i in range(int(conf.SPEC['NSpec'])):
                     StN_distuser = numpy.loadtxt(os.path.join(conf.General['PDir'], \
                             conf.SPEC['types'][specs[i]]['Stnfile']))
-                    new_StNdist = self.dist_from_user_dist(StN_distuser,Nsim,int(len(StN_distuser)/10))
+
+                    if StN_distuser.size == 1:
+                        new_StNdist = StN_distuser *  numpy.ones(Nsim)
+                    else:
+                        new_StNdist = self.dist_from_user_dist(StN_distuser,Nsim,int(len(StN_distuser)/10))
                     #plot().two_dist(StN_distuser,20,'user, N=%s'%len(StN_distuser), new_StNdist, 20,\
                     #'final dist, N=%s'%Nsim, 'Signa-to-noise ratio')  
                     Ndist.append(new_StNdist) 
@@ -848,11 +882,12 @@ class prepare_dis:
         Nsim        int, number of simulation given by the user
         binning     binning, of the distribution
 
-        Return:
+        Returns:
         -------
         new_dist    list, of Nsim value with the same distribution as
                           user_dist
         '''
+
         hist, bin_edges = numpy.histogram(user_dist, bins=binning, density=True)
         cum_values = numpy.zeros(bin_edges.shape)
         cum_values[1:] = numpy.cumsum(hist*numpy.diff(bin_edges))

@@ -71,6 +71,8 @@ class Main:
 
         self.original_template_dir = os.path.join(conf.General['PDir'], 'original_template')
 
+        self.sky_dir = os.path.join(conf.General['PDir'], 'sky')
+
     def main(self, z, StN, mag, wave_rf, template, parameters, param_names, COSMOS):
 
         '''
@@ -95,17 +97,19 @@ class Main:
             MTU.Info('Start simulation #%s'%N, 'Yes')
             MTU.Info('z=%s, Normmag=%s'%(z, NormMag), 'No')
             ### a - create simulation names and check presence of files
+  
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Name_photo = '%s_Photometry_N%s.dat'%(self.conf.General['PName'], N)
-                Name_photo_sky = '%s_Photometry_sky_N%s.dat'%(self.conf.General['PName'], N)
+                Name_sky_file = '%s_OHsky_N%s_'%(self.conf.General['PName'], N)
 
             if self.DataT == 'Spectro' or self.DataT == 'Combined':
                 Name_spectro = '%s_spectro_N%s.dat'%(self.conf.General['PName'], N)
-                Name_spectro_sky = '%s_spectro_sky_N%s.dat'%(self.conf.General['PName'], N)
+                Name_sky = '%s_spectro_sky_N%s'%(self.conf.General['PName'], N)
 
             if self.DataT == 'Combined':
                 Name_Combined = '%s_comb_N%s.dat'%(self.conf.General['PName'], N)
-                Name_Combined_sky = '%s_comb_sky_N%s.dat'%(self.conf.General['PName'], N)
+                Name_sky = '%s_comb_sky_N%s'%(self.conf.General['PName'], N) 
+                Name_sky_file = '%s_OHsky_N%s_'%(self.conf.General['PName'], N)
 
             ####update library with emline and 
             ##1 Emission line
@@ -189,7 +193,7 @@ class Main:
             if self.DataT == 'Spectro':
                 blist = list(self.conf.SPEC['Norm_band'].keys())
                 Normfluxsim, Normalisation = Photo.Normalise_template(Wave_at_z, \
-                        simFlux, blist[0], NormMag)
+                        simFlux, self.conf.SPEC['Norm_band'][blist[0]], NormMag, sim_sky)
 
             ###add the normalisation to the mass and SFR
             simPara[3] = numpy.log10(simPara[3]*Normalisation)
@@ -200,6 +204,7 @@ class Main:
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Photo_sim = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
                         self.conf.PHOT['Band_list'], self.conf.PHOT, sim_sky)
+ 
                 MTU.Info('Photometry has been simulated', 'No')
                 ####chekc with plot
                 #plot().template_and_mags(Wave_at_z, Normfluxsim, Photo_sim, z)
@@ -219,28 +224,27 @@ class Main:
                 #Photo_sim_spec = spec().combined_spectro_photometry(Photo_sim, self.conf)
                 Photo_sim_spec = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
                         self.conf.SPEC['Norm_band'], self.conf.SPEC, sim_sky)
-
                 #Check_plots.plot().combined_template_mag(Wave_at_z, \
                         #Normfluxsim, spectro_sim, Photo_sim, z)
 
             ### j - and write them down
             out = simu_output.Output()
+
             if self.DataT == 'Photo':
-                out.add_to_final_mag_file(Name_photo, self.PhotoDir, Photo_sim, \
-                        z, self.Photofinalfile)
+                out.add_to_final_mag_file(Name_photo, self.PhotoDir, Photo_sim, z, self.Photofinalfile)
                 out.add_to_output_param_file(z, Name_photo, simPara, self.final_param_file, NormMag)
 
             if self.DataT == 'Spectro':
                 out.add_to_output_param_file(z, Name_spectro, simPara, self.final_param_file, NormMag)
-                out.add_to_final_spec_file(Name_spectro, Name_spectro_sky, spectro_sim, Photo_sim_spec, \
-                        z, self.Spectrofinalfile, self.SpectraDir)
+                out.add_to_final_spec_file(Name_spectro, Name_spectro, \
+                        spectro_sim, Photo_sim_spec, z, self.Spectrofinalfile, self.SpectraDir)
 
             if self.DataT == 'Combined':
                 out.add_to_final_mag_file(Name_Combined, self.PhotoDir, Photo_sim, \
                         z, self.Photofinalfile)
-                out.add_to_final_spec_file(Name_Combined, Name_Combined_sky, spectro_sim, \
+                out.add_to_final_spec_file(Name_Combined, Name_sky, spectro_sim, \
                         Photo_sim_spec, z, self.Spectrofinalfile, self.SpectraDir)
-                out.add_to_final_comb_file(Name_Combined, Name_Combined_sky, spectro_sim,\
+                out.add_to_final_comb_file(Name_Combined, Name_sky, spectro_sim,\
                         Photo_sim_spec, Photo_sim, z, self.Combinedfinalfile, self.SpectraDir)
                 out.add_to_output_param_file(z, Name_Combined, simPara, self.final_param_file, NormMag)
 
@@ -252,6 +256,11 @@ class Main:
             else:
                 out.create_original_template(Wave_at_z, Normfluxsim, Name_file_para, \
                         self.original_template_dir, self.conf.SPEC)
+ 
+            ### l - save sky file
+            if self.DataT == 'Photo' or self.DataT == 'Combined':
+                if self.conf.PHOT['savesky'] == 'yes':
+                    out.create_sky(sim_sky, self.sky_dir, Name_sky_file, Photo_sim, self.conf.PHOT)
  
 
     def prepare_files(self):
@@ -279,3 +288,8 @@ class Main:
         ###### e - create original template dire
         if not os.path.isdir(self.original_template_dir):
             os.makedirs(self.original_template_dir)
+
+        ###### f - create sky directory
+        if self.conf.PHOT['savesky'] == 'yes':
+            if not os.path.isdir(self.sky_dir):
+                os.makedirs(self.sky_dir)

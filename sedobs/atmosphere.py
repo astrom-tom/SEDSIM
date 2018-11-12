@@ -122,4 +122,5 @@ class sky(object):
                 ##get right index
                 indexOH = numpy.where(numpy.array(allOH['AM']) == AMsim)[0]
                 ##get right curve
-                self.sky[i]['OH'] = [allOH['wave'], allOH['array'][indexOH][0]]
+                self.sky[i]['OH'] = [allOH['wave'], \
+                        self.conf.General['sizegal'] * allOH['array'][indexOH][0]]

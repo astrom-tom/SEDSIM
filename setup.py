@@ -16,7 +16,8 @@ setup(
        "numpy >= 1.14.2",
        "h5py >= 2.8.0",
        "scipy >= 1.0.1",
-       "tqdm >= 4.23.4"
+       "tqdm >= 4.23.4",
+       "extinction >= 0.4.0",
    ],
    include_package_data=True,
 )
