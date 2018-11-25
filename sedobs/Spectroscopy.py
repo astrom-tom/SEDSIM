@@ -73,8 +73,8 @@ class Spectroscopy:
             spec_indiv['SNR'] = STN[i][N]
              
             ###simulate the spectrum
-            wavespec, fluxnoised_skysub, noise_spec, OH, spec_withsky = \
-                    self.simu_one_single_spec(spec_indiv, wave, flux, redshift, conf, sky)     
+            wavespec, fluxnoised_skysub, noise_spec, OH = \
+                self.simu_one_single_spec(spec_indiv, wave, flux, redshift, conf, sky)     
 
             spec_final[i+1] = {}
             if conf.SPEC['flux_unit'] == 'Jy':
@@ -94,7 +94,7 @@ class Spectroscopy:
             spec_final[i+1]['flux'] = fluxnoised_skysub
             spec_final[i+1]['noise'] = noise_spec
             spec_final[i+1]['OH'] = OH
-            spec_final[i+1]['flux_withsky'] = spec_withsky 
+            spec_final[i+1]['skysub'] = spec_indiv['skysub']
 
             MTU.Info('Spectrum #%s with STN %s have been simulated'%(i+1, STN[i][N]), 'No')
 
@@ -148,17 +148,15 @@ class Spectroscopy:
         else:
             ext_cut = numpy.ones(len(flux_cut))
             flux_cutsky = numpy.zeros(len(flux_cut))
-        
-        flux_cut = flux_cut + flux_cutsky
+
+
+        flux_cut = flux_cut + (1-spec_conf['skysub'])*flux_cutsky
         #plot().spec_sim(wave, flux, wave_cut, flux_cut, redshift, spec_conf)
 
         ###4 - we compute the noise 
         flux_noised_withsky, noise_spec = self.add_noise(wave_cut, flux_cut, spec_conf, redshift)
 
-        ###5 - we substract the sky
-        flux_noised_skysub = flux_noised_withsky - spec_conf['skysub']*flux_cutsky
-
-        return wave_cut, flux_noised_skysub, noise_spec, flux_cutsky, flux_noised_withsky
+        return wave_cut, flux_noised_withsky, noise_spec, flux_cutsky 
 
     def add_noise(self, wave, flux, specconf, Redshift):
         '''

@@ -13,6 +13,7 @@ Module dealing with library ingredients during the fit
 import os
 import time
 from pathlib import Path
+import random
 
 
 ####Third party
@@ -40,15 +41,22 @@ class DUSTlib:
         self.inputdir = numpy.genfromtxt(fileconf, dtype='str')[1]
         self.hide_dir = os.path.join(self.home,'.sedobs/')
 
-    def Dust_for_fit(self, Dustfile, wave_models, EBVlist):
+    def Dust_for_fit(self, Dustfile, wave_models, dustuse_stel, Avstel, \
+            Rvstel, dustuse_neb, Avneb, Rvneb):
         '''
         Method that prepares the final extinction curve to be used
         during the fit
         Parameter
         ---------
-        Dustfile    str, /path/to/extinction curve file
-        wave_model  1D array, wavelength of the templates
-        EBVlist     list of str, list of EBV values given by tthe user
+        Dustfile     str, /path/to/extinction curve file
+        wave_model   1D array, wavelength of the templates
+        dustuse_stel str, yes or no to use stellar dust extinction
+        Avstel       list of str, list of AV stellar values given by the user
+        Rvstel       list of str, list of RV stellar values given by the user
+        dustuse_neb  str, yes or no to use nebular dust extinction
+        AVneb       list of str, list of AV stellar values given by the user
+        AVneb       list of str, list of AV stellar values given by the user
+
         Return
         ------
         Dust_for_fit 2D array, with wavelength in the first clumn and 
@@ -57,22 +65,46 @@ class DUSTlib:
         DUSTdict = {}
         if Dustfile == 'none' or Dustfile == '':
             DUSTdict['Use'] = 'No'
+            DUSTdict['sim_rv_stel'] = -99.9
+            DUSTdict['sim_av_stel'] = -99.9
+            DUSTdict['sim_rv_neb'] = -99.9
+            DUSTdict['sim_av_neb'] = -99.9
+            MTU.Info('No dust extinction will be used', 'No')
+ 
+            
         else:
+            DUSTdict['Use'] = 'Yes'
             dustfile = os.path.join(self.inputdir, 'EXT', Dustfile)
             ##1- We extract the extinction curve
             WaveDust, CoefDust = numpy.loadtxt(dustfile).T
             ##2- Then we regrid to the model 
-            DUSTdict['Use'] = 'Yes'
             DUSTdict['Coef'] = numpy.interp(wave_models, WaveDust, CoefDust)
-            DUSTdict['EBV'] = EBVlist
+            ###choose randomely the values to use:
+            if dustuse_stel.lower() == 'yes':
+                DUSTdict['sim_rv_stel'] = float(random.choice(Rvstel))
+                DUSTdict['sim_av_stel'] = float(random.choice(Avstel))
+            if dustuse_neb.lower() == 'yes':
+                DUSTdict['sim_rv_neb'] = float(random.choice(Rvneb))
+                DUSTdict['sim_av_neb'] = float(random.choice(Avneb))
+            else:
+                DUSTdict['sim_rv_neb'] = DUSTdict['sim_rv_stel']
+                DUSTdict['sim_av_neb'] = DUSTdict['sim_av_stel']
+
+            MTU.Info('Stellar extinction: Av=%s, Rv=%s'%(DUSTdict['sim_av_stel'], \
+                    DUSTdict['sim_rv_stel']), 'No')
+            MTU.Info('Nebular extinction: Av=%s, Rv=%s'%(DUSTdict['sim_av_neb'], \
+                    DUSTdict['sim_rv_neb']), 'No')
+
+
         return DUSTdict
 
-    def Dust_ext(self, ebv, Coef):
+    def Dust_ext(self, Av, Rv, Coef):
         '''
         Method that compute the coefficient from the extinction anf the EBV value
         Parameter
         ---------
-        ebv     float, E(B-V) value given by the user
+        Av      float, Av value chosen from the user distribution
+        Rv      float, Rv value chosen from the user distribution
         Coef    1D array, extinction coefficient regridded to the wave model grid (restframe)
 
         Return
@@ -80,7 +112,7 @@ class DUSTlib:
         Dust_trans  1Darray, of the dust transmission computed as 10**(-0.4*E(B-V)*k(lambda))
                     See http://webast.ast.obs-mip.fr/hyperz/hyperz_manual1/node10.html for detail
         '''
-        Dust_trans = 10**(-0.4*ebv*Coef)
+        Dust_trans = 10**(-0.4*Av*Coef/Rv)
 
         return Dust_trans
 
@@ -292,7 +324,8 @@ class Emlineslib:
         self.Ratios = os.path.join(current_dir, 'emlines/Anders_Fritze_2003.dat')
         self.Neb_cont = os.path.join(current_dir, 'emlines/Emission_coef.txt')
 
-    def main(self, Templates_final, Wave_final, Parameter_array, Names, CONF, toskip):
+    def main(self, Templates_final, Wave_final, Parameter_array, Names, CONF, \
+            DUSTdict, toskip):
         '''
         This method is the main function that adds the emission lines
         Parameter:
@@ -302,6 +335,7 @@ class Emlineslib:
         Parameter_array , Nd array of template parameters (needed for metallicity)
         Names           , Nd array of parameter name
         CONF            , dict of configuration
+        DUSTdict        , dict of dust configuration
         toskip          , list of line to skip
         Return:
         -------
@@ -309,7 +343,17 @@ class Emlineslib:
                           emission line are not applied)
         '''
 
-        #print(CONF.LIB['EMline'])
+        ###prepare dust extinction
+        if DUSTdict['Use'] == 'No':
+            neb_ext = numpy.ones(len(Wave_final))
+            stel_ext = numpy.ones(len(Wave_final))
+
+        else:
+            stel_ext = DUSTlib().Dust_ext(DUSTdict['sim_av_stel'], DUSTdict['sim_rv_stel'], \
+                    DUSTdict['Coef'])
+            neb_ext = DUSTlib().Dust_ext(DUSTdict['sim_av_neb'], DUSTdict['sim_rv_neb'], \
+                    DUSTdict['Coef'])
+
 
         if CONF.Template['EMline'].lower() == 'yes':
             ##initialize ionization edges
@@ -339,13 +383,8 @@ class Emlineslib:
             EW, lumi, Name, lambdal, pos_line, l_line = self.EW_calcul(LCP, \
                     fgas, Metlist, Wave_final, Templates_final, Nebular_cont, toskip)
 
-            ###and create the lines on the flux
-
-#-->old one #flux_emLINE = self.Em_line_on_template1(l_line, pos_line, Templates_final, \
-            #        Nebular_cont, Wave_final, Metlist)
-
             flux_emLINE2 = self.Em_line_on_template2(l_line, pos_line, Templates_final, \
-                    Nebular_cont, Wave_final, Metlist)
+                    Nebular_cont, Wave_final, Metlist, stel_ext, neb_ext)
 
             #####################################
             ###check with plots
@@ -353,14 +392,44 @@ class Emlineslib:
             #print(Parameter_array[X])
             #plot().EmLinecheck(Wave_final, Templates_final[X], Nebular_cont[X], flux_emLINE[X])
             #print(Templates_final.shape, flux_emLINE.shape)
-            return flux_emLINE2
+
+            ##update parameter names
+            Names.append('Av_s')
+            Names.append('Rv_s')
+            Names.append('Av_n')
+            Names.append('Rv_n')
+
+            ###update parameters with dust values (+4 parameters)
+            New_parameter_dust = numpy.empty((Parameter_array.shape[0], Parameter_array.shape[1]+4))
+            New_parameter_dust[:,-4] = DUSTdict['sim_av_stel']
+            New_parameter_dust[:,-3] = DUSTdict['sim_rv_stel']
+            New_parameter_dust[:,-2] = DUSTdict['sim_av_neb']
+            New_parameter_dust[:,-1] = DUSTdict['sim_rv_neb']
+            New_parameter_dust[:,0:-4] = Parameter_array
+
+
+            return flux_emLINE2, Wave_final, New_parameter_dust, Names
 
         else:
-            return Templates_final
+            ###update parameters with dust values (+2 parameters (only stellar attenuation))
+            Names.append('Av_s')
+            Names.append('Rv_s')
+            Names.append('Av_n')
+            Names.append('Rv_n')
+            New_parameter_dust = numpy.empty((Parameter_array.shape[0], Parameter_array.shape[1]+4)) 
+            New_parameter_dust[:,-4] = DUSTdict['sim_av_stel']
+            New_parameter_dust[:,-3] = DUSTdict['sim_rv_stel']
+            New_parameter_dust[:,-2] = DUSTdict['sim_av_neb']
+            New_parameter_dust[:,-1] = DUSTdict['sim_rv_neb']
+            New_parameter_dust[:,0:-4] = Parameter_array
+            
+            Templates_dust = Templates_final * stel_ext
+
+            return Templates_dust, Wave_final, New_parameter_dust, Names
     
    
 
-    def Em_line_on_template2(self, l_line, pos_line, flux, cont, wave, Metlist):
+    def Em_line_on_template2(self, l_line, pos_line, flux, cont, wave, Metlist, stel_ext, neb_ext):
         '''
         This methods creates the emission line on the 
         template
@@ -374,6 +443,8 @@ class Emlineslib:
         flux        array, flux of the templates
         cont        array, nebular continnuum 
         wave        array, wavelength grid
+        stel_ext    array, stelar extinction
+        neb_ext     array, nebular_extinction
 
         Return
         ------
@@ -404,10 +475,11 @@ class Emlineslib:
             fluxmet = flux2[met_template]
             contmet = cont2[met_template]
             flux_dirac_met = numpy.zeros(l_linemet.shape)
-
+            
             posi = numpy.where(pos_linemet[1] == 1)
 
             for j in range(len(pos_linemet[1])):
+                #print(j, stel_ext[j], neb_ext[j])
                 if pos_linemet[1][j] == 1:
 
                     if pos_linemet[1][j-1] == 1:
@@ -421,15 +493,18 @@ class Emlineslib:
                     width = 0.5*abs(wave[j+1]-wave[j]) + 0.5*abs(wave[j]-wave[j-1])
                     fl_line = l_linemet.T[j] / width
                     
-                    flux_dirac_met.T[j] = fluxmet.T[j]   + fl_line + contmet.T[j]
+                    flux_dirac_met.T[j] = stel_ext[j]*fluxmet.T[j] + \
+                            neb_ext[j]*fl_line + neb_ext[j]*contmet.T[j]
 
                 else:
 
-                    flux_dirac_met.T[j] = fluxmet.T[j] + contmet.T[j]
+                    flux_dirac_met.T[j] = stel_ext[j]*fluxmet.T[j] + neb_ext[j]*contmet.T[j]
+
             flux_dirac_arrays.append(flux_dirac_met)
 
         fast = [ i for i in flux_dirac_arrays]
         F = numpy.concatenate(fast)
+
         return F
     
     def Em_line_on_template1(self, l_line, pos_line, flux, cont, wave, Metlist):

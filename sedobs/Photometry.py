@@ -167,9 +167,10 @@ class Photometry:
             usesky = band.strip('()').split(',')[-2].strip()
             skysub = band.strip('()').split(',')[-1].strip()
             bandname = band.strip('()').split(',')[0].strip()
+
         else: ##<---normal case during simulation
             usesky = band[-2]
-            skysub = band[-1]
+            skysub = float(band[-1])/100
             bandname = band[0]
 
         fluxcp = copy.copy(flux)

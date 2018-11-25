@@ -48,7 +48,7 @@ class Output:
             os.remove(param_file)
 
         MTU.Info('Output Parameter file does not exist, we create it', 'No')
-        Header = '#ID_sim\tredshift\tMag\tMet\tTAU\tAGE\tMass\tSFR\tEBV\tTrLya'
+        Header = '#ID_sim\tredshift\tMag\tMet\tTAU\tAGE\tMass\tSFR\tAvs\tRvs\tAvn\tRvn\tTrLya\tTrLyb\tTrLyg'
         par_file = open(param_file, 'w')
         par_file.write(Header)
         par_file.close()
@@ -71,11 +71,16 @@ class Output:
         Age = P[2]
         Mst = P[3]
         SFR = P[4]
-        EBV = P[5]
-        TrLya = P[6]
+        Avs = P[5]
+        Rvs = P[6]
+        Avn = P[7]
+        Rvn = P[8]
+        TrLya = P[9]
+        TrLyb = P[10]
+        TrLyg = P[11]
 
-        line += '\t%1.4f\t%1.4f\t%1.4f\t%1.4e\t%1.4f\t%1.4f\t%1.4f\t%1.4f'%(Normmag, MET,\
-                TAU, Age, Mst, SFR, EBV, TrLya)
+        line += '\t%1.4f\t%1.4f\t%1.4f\t%1.4e\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f'\
+                %(Normmag, MET, TAU, Age, Mst, SFR, Avs, Rvs, Avn, Rvn, TrLya, TrLyb, TrLyg)
 
         with open(paramfile, 'a') as out:
             out.write(line)
@@ -294,7 +299,6 @@ class Output:
         folder  str, folder where the spectra will be stored
         spectro dict, with spectroscopic simuation
         '''
-
         namedir = os.path.join(folder, name)
         wave = spectro['wave']
         flux = spectro['flux']
@@ -309,12 +313,11 @@ class Output:
 
         namedirsky = os.path.join(folder, namesky+'.dat')
         wave = spectro['wave']
-        fluxwithsky = spectro['flux_withsky']
         sky = spectro['OH']
         with open(namedirsky, 'w') as ff:
             for i in enumerate(wave):
                 w = wave[i[0]]
-                s = sky[i[0]]
+                s = (1-spectro['skysub']) * sky[i[0]]
                 line = '%s\t\t%s\n'%(w, s)
                 ff.write(line)
 

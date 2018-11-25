@@ -74,7 +74,6 @@ class Main:
         self.sky_dir = os.path.join(conf.General['PDir'], 'sky')
 
     def main(self, z, StN, mag, wave_rf, template, parameters, param_names, COSMOS):
-
         '''
         This method is the main engin of the simulation
         '''
@@ -111,33 +110,36 @@ class Main:
                 Name_sky = '%s_comb_sky_N%s'%(self.conf.General['PName'], N) 
                 Name_sky_file = '%s_OHsky_N%s_'%(self.conf.General['PName'], N)
 
-            ####update library with emline and 
-            ##1 Emission line
+            ##1 -- get Dust configuration
+            DUST_dict = modif_LIB.DUSTlib().Dust_for_fit(self.conf.Template['DustModel'], wave_rf, \
+                    self.conf.Template['DustUse_stel'], self.conf.Template['Av_sList'],\
+                    self.conf.Template['Rv_sList'], self.conf.Template['DustUse_neb'],\
+                    self.conf.Template['Av_nList'], self.conf.Template['Rv_nList'])
+#           wave_rf, Dusted_template, Dusted_Parameters, \
+#           Dust_param_names = modif_LIB.DUSTlib().Make_dusted_library(Templates_emLine, \
+#           DUST_dict, parameters, param_names, wave_rf)
+
+            ##2 apply dust and create Emission line at the same time (allows different exintction
+            #for lines/nebular continuum and stellar continuum)
             ####check for Lyman alpha
+            MTU.Info('Addition of Emission line and dust', 'No')
+            ###check Lya fraction
             frac = self.conf.Template['Lyafrac']
             frac = numpy.random.choice([True, False], size=1, p=[frac, 1-frac])[0]
             if not frac:
                 toskip = ['H_Lya']
             else:
                 toskip = []
-
-            MTU.Info('Addition of Emission line', 'Yes')
-            Templates_emLine = modif_LIB.Emlineslib().main(template, wave_rf, parameters, \
-                    param_names, self.conf, toskip)
-
-            ##2 Dust
-            DUST_dict = modif_LIB.DUSTlib().Dust_for_fit(self.conf.Template['DustUse'], wave_rf,\
-                self.conf.Template['EBVsList'])
-            Dusted_template, Dusted_Parameters, \
-                Dust_param_names = modif_LIB.DUSTlib().Make_dusted_library(Templates_emLine, \
-                DUST_dict, parameters, param_names, wave_rf)
+            Dust_emLine_template, wave_rf, Dusted_Parameters, Dust_param_names\
+                    = modif_LIB.Emlineslib().main(template, wave_rf, parameters, \
+                    param_names, self.conf, DUST_dict, toskip)
 
             #### b - we had the IGM if needed
             ### We check if we will use some IGM and if Yes, we prepare it
             IGM_dict = modif_LIB.IGMlib().IGM_for_fit(self.conf.Template['IGMUse'],\
                     z, wave_rf, self.conf.Template['IGMtype'])
             Templates_IGM, Parameter_IGM, IGM_param_names, \
-                    appliedIGM = modif_LIB.IGMlib().Make_IGM_library(wave_rf, Dusted_template, \
+                    appliedIGM = modif_LIB.IGMlib().Make_IGM_library(wave_rf, Dust_emLine_template, \
                                  Dusted_Parameters, Dust_param_names, z, IGM_dict)
 
             MTU.Info('After IGM, we have %s Template in the library'%len(Templates_IGM), 'No')
