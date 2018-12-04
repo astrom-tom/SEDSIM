@@ -24,13 +24,15 @@ import numpy
 from . import messages as MTU
 
 
-def required_atmosphere(conf):
+def required_atmosphere(conf, DataT):
     '''
     This function looks into the data configuration and defines if atmospherical are required
     Parameters:
     -----------
     conf
             obj, configuration from user conf file
+    DataT
+            str, data type to be simulated
 
     Returns:
     --------
@@ -39,19 +41,21 @@ def required_atmosphere(conf):
     '''
 
     AMrange = []
-    for i in conf.PHOT['Band_list']:
-        ##look at all the bands and get the airmass range
-        am = conf.PHOT['Band_list'][i][-2]
-        ##if we do not have it in the AMrange list we add it
-        if am not in AMrange:
-            AMrange.append(am)
+    if DataT in ['Combined', 'Photo']:
+        for i in conf.PHOT['Band_list']:
+            ##look at all the bands and get the airmass range
+            am = conf.PHOT['Band_list'][i][-2]
+            ##if we do not have it in the AMrange list we add it
+            if am not in AMrange:
+                AMrange.append(am)
 
-    for i in conf.SPEC['types']:
-        ###look at all spectra and get airmass range
-        am = conf.SPEC['types'][i]['Atm']
-        ##if we do not have it in the AMrange list we add it
-        if am not in AMrange:
-            AMrange.append(am)
+    if DataT in ['Combined', 'Spectro']:
+        for i in conf.SPEC['types']:
+            ###look at all spectra and get airmass range
+            am = conf.SPEC['types'][i]['Atm']
+            ##if we do not have it in the AMrange list we add it
+            if am not in AMrange:
+                AMrange.append(am)
 
     return AMrange
 
@@ -121,6 +125,7 @@ class sky(object):
                         'skylines_em.pickle'), 'rb')) 
                 ##get right index
                 indexOH = numpy.where(numpy.array(allOH['AM']) == AMsim)[0]
+
                 ##get right curve
                 self.sky[i]['OH'] = [allOH['wave'], \
                         self.conf.General['sizegal'] * allOH['array'][indexOH][0]]

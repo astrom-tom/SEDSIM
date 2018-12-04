@@ -69,11 +69,15 @@ class Main:
         self.final_param_file = conf.General['PDir'] + '/' +\
                 '%s_final_param_file.txt'%conf.General['PName']
 
+        self.sky_file = conf.General['PDir'] + '/' +\
+                '%s_sky_catalog.txt'%conf.General['PName']
+
         self.original_template_dir = os.path.join(conf.General['PDir'], 'original_template')
 
         self.sky_dir = os.path.join(conf.General['PDir'], 'sky')
 
-    def main(self, z, StN, mag, wave_rf, template, parameters, param_names, COSMOS):
+    def main(self, z, StN, mag, wave_rf, template, parameters, param_names, COSMOS, Ntot):
+
         '''
         This method is the main engin of the simulation
         '''
@@ -93,7 +97,7 @@ class Main:
 
             ###message to display
 
-            MTU.Info('Start simulation #%s'%N, 'Yes')
+            MTU.Info('Start simulation #%s/%s'%(N, Ntot), 'Yes')
             MTU.Info('z=%s, Normmag=%s'%(z, NormMag), 'No')
             ### a - create simulation names and check presence of files
   
@@ -110,39 +114,38 @@ class Main:
                 Name_sky = '%s_comb_sky_N%s'%(self.conf.General['PName'], N) 
                 Name_sky_file = '%s_OHsky_N%s_'%(self.conf.General['PName'], N)
 
-            ##1 -- get Dust configuration
-            DUST_dict = modif_LIB.DUSTlib().Dust_for_fit(self.conf.Template['DustModel'], wave_rf, \
-                    self.conf.Template['DustUse_stel'], self.conf.Template['Av_sList'],\
-                    self.conf.Template['Rv_sList'], self.conf.Template['DustUse_neb'],\
-                    self.conf.Template['Av_nList'], self.conf.Template['Rv_nList'])
-#           wave_rf, Dusted_template, Dusted_Parameters, \
-#           Dust_param_names = modif_LIB.DUSTlib().Make_dusted_library(Templates_emLine, \
-#           DUST_dict, parameters, param_names, wave_rf)
-
-            ##2 apply dust and create Emission line at the same time (allows different exintction
-            #for lines/nebular continuum and stellar continuum)
+            ####update library with emline and 
+            ##1 Emission line
             ####check for Lyman alpha
-            MTU.Info('Addition of Emission line and dust', 'No')
-            ###check Lya fraction
             frac = self.conf.Template['Lyafrac']
             frac = numpy.random.choice([True, False], size=1, p=[frac, 1-frac])[0]
             if not frac:
                 toskip = ['H_Lya']
             else:
                 toskip = []
-            Dust_emLine_template, wave_rf, Dusted_Parameters, Dust_param_names\
-                    = modif_LIB.Emlineslib().main(template, wave_rf, parameters, \
-                    param_names, self.conf, DUST_dict, toskip)
+
+            MTU.Info('Addition of Emission line', 'Yes')
+            Templates_emLine = modif_LIB.Emlineslib().main(template, wave_rf, parameters, \
+                    param_names, self.conf, toskip)
+
+            ##2 Dust
+            DUST_dict = modif_LIB.DUSTlib().Dust_for_fit(self.conf.Template['DustModel'], wave_rf,\
+                self.conf.Template['Av_sList'], self.conf.Template['Rv_sList'])
+            Dusted_template, Dusted_Parameters, \
+                Dust_param_names = modif_LIB.DUSTlib().Make_dusted_library(Templates_emLine, \
+                DUST_dict, parameters, param_names, wave_rf)
+
 
             #### b - we had the IGM if needed
             ### We check if we will use some IGM and if Yes, we prepare it
             IGM_dict = modif_LIB.IGMlib().IGM_for_fit(self.conf.Template['IGMUse'],\
                     z, wave_rf, self.conf.Template['IGMtype'])
             Templates_IGM, Parameter_IGM, IGM_param_names, \
-                    appliedIGM = modif_LIB.IGMlib().Make_IGM_library(wave_rf, Dust_emLine_template, \
+                    appliedIGM = modif_LIB.IGMlib().Make_IGM_library(wave_rf, Dusted_template, \
                                  Dusted_Parameters, Dust_param_names, z, IGM_dict)
 
-            MTU.Info('After IGM, we have %s Template in the library'%len(Templates_IGM), 'No')
+            if appliedIGM == 'no':
+                MTU.Info('After IGM, we have %s Template in the library'%len(Templates_IGM), 'No')
 
             #### c - we redshift the library
             MTU.Info('Apply cosmology to the library', 'No')
@@ -167,9 +170,16 @@ class Main:
 
             simFlux = Templates_at_z
 
-            ###adjust parameter list. In case no IGM we create IGM parameters anyway and
+            ###adjust parameter list. In case no IGM/DUST we create IGM/Dust parameters anyway and
             ###put them at -99.9
             simPara = list(Cosmo_Parameters[Nrandom])
+
+            if DUST_dict['Use'] == 'No':
+                simPara.append(-99.9)
+                simPara.append(-99.9)
+                IGM_param_names.append('Av')
+                IGM_param_names.append('Rv')
+
             if appliedIGM == 'no':
                 simPara.append(-99.9)
                 simPara.append(-99.9)
@@ -181,7 +191,7 @@ class Main:
             ##simPara -> MET, TAU, age, M*, SFR, EBV, Lya, Lyb, Lyg
 
             ### g - get atsmophere
-            AMrange = atm.required_atmosphere(self.conf)
+            AMrange = atm.required_atmosphere(self.conf, self.DataT)
             sim_sky = atm.sky(self.conf)
             sim_sky.get_sky(AMrange)
 
@@ -190,7 +200,7 @@ class Main:
             Photo = Photometry.Photometry(self.filter_file)
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Normfluxsim, Normalisation = Photo.Normalise_template(Wave_at_z, simFlux, \
-                        self.conf.PHOT['Norm_band'], NormMag, sim_sky)
+                        self.conf.PHOT['Norm_band'], NormMag, sim_sky, self.conf)
 
             if self.DataT == 'Spectro':
                 blist = list(self.conf.SPEC['Norm_band'].keys())
@@ -198,27 +208,30 @@ class Main:
                         simFlux, self.conf.SPEC['Norm_band'][blist[0]], NormMag, sim_sky)
 
             ###add the normalisation to the mass and SFR
+                
             simPara[3] = numpy.log10(simPara[3]*Normalisation)
             simPara[4] = numpy.log10(simPara[4]*Normalisation)
+            #print(Normalisation, simPara[3], simPara[4])
 
             ### i - simulate
             spectro = Spectroscopy.Spectroscopy() 
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 Photo_sim = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
-                        self.conf.PHOT['Band_list'], self.conf.PHOT, sim_sky)
+                        self.conf.PHOT['Band_list'], self.conf.PHOT, sim_sky, self.conf)
  
                 MTU.Info('Photometry has been simulated', 'No')
                 ####chekc with plot
-                #plot().template_and_mags(Wave_at_z, Normfluxsim, Photo_sim, z)
+                #Check_plots.plot().template_and_mags(Wave_at_z, Normfluxsim, Photo_sim, z)
 
-            if self.DataT == 'Spectro':
+            if self.DataT == 'Spectro' or self.DataT == 'Combined':
                 spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, \
                         StN, z, i[0], sim_sky)
                 MTU.Info('Spectroscopy has been simulated', 'No')
                 Photo_sim_spec = Photo.simulate_photo(Wave_at_z, Normfluxsim, \
-                        self.conf.SPEC['Norm_band'], self.conf.SPEC, sim_sky)
+                        self.conf.SPEC['Norm_band'], self.conf.SPEC, sim_sky, self.conf)
                 #plot().spec_template_mag(Wave_at_z, Normfluxsim, spectro_sim, Photo_sim_spec, z)
 
+            '''
             if self.DataT == 'Combined':
                 spectro_sim = spectro.simu_spec_main(self.conf, Wave_at_z, Normfluxsim, StN, z, \
                         i[0], sim_sky)
@@ -228,7 +241,7 @@ class Main:
                         self.conf.SPEC['Norm_band'], self.conf.SPEC, sim_sky)
                 #Check_plots.plot().combined_template_mag(Wave_at_z, \
                         #Normfluxsim, spectro_sim, Photo_sim, z)
-
+            '''
             ### j - and write them down
             out = simu_output.Output()
 
@@ -263,6 +276,15 @@ class Main:
             if self.DataT == 'Photo' or self.DataT == 'Combined':
                 if self.conf.PHOT['savesky'] == 'yes':
                     out.create_sky(sim_sky, self.sky_dir, Name_sky_file, Photo_sim, self.conf.PHOT)
+
+            ### m - save the sky catalog
+            if self.DataT == 'Combined':
+                out.add_toskycat(sim_sky, self.sky_file, Name_Combined)
+            if self.DataT == 'Spectro':
+                out.add_toskycat(sim_sky, self.sky_file, Name_spectro)
+            if self.DataT == 'Photo':
+                out.add_toskycat(sim_sky, self.sky_file, Name_photo)
+ 
  
 
     def prepare_files(self):
@@ -287,11 +309,14 @@ class Main:
         if self.DataT == 'Combined':
             Out.create_final_comb_file(self.Combinedfinalfile, self.conf)
 
-        ###### e - create original template dire
+        ###### e - Sky file
+        Out.create_sky_cat(self.sky_file, self.conf)
+
+        ###### f - create original template dire
         if not os.path.isdir(self.original_template_dir):
             os.makedirs(self.original_template_dir)
 
-        ###### f - create sky directory
-        if self.conf.PHOT['savesky'] == 'yes':
+        ###### g - create sky directory
+        if self.DataT != 'Spectro' and self.conf.PHOT['savesky'] == 'yes':
             if not os.path.isdir(self.sky_dir):
                 os.makedirs(self.sky_dir)

@@ -75,28 +75,32 @@ class read_config:
         DataT['Photometry'] = config.get('Data_Type', 'Photometry')
         DataT['Spectro'] = config.get('Data_Type', 'Spectro')
         self.DataT = DataT
+        print(self.DataT)
 
-        ###Spectro information
-        SPEC = {}
-        SPEC['NSpec'] = config.get('Spectro', 'NSpec')
-        SPEC['Norm_band'] = config.get('Spectro', 'Norm_band')
-        SPEC['Noise_reg'] = config.get('Spectro', 'Noise_reg')
-        SPEC['Norm_distribution'] = config.get('Spectro', 'Norm_distribution')
-        SPEC['types'] = config.get('Spectro', 'types')
-        SPEC['flux_unit'] = config.get('Spectro', 'flux_unit')
-        SPEC['wave_unit'] = config.get('Spectro', 'wave_unit')
-        self.SPEC = SPEC
+
+        if DataT['Spectro'].lower() == 'yes':
+            ###Spectro information
+            SPEC = {}
+            SPEC['NSpec'] = config.get('Spectro', 'NSpec')
+            SPEC['Norm_band'] = config.get('Spectro', 'Norm_band')
+            SPEC['Noise_reg'] = config.get('Spectro', 'Noise_reg')
+            SPEC['Norm_distribution'] = config.get('Spectro', 'Norm_distribution')
+            SPEC['types'] = config.get('Spectro', 'types')
+            SPEC['flux_unit'] = config.get('Spectro', 'flux_unit')
+            SPEC['wave_unit'] = config.get('Spectro', 'wave_unit')
+            self.SPEC = SPEC
 
         ###Photo information
         PHOT = {}
-        PHOT['Norm_band'] = config.get('Photo', 'Norm_band')
-        PHOT['Norm_distribution'] = config.get('Photo', 'Norm_distribution')
-        PHOT['Nband'] = config.get('Photo', 'Nband')
-        PHOT['Band_list'] = config.get('Photo', 'Band_list')
-        PHOT['flux_unit'] = config.get('Photo', 'flux_unit')
-        PHOT['wave_unit'] = config.get('Photo', 'wave_unit')
-        PHOT['savesky'] = config.get('Photo', 'savesky').lower()
         self.PHOT = PHOT
+        if DataT['Photometry'].lower() == 'yes':
+            PHOT['Norm_band'] = config.get('Photo', 'Norm_band')
+            PHOT['Norm_distribution'] = config.get('Photo', 'Norm_distribution')
+            PHOT['Nband'] = config.get('Photo', 'Nband')
+            PHOT['Band_list'] = config.get('Photo', 'Band_list')
+            PHOT['flux_unit'] = config.get('Photo', 'flux_unit')
+            PHOT['wave_unit'] = config.get('Photo', 'wave_unit')
+            PHOT['savesky'] = config.get('Photo', 'savesky').lower()
 
         ###Cosmology
         COSMO = {}
@@ -112,9 +116,10 @@ class read_config:
         Template['DustUse_stel'] = config.get('Templates', 'DustUse_ste')
         Template['Rv_sList'] = config.get('Templates', 'RvsList')
         Template['Av_sList'] = config.get('Templates', 'AvsList')
-        Template['DustUse_neb'] = config.get('Templates', 'DustUse_neb')
-        Template['Rv_nList'] = config.get('Templates', 'RvnList')
-        Template['Av_nList'] = config.get('Templates', 'AvnList')
+        #Template['DustUse_neb'] = config.get('Templates', 'DustUse_neb')
+        #Template['Rv_nList'] = config.get('Templates', 'RvnList')
+        #Template['Av_nList'] = config.get('Templates', 'AvnList')
+        #Template['forcehigher_neb'] = config.get('Templates', 'force_ebvneb_higher')
         Template['IGMtype'] = config.get('Templates', 'IGMType').lower()
         Template['IGMUse'] = config.get('Templates', 'IGMUse')
         Template['EMline'] = config.get('Templates', 'EMline').lower()
@@ -292,7 +297,7 @@ class check_prepare:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
         if self.testtype == 's':
-            listfile = ['dist_mag.txt', 'dist_zspec.txt', 'dist_SNR1.txt']
+            listfile = ['all_mag_lowz.txt', 'all_z_lowz.txt', 'all_snr_lowz.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
@@ -385,7 +390,7 @@ class check_prepare:
 
         ##check if the normalisation filter is in the filter file
         if PHOT['Norm_band']:
-            if PHOT['Norm_band'].strip("()").split(',')[0] in list_filt:
+            if PHOT['Norm_band'].strip("()").split(',')[0]  in list_filt:
                 MTU.Info('%s for normalisation found in filter file'%PHOT['Norm_band'].strip("()").split(',')[0],'No') 
             else:
                 MTU.Error('%s for normalisation not found in filter file ... exit'%PHOT['Norm_band'], 'Yes')
@@ -446,23 +451,18 @@ class check_prepare:
 
         ###put the normalisation band in right format
         splitband = PHOT['Norm_band'].strip("()").split(',')
-        if len(splitband) != 6:
+        if len(splitband) != 4:
             MTU.Error('Normalisation band for configuration must be of the form '+ \
-                        '(name,offset,mean_err,sigma_err,Atmosphere,skysub) ... exit', 'Yes')
+                        '(name,offset,mean_err,sigma_err) ... exit', 'Yes')
             sys.exit()
         else:
-            if splitband[-2] not in ['none', 'low', 'int', 'high']:
-                MTU.Error('Wrong Atmospheric parameter. Must be none or low or int or high ... exit', \
-                        'Yes')
-                sys.exit()
-            else:
-                PHOT['Norm_band'] = [splitband[0], float(splitband[1]), \
-                    float(splitband[2]), float(splitband[3]), splitband[-2], \
-                    float(splitband[-1])/100]
-
-
-
-           
+            #if splitband[-2] not in ['none', 'low', 'int', 'high']:
+            #    MTU.Error('Wrong Atmospheric parameter. Must be none or low or int or high ... exit', \
+            #            'Yes')
+            #    sys.exit()
+            #else:
+            PHOT['Norm_band'] = [splitband[0], float(splitband[1]), \
+                float(splitband[2]), float(splitband[3]), 'none', 1.00]
 
         if PHOT['flux_unit'] == 'Jy':
             MTU.Info('Flux unit will be Jansky', 'No')
@@ -515,9 +515,9 @@ class check_prepare:
             bands_to_simulate = {}
             for i in specs_norm:
                 indiv_band= i.strip("()").split(',')
-                if len(indiv_band) !=6:
+                if len(indiv_band) !=4:
                     MTU.Error('Normalisation band configuration must be of the form'+ \
-                            '(name,offset,mean_err,sigma_err,atm,skysub) ... exit', 'Yes')
+                            '(name,offset,mean_err,sigma_err) ... exit', 'Yes')
                     sys.exit()
 
                 name = indiv_band[0]
@@ -527,8 +527,7 @@ class check_prepare:
                     MTU.Error('%s not found in filter file ... exit'%name, 'Yes')
                     sys.exit()
                 bands_to_simulate[name] = [indiv_band[0], float(indiv_band[1]),\
-                        float(indiv_band[2]), float(indiv_band[3]), indiv_band[-2], \
-                        float(indiv_band[-1])/100]
+                        float(indiv_band[2]), float(indiv_band[3]), 'none', 1.0]
 
             for i in bands_to_simulate:
                 if i in list_filt:
@@ -627,7 +626,6 @@ class check_prepare:
             spectra_to_simulate['spec_%s'%n]['res'] = indiv_spec[3]
             spectra_to_simulate['spec_%s'%n]['Atm'] = indiv_spec[-2]
             spectra_to_simulate['spec_%s'%n]['skysub'] = float(indiv_spec[-1])/100
-            print(spectra_to_simulate['spec_%s'%n])
 
             if gen_array == 'no':
                 spectra_to_simulate['spec_%s'%n]['Stnfile'] = indiv_spec[4]
@@ -705,6 +703,7 @@ class check_prepare:
             else:
                 MTU.Info('No DUST extinction will be used', 'No')
 
+            '''
             ###Nebular Dust Use
             if Temp['DustUse_neb'].lower() == 'yes':
 
@@ -736,6 +735,9 @@ class check_prepare:
             else:
                 MTU.Info('Nebular extinction will be equal to stellar extinction', 'No')
 
+        if Temp['forcehigher_neb'].lower() == 'yes':
+            Temp['forcehigher_neb'] = True
+        '''
         ##IGM Use
         if Temp['IGMtype']:
             fullpathigm = os.path.join(self.inputdir, 'IGM', Temp['IGMUse'])

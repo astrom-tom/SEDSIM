@@ -48,7 +48,7 @@ class Output:
             os.remove(param_file)
 
         MTU.Info('Output Parameter file does not exist, we create it', 'No')
-        Header = '#ID_sim\tredshift\tMag\tMet\tTAU\tAGE\tMass\tSFR\tAvs\tRvs\tAvn\tRvn\tTrLya\tTrLyb\tTrLyg'
+        Header = '#ID_sim\tredshift\tMag\tMet\tTAU\tAGE\tMass\tSFR\tAvs\tRvs\tTrLya\tTrLyb\tTrLyg'
         par_file = open(param_file, 'w')
         par_file.write(Header)
         par_file.close()
@@ -68,19 +68,17 @@ class Output:
         line = '\n%s\t%s'%(Name, redshift)
         MET = P[0]
         TAU = P[1]
-        Age = P[2]
+        Age = numpy.log10(P[2])
         Mst = P[3]
         SFR = P[4]
         Avs = P[5]
         Rvs = P[6]
-        Avn = P[7]
-        Rvn = P[8]
-        TrLya = P[9]
-        TrLyb = P[10]
-        TrLyg = P[11]
+        TrLya = P[7]
+        TrLyb = P[8]
+        TrLyg = P[9]
 
-        line += '\t%1.4f\t%1.4f\t%1.4f\t%1.4e\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f'\
-                %(Normmag, MET, TAU, Age, Mst, SFR, Avs, Rvs, Avn, Rvn, TrLya, TrLyb, TrLyg)
+        line += '\t%1.4f\t%1.4e\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f\t%1.4f'\
+                %(Normmag, MET, TAU, Age, Mst, SFR, Avs, Rvs, TrLya, TrLyb, TrLyg)
 
         with open(paramfile, 'a') as out:
             out.write(line)
@@ -272,7 +270,7 @@ class Output:
         name = name + '_phot.txt'
         fullname = os.path.join(folder, name)
         ###header
-        h = '#wavelength\twavelength_err\tmag_template\tmag_template_flux\tmagfinal\terrormag\tfluxfinal\terrorflux\n'
+        h = '#wavelength\twavelength_err\tmag_tempsky\tflux_tempsky\tmag_final\terror_mag\tflux_final\terror_flux\tmag_sky\tFlux_sky\n'
         ##open and write to file
         with open(fullname, 'w') as ff:
             ###first the header
@@ -280,9 +278,10 @@ class Output:
             #then the photometry
             for i in photosim:
                 band = photosim[i]
-                line = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(band['Leff'], band['wave_err'], \
-                        band['Measori'], band['Fluxori'], band['Meas'], band['Err'], \
-                        band['Flux'], band['FluxErr'])
+                line = '%1.4f\t%1.4f\t%1.4f\t%1.4e\t%1.4f\t%1.4f\t%1.4e\t%1.4e\t%1.4f\t%1.4e\n'%(\
+                        band['Leff'], band['wave_err'], band['Measori'], band['Fluxori'], \
+                        band['Meas'], band['Err'], band['Flux'], band['FluxErr'], \
+                        band['Mag_sky'], band['Flux_sky'])
                 
 
                 ff.write(line)
@@ -359,6 +358,56 @@ class Output:
                 FF.write(line)
 
 ##############SKY########################
+    def create_sky_cat(self, sky_file, conf):
+        '''
+        This method checks if the sky catalog exists. If it does
+        we remove it. If it does not we create it
+        Parameter
+        ---------
+        Sky_file    str, path/and/name to the sky catalog
+        conf        str, configuration dict from user
+
+        Return
+        ------
+        #nothing we just create a catalog
+        '''
+
+        ###first we check presence
+        if os.path.isfile(sky_file):
+            MTU.Info('Output Sky catalog file already exists, we remove it', 'No')
+            os.remove(sky_file)
+
+        else:
+            ##if not there we create it
+            MTU.Info('Output Sky catalog file does not exist, we create it', 'No')
+
+        Header = '#This catalog display the type of sky that was used\n'+\
+                '#giving the range that was considered and\n'+\
+                '#the corresponding AM value\n'
+        sky = open(sky_file, 'w')
+        sky.write(Header)
+        sky.close()
+
+    def add_toskycat(self, sky, File, Namesim):
+        '''
+        Add the line to the sky catalog
+        Parameters:
+        -----------
+        sky     obj, sky configuration
+        File    str, file to which we are adding the line
+        Namesim str, Name of the simulated galaxy
+        '''
+        ##for each range we take the AM
+        line = ''
+        line += '%s\t'%Namesim[:-4]
+        for i in sky.sky:
+            line += '%s\t%s\t'%(i, sky.sky[i]['AM'])
+        line += '\n' 
+
+        ##and write the line
+        with open(File, 'a') as out:
+            out.write(line)
+
     def create_sky(self, sky, skydir, Name_sky_file, Photo_sim, conf):
         '''
         This method writes down the sky spectra used for the simulation

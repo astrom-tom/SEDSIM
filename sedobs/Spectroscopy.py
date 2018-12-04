@@ -100,6 +100,9 @@ class Spectroscopy:
 
         return spec_final
 
+
+
+
     def simu_one_single_spec(self, spec_conf, wave, flux, redshift, conf, sky):
         '''
         This function simulate the spectrum,

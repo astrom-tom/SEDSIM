@@ -23,9 +23,6 @@ plt.rcParams["font.family"] = "serif"
 #from SIM_photo.Photometry import Photometry
 #----------------------------------------------------------
 
-
-
-
 class plot:
     '''
     plot maker
@@ -136,12 +133,13 @@ class plot:
         aa = fig.add_subplot(111)
         ##plot the template and magnitudes
         aa.plot(wave, template, label='Template', color='k')
-        print(photosim)
+        #print(photosim)
         magx = []
         magy = []
         for i in photosim:
             magy.append(photosim[i]['Flux'])
             magx.append(photosim[i]['Leff'])
+        print(magy, magx)
         aa.scatter(magx, magy, label='Magnitudes', color='r')
         ##properties of the subplot 
         aa.legend(fontsize=5)

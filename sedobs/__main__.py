@@ -98,28 +98,34 @@ def main():
 
     ###if test:
     if args.test == True:
-        MTU.Info('\t Test run :', 'Yes')
-        testok = 'no'
-        while testok in ['no', 'wrong']:
-            if testok == 'no':
-                test = input('Choose your test run (first letter needed)\n' + \
-                        '[P]hotometric with single distribution option\n' + \
-                        '[S]pectroscopic with single distribution option\n' + \
-                        '[M]ultispectro with single distribution option\n' + \
-                        '[F]ull with single distribution option\n' + \
-                        '[PG] Photometric with global configuration\n' + \
-                        '[SG] Spectroscopic with global configuration\n' + \
-                        '[MG] Multispectro with global configuration\n' + \
-                        '[FG] Full with global configuration:\n' + \
-                        'p, s, m, f, pg, sg, mg, fg:   ')
-            else:
-                test = input('Name of the test not entered correctly, retry:   ')
+        try:
+            MTU.Info('\t Test run :', 'Yes')
+            testok = 'no'
+            while testok in ['no', 'wrong']:
+                if testok == 'no':
+                    test = input('Choose your test run (first letter needed)\n' + \
+                            '[P]hotometric with single distribution option\n' + \
+                            '[S]pectroscopic with single distribution option\n' + \
+                            '[M]ultispectro with single distribution option\n' + \
+                            '[F]ull with single distribution option\n' + \
+                            '[PG] Photometric with global configuration\n' + \
+                            '[SG] Spectroscopic with global configuration\n' + \
+                            '[MG] Multispectro with global configuration\n' + \
+                            '[FG] Full with global configuration:\n' + \
+                            'p, s, m, f, pg, sg, mg, fg:   ')
+                else:
+                    test = input('Name of the test not entered correctly, retry:   ')
 
-            if test.lower() not in ['p', 'pg', 's', 'sg', 'm', 'mg', 'f', 'fg']:
-                testok = 'wrong'
-            else:
-                testok = 'ok'
-                MTU.Info('You choosed to run the %s run test...starting...'%test, 'No')
+                if test.lower() not in ['p', 'pg', 's', 'sg', 'm', 'mg', 'f', 'fg']:
+                    testok = 'wrong'
+                else:
+                    testok = 'ok'
+                    MTU.Info('You choosed to run the %s run test...starting...'%test, 'No')
+
+        except KeyboardInterrupt:
+            MTU.Info('You quitted the test choice....exit sedobs...', 'Yes')
+            sys.exit()
+
 
         if test.lower() == 'p':
             args.project = os.path.join(hide_dir, 'SEDobs_Test_run_photo.conf') 
@@ -144,8 +150,6 @@ def main():
 
         if test.lower() == 'fg':
             args.project = os.path.join(hide_dir, 'SEDobs_Test_run_full_FA.conf')  
-
-
 
     else:
         ##no test
@@ -221,7 +225,7 @@ def main():
             #start simulating
             SIM = simu.Main(final.config)
             try:
-                SIM.main(redshift, StN, mag, wave, template, parameters, param_names, COSMOS)
+                SIM.main(redshift, StN, mag, wave, template, parameters, param_names, COSMOS, len(mag))
             except KeyboardInterrupt:
                 MTU.Info('You quitted the simulation....exit sedobs...', 'Yes')
                 sys.exit()
