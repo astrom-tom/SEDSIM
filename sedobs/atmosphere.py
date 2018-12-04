@@ -22,6 +22,7 @@ import numpy
 
 ##### local
 from . import messages as MTU
+from . import Spectroscopy
 
 
 def required_atmosphere(conf, DataT):
@@ -101,6 +102,11 @@ class sky(object):
             dict, for each airmass range we select randomly the airmass and assign OHspectrum
                     and absorption curve to it
         '''
+
+        ###prepare for resolution change
+        Spectro = Spectroscopy.Spectroscopy()
+        Rsky = [[11500, 10., 100000.]]
+
         self.sky = {}
         for i in Amrange:
             self.sky[i] = {}
@@ -126,6 +132,12 @@ class sky(object):
                 ##get right index
                 indexOH = numpy.where(numpy.array(allOH['AM']) == AMsim)[0]
 
+                ###change resolution
+                resolution = Spectro.model_res(self.conf.Template['BaseSSP'])[0][0]
+                spec_conf = {'l0':min(allOH['wave']), 'lf':max(allOH['wave']), 'res':resolution}
+                smoothed_sky = numpy.array(Spectro.change_resolution(allOH['array'][indexOH[0]], \
+                        allOH['wave'], 0, Rsky, spec_conf))
+
                 ##get right curve
                 self.sky[i]['OH'] = [allOH['wave'], \
-                        self.conf.General['sizegal'] * allOH['array'][indexOH][0]]
+                        self.conf.General['sizegal'] * smoothed_sky]

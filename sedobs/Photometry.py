@@ -196,13 +196,7 @@ class Photometry:
             indexs = numpy.where((OH[0] >= wave[0]) & (OH[0] <= wave[-1]))[0]
             OHw = OH[0][indexs]
             OHext = OH[1][indexs] 
-            ##get resolution of the templates
-            resolution = Spectro.model_res(conf.Template['BaseSSP'])[0][0]
-            spec_conf = {'l0':min(OHw), 'lf':max(OHw), 'res':resolution}
-            ##adjust the OH spectrum resolution to the one of the template
-            smoothed_sky = numpy.array(Spectro.change_resolution(OHext, OHw, 0, Rsky, spec_conf))
-            ###get OHtemp
-            OHtemp = numpy.interp(wave, OHw, smoothed_sky)
+            OHtemp = numpy.interp(wave, OHw, OHext)
 
             ##applu everything
             Sky_to_add = (1-skysub) * OHtemp
@@ -222,7 +216,7 @@ class Photometry:
             indexs = numpy.where((OH[0] >= Lambda[0]) & (OH[0] <= Lambda[-1]))[0]
             OHmeasw = OH[0][indexs]
             SkyfreqTemp, SkyTemplate_hz = self.convert_wave_to_freq(OH[0][indexs], \
-                    (1-skysub)*smoothed_sky[indexs])
+                    (1-skysub)*OHext[indexs])
 
 
         ##interpolate the filter throughput to the wavelength grid
