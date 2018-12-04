@@ -278,7 +278,7 @@ class Output:
             #then the photometry
             for i in photosim:
                 band = photosim[i]
-                line = '%1.4f\t%1.4f\t%1.4f\t%1.4e\t%1.4f\t%1.4f\t%1.4e\t%1.4e\t%1.4f\t%1.4e\n'%(\
+                line = '%6.4f\t%6.4f\t%1.4f\t%.4E\t%1.4f\t%1.4f\t%.4E\t%.4E\t%1.4f\t%.4E\n'%(\
                         band['Leff'], band['wave_err'], band['Measori'], band['Fluxori'], \
                         band['Meas'], band['Err'], band['Flux'], band['FluxErr'], \
                         band['Mag_sky'], band['Flux_sky'])
