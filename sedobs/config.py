@@ -75,8 +75,6 @@ class read_config:
         DataT['Photometry'] = config.get('Data_Type', 'Photometry')
         DataT['Spectro'] = config.get('Data_Type', 'Spectro')
         self.DataT = DataT
-        print(self.DataT)
-
 
         if DataT['Spectro'].lower() == 'yes':
             ###Spectro information
@@ -113,7 +111,6 @@ class read_config:
         Template = {}
         Template['BaseSSP'] = config.get('Templates', 'BaseSSP')
         Template['DustModel'] = config.get('Templates', 'DustModel')
-        Template['DustUse_stel'] = config.get('Templates', 'DustUse_ste')
         Template['Rv_sList'] = config.get('Templates', 'RvsList')
         Template['Av_sList'] = config.get('Templates', 'AvsList')
         #Template['DustUse_neb'] = config.get('Templates', 'DustUse_neb')
@@ -297,7 +294,7 @@ class check_prepare:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
         if self.testtype == 's':
-            listfile = ['all_mag_lowz.txt', 'all_z_lowz.txt', 'all_snr_lowz.txt']
+            listfile = ['dist_mag.txt', 'dist_z.txt', 'all_snr_lowz.txt']
             for i in listfile:
                 copyfile(os.path.join(self.hide_dir, i), os.path.join(directory, i)) 
 
@@ -451,9 +448,9 @@ class check_prepare:
 
         ###put the normalisation band in right format
         splitband = PHOT['Norm_band'].strip("()").split(',')
-        if len(splitband) != 4:
+        if len(splitband) != 3:
             MTU.Error('Normalisation band for configuration must be of the form '+ \
-                        '(name,offset,mean_err,sigma_err) ... exit', 'Yes')
+                        '(name,atm,skysub) ... exit', 'Yes')
             sys.exit()
         else:
             #if splitband[-2] not in ['none', 'low', 'int', 'high']:
@@ -461,8 +458,7 @@ class check_prepare:
             #            'Yes')
             #    sys.exit()
             #else:
-            PHOT['Norm_band'] = [splitband[0], float(splitband[1]), \
-                float(splitband[2]), float(splitband[3]), 'none', 1.00]
+            PHOT['Norm_band'] = [splitband[0], splitband[1], float(splitband[2])/100]
 
         if PHOT['flux_unit'] == 'Jy':
             MTU.Info('Flux unit will be Jansky', 'No')
@@ -515,9 +511,9 @@ class check_prepare:
             bands_to_simulate = {}
             for i in specs_norm:
                 indiv_band= i.strip("()").split(',')
-                if len(indiv_band) !=4:
+                if len(indiv_band) !=3:
                     MTU.Error('Normalisation band configuration must be of the form'+ \
-                            '(name,offset,mean_err,sigma_err) ... exit', 'Yes')
+                            '(name,atm,skysub) ... exit', 'Yes')
                     sys.exit()
 
                 name = indiv_band[0]
@@ -526,8 +522,7 @@ class check_prepare:
                 else:
                     MTU.Error('%s not found in filter file ... exit'%name, 'Yes')
                     sys.exit()
-                bands_to_simulate[name] = [indiv_band[0], float(indiv_band[1]),\
-                        float(indiv_band[2]), float(indiv_band[3]), 'none', 1.0]
+                bands_to_simulate[name] = [indiv_band[0], indiv_band[1], float(indiv_band[2])/100]
 
             for i in bands_to_simulate:
                 if i in list_filt:
@@ -675,33 +670,31 @@ class check_prepare:
  
             MTU.Info('Dust extinction used: %s'%Temp['DustModel'], 'No')
 
-            if Temp['DustUse_stel'].lower() == 'yes':
-                ###stellar extinction
-                if Temp['Av_sList']:
-                    MTU.Info('%s Av stellar ; list: %s'%(len(Temp['Av_sList'].split(';')),\
-                            Temp['Av_sList'].split(';')), 'No')
-                    Temp['Av_sList'] = Temp['Av_sList'].split(';')
-                    for i in Temp['Av_sList']:
-                        if float(i)<0:
-                            raise Exception('Rv for nebular extinction should be positive')
-     
-                else:
-                    MTU.Error('no stellar Av list given ... exit', 'No')
-                    sys.exit()
-
-                if Temp['Rv_sList']:
-                    MTU.Info('%s Rv stellar ; list: %s'%(len(Temp['Rv_sList'].split(';')),\
-                            Temp['Rv_sList'].split(';')), 'No')
-                    Temp['Rv_sList'] = Temp['Rv_sList'].split(';')
-                    for i in Temp['Rv_sList']:
-                        if float(i)<0:
-                            raise Exception('Rv for nebular extinction should be positive')
-     
-                else:
-                    MTU.Info('no stellar Rv list given ... '+\
-                            'will use the default value for the selected law', 'No')
+            if Temp['Av_sList']:
+                MTU.Info('%s Av stellar ; list: %s'%(len(Temp['Av_sList'].split(';')),\
+                        Temp['Av_sList'].split(';')), 'No')
+                Temp['Av_sList'] = Temp['Av_sList'].split(';')
+                for i in Temp['Av_sList']:
+                    if float(i)<0:
+                        raise Exception('Rv for nebular extinction should be positive')
+ 
             else:
-                MTU.Info('No DUST extinction will be used', 'No')
+                MTU.Error('no stellar Av list given ... exit', 'No')
+                sys.exit()
+
+            if Temp['Rv_sList']:
+                MTU.Info('%s Rv stellar ; list: %s'%(len(Temp['Rv_sList'].split(';')),\
+                        Temp['Rv_sList'].split(';')), 'No')
+                Temp['Rv_sList'] = Temp['Rv_sList'].split(';')
+                for i in Temp['Rv_sList']:
+                    if float(i)<0:
+                        raise Exception('Rv for nebular extinction should be positive')
+ 
+            else:
+                MTU.Info('no stellar Rv list given ... '+\
+                        'will use the default value for the selected law', 'No')
+        else:
+            MTU.Info('No DUST extinction will be used', 'No')
 
             '''
             ###Nebular Dust Use

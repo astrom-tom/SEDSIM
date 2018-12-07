@@ -37,12 +37,12 @@ In order to make a simulation run with SEDobs, a configuration file must be fill
 
 	[General]
 	Project_name = 
-	Author = 
+	Author =
 	Project_Directory= 
 	full_array =  
 	z_distribution = 
 	Nobj =  
-	sizegal = 1
+	sizegal = 
 
 	[Data_Type]
 	Photometry = 
@@ -50,40 +50,41 @@ In order to make a simulation run with SEDobs, a configuration file must be fill
 
 	[Spectro]
 	NSpec = 
-	Norm_band =
-	Noise_reg = 
+	Norm_band = 
+	Noise_reg =  
 	Norm_distribution = 
 	types = 
 	flux_unit = 
-	wave_unit =
+	wave_unit = 
 
 	[Photo]
 	Norm_band = 
 	Norm_distribution = 
 	Nband = 
 	Band_list = 
-	flux_unit = 
-	wave_unit =
+	flux_unit = muJy
+	wave_unit = log_ang
 	savesky = No
 
 	[Cosmo]
 	Ho=70
-	Omega_m=0.27
-	Omega_L=0.73
-	Use_Cosmo=Yes
+	Omega_m = 
+	Omega_L = 
+	Use_Cosmo = 
 
 	[Templates]
 	BaseSSP = 
-	DustUse = 
-	EBVsList = 
+	DustModel = 
+	AvsList = 
+	RvsList = 
 	IGMUse = 
-	IGMtype =  
+	IGMtype = 
 	EMline= 
 	EBVnList =
 	Lyafrac = 
 	Age = 
 	TAU = 
-	MET = 
+	MET =  
 
 
 This configuration file is composed of 6 mandatory sections. If one is missing, SEDobs can not run. We detail them below.
@@ -150,7 +151,7 @@ Photo
 ^^^^^
 This is where you tell SEDOBS what photometric data to simulate:
 
-* **Norm_band**: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see :doc:`filters` page for all the filters available).
+* **Norm_band**: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see :doc:`filters` page for all the filters available), an atmosphere range and a sky subrtaction estimation (see below).
 * **Norm_distribution**: Only if you do not use the previous **full_array** option. This is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the same band you gave in the **Norm_band** entry.
 * **Nband**: The number of photometric band you want to be computed for a given simulation.
 * **Band_list**: This is where you give the photometric configuration for each band. For each of them you must give multiple information **(name,offset,mean,sigma,atm,skysub)**:
@@ -169,24 +170,26 @@ An example is given below, without full array:
 
 .. code-block:: shell
 
-    Norm_band = r-megacam
+    Norm_band = (r-megacam,low,98)
     Norm_distribution = magnorm.txt
     Nband = 10
-    Band_list = (u-megacam,0.0, 0.31, 0.38,int);(g-megacam,0.0,0.15,0.20,int);(r-megacam,0.0,0.19,0.09,int);(i-megacam, 0
-    .0, 0.23, 0.12,int);(z-megacam,0.0, 0.38, 0.19,int);(J-wircam, 0.0, 0.68, 0.45,low);(H-wircam, 0.0, 0.71,0.37,low);(K-wir
-    cam,0.0,0.55, 0.41,low);(IRAC1,0.0,0.08, 0.04,none);(IRAC2,0.0,0.09,0.06,none)
+    Band_list = (u-megacam,0.0,0.31,0.38,low,98);(g-megacam,0.0,0.15,0.20,low,98);(r-megacam,0.0,0.19,0.09,low,98);
+    (i-megacam, 0.0, 0.23, 0.12,low,98);(z-megacam,0.0, 0.38, 0.19,low,98);(J-wircam, 0.0, 0.68, 0.45,low,99.5);
+    (H-wircam,0.0,0.71,0.37,low,99.5);(K-wircam,0.0,0.55,0.41,low,99.5);(IRAC1,0.0,0.08,0.04,none,100);
+    (IRAC2,0.0,0.09,0.06,none,100)
+
 
 And with it
 
 .. code-block:: shell
 
-    Norm_band = r-megacam
+    Norm_band = (r-megacam,low,98)
     Norm_distribution = 
     Nband = 10
-    Band_list = (u-megacam,0.0, 0.31, 0.38,int);(g-megacam,0.0,0.15,0.20,int);(r-megacam,0.0,0.19,0.09,int);(i-megacam, 0
-    .0, 0.23, 0.12,int);(z-megacam,0.0, 0.38, 0.19,int);(J-wircam, 0.0, 0.68, 0.45,low);(H-wircam, 0.0, 0.71,0.37,low);(K-wir
-    cam,0.0,0.55,0.41,low);(IRAC1,0.0,0.08, 0.04,none);(IRAC2,0.0,0.09,0.06,none)
-
+    Band_list = (u-megacam,0.0,0.31,0.38,low,98);(g-megacam,0.0,0.15,0.20,low,98);(r-megacam,0.0,0.19,0.09,low,98);
+    (i-megacam, 0.0, 0.23, 0.12,low,98);(z-megacam,0.0, 0.38, 0.19,low,98);(J-wircam, 0.0, 0.68, 0.45,low,99.5);
+    (H-wircam,0.0,0.71,0.37,low,99.5);(K-wircam,0.0,0.55,0.41,low,99.5);(IRAC1,0.0,0.08,0.04,none,100);
+    (IRAC2,0.0,0.09,0.06,none,100)
 
 
 Spectro
@@ -194,7 +197,7 @@ Spectro
 This is where you precise the spectroscopic information of the simulations. Seven entries are needed:
 
 * **NSpec**: This is the number of spectroscopy per simulated galaxy you want to create. For a given template, randomely chosen in the library, you can ask to have 1, 2 or N spectra to be created (for example sdss-like and HST-like).
-* **Norm_band**: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above), you must give an offset, and information about errors on that band as well atsmopheric parameters.
+* **Norm_band**: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above) you must give the name of a filter, atmospheric range and a skysubstraction efficiency estimation.
 * **Noise_reg**: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.
 * **Norm_distribution**: Only if you do not use the **full_array** option. You must give the normalisation file (see above for photometry). 
 * **types**: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: **l1, l2, dl, R [,SNR.txt], atm, skysub**:
@@ -218,7 +221,7 @@ An example of this section is given below without full array option.
 
     	[Spectro]
 	NSpec = 2 
-	Norm_band = (r-megacam, 0.0, 0.1, 0.03,low,90);(J-wircam, 0.0, 0.68, 0.45,none,100)
+	Norm_band = (r-megacam,low,98);(J-wircam,none,100)
 	Noise_reg =  (1080,1170);(3600,3700)
 	Norm_distribution = dist_mag.txt 
 	types = (3500,9500,7.25,240,dist_SNR1.txt,low,90);(12000,15000,50,100,dist_SNR2.txt,none,100)
@@ -232,10 +235,10 @@ And with it
 
     	[Spectro]
 	NSpec = 2 
-	Norm_band = (r-megacam, 0.0, 0.1, 0.03,low,90);(J-wircam, 0.0, 0.68, 0.45,none,100)
+	Norm_band = (r-megacam,low,98);(J-wircam,none,100)
 	Noise_reg =  (1080,1170);(3600,3700)
 	Norm_distribution = dist_mag.txt 
-	types = (3500,9500,7.25,240,low,90);(12000,15000,50,100,none,100)
+	types = (3500,9500,7.25,240,low,98);(12000,15000,50,100,none,100)
 	flux_unit = 
 	wave_unit =
 
@@ -301,6 +304,8 @@ Each pre-computed library comes with already defined range of values for the gal
 * **TAU**: The same as for the ages. TAUs are defined (for both delayed and declining) from 0.1Gyr to 9.9Gyr. You can give any values between these two limits.
 * **MET**: Unlike the other parameters, SEDobs will not interpolate between existing values. Therefore you have to give one (or more) of these metallicites (in Z(solar) unit): 0.02;0.2;0.4;1.0;2.5.
 * **EBVList**: The color excess values you want to apply. They must be positive (or equal to 0). 
+* **AvsList**:  Total extinction in the V band. Must be positive.
+* **RvsList**:  optical to selective extinction ratio (with Rv = Av/E(b-v))
 
 For each list of parameters you have to separate values by ';' wihout spaces.
 
@@ -308,19 +313,21 @@ En example of such section is given here:
 
 .. code-block:: shell
 
-    [Templates]
-    BaseSSP=LIB_BC03_Delayed_LR_Chab_SPARTAN.hdf5
-    DustUse=calzetti.dat
-    EBVList=0.0;0.05;0.1;0.15;0.2;0.25;0.30;0.35;0.4;0.45;0.50
-    IGMUse =SPARTAN_Meiksin_Free_7curves.hdf5
-    ###IGM type free or mean or empty
-    IGMtype = free
-    EMline= yes
-    Lyafrac = 0.5
-    Age = 0.1e+09;0.2e+09;0.3e+09;0.4e+09;0.5e+09;0.6e+09;0.7e+09;0.8e+09;0.9e+09;1.0e+09;1.0e+09;1.1e
-    +09;1.2e+09;1.3e+09;1.4e+09;1.5e+09
-    TAU = 0.10;0.2;0.3;0.4;0.5;0.6;0.7;0.8;0.9;1.0
-    MET = 0.4;1.0;2.5
+    	[Templates]
+	BaseSSP = LIB_BC03_Delayed_LR_Salp_SPARTAN.hdf5
+	DustModel = calzetti.dat
+	DustUse_ste = yes
+	AvsList = 0.0;0.4050;0.8100;1.2149;1.6200;2.0250
+	RvsList = 4.05
+	IGMUse = SPARTAN_Meiksin_Free_7curves.hdf5
+	###IGM type free or mean or empty
+	IGMtype = free 
+	EMline= yes
+	EBVnList =
+	Lyafrac = 0.5
+	Age = 0.5e+08;0.75e+08;0.1e+09;0.2e+09;0.3e+09;0.4e+09;0.5e+09;0.6e+09;0.7e+09;0.8e+09;0.9e+09;1.0e+09;1.0e+09;1.1e+09;1.2e+09;1.3e+09;1.4e+09;1.5e+09
+	TAU = 0.10;0.2;0.3;0.4;0.5;0.6;0.7;0.8;0.9;1.0
+	MET = 0.4;1.0;2.5
 
 
 

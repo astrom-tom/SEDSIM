@@ -192,20 +192,21 @@ class Main:
 
             ### g - get atsmophere
             AMrange = atm.required_atmosphere(self.conf, self.DataT)
-            sim_sky = atm.sky(self.conf)
-            sim_sky.get_sky(AMrange)
+            sim_sky = atm.sky(self.conf, NormMag)
 
             #### h - Normalize the template
             MTU.Info('Normalize Template', 'No')
             Photo = Photometry.Photometry(self.filter_file)
             if self.DataT == 'Photo' or self.DataT == 'Combined':
+                sim_sky.get_sky(AMrange, Wave_at_z, self.conf.PHOT['Norm_band'])
                 Normfluxsim, Normalisation = Photo.Normalise_template(Wave_at_z, simFlux, \
-                        self.conf.PHOT['Norm_band'], NormMag, sim_sky, self.conf)
+                        self.conf.PHOT['Norm_band'], sim_sky.finalNormmag, sim_sky, self.conf)
 
             if self.DataT == 'Spectro':
                 blist = list(self.conf.SPEC['Norm_band'].keys())
+                sim_sky.get_sky(AMrange, Wave_at_z, self.conf.SPEC['Norm_band'][blist[0]])
                 Normfluxsim, Normalisation = Photo.Normalise_template(Wave_at_z, \
-                        simFlux, self.conf.SPEC['Norm_band'][blist[0]], NormMag, sim_sky)
+                        simFlux, self.conf.SPEC['Norm_band'][blist[0]], NormMag, sim_sky, self.conf)
 
             ###add the normalisation to the mass and SFR
                 
@@ -242,6 +243,7 @@ class Main:
                 #Check_plots.plot().combined_template_mag(Wave_at_z, \
                         #Normfluxsim, spectro_sim, Photo_sim, z)
             '''
+
             ### j - and write them down
             out = simu_output.Output()
 
@@ -251,9 +253,9 @@ class Main:
 
             if self.DataT == 'Spectro':
                 out.add_to_output_param_file(z, Name_spectro, simPara, self.final_param_file, NormMag)
-                out.add_to_final_spec_file(Name_spectro, Name_spectro, \
-                        spectro_sim, Photo_sim_spec, z, self.Spectrofinalfile, self.SpectraDir)
-
+                out.add_to_final_spec_file(Name_spectro, Name_sky, spectro_sim, \
+                        Photo_sim_spec, z, self.Spectrofinalfile, self.SpectraDir)
+ 
             if self.DataT == 'Combined':
                 out.add_to_final_mag_file(Name_Combined, self.PhotoDir, Photo_sim, \
                         z, self.Photofinalfile)

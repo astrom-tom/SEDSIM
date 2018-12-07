@@ -100,9 +100,6 @@ class Spectroscopy:
 
         return spec_final
 
-
-
-
     def simu_one_single_spec(self, spec_conf, wave, flux, redshift, conf, sky):
         '''
         This function simulate the spectrum,
@@ -141,8 +138,8 @@ class Spectroscopy:
         if spec_conf['Atm'] != 'none':
             ###OH emission
             Rsky = [[11500, 10., 100000.]]
-            skywave = sky.sky[spec_conf['Atm']]['OH'][0]
-            skyOH = sky.sky[spec_conf['Atm']]['OH'][1] 
+            skywave = sky.sky[spec_conf['Atm']]['OH_full'][0]
+            skyOH = sky.sky[spec_conf['Atm']]['OH_full'][1] 
             smoothed_sky = self.change_resolution(skyOH, skywave, 0, Rsky, spec_conf)           
             wave_cutsky, flux_cutsky = self.cut_spec(skywave, smoothed_sky, spec_conf['l0'],\
                 spec_conf['lf'], spec_conf['dl'])
@@ -152,10 +149,8 @@ class Spectroscopy:
             ext_cut = numpy.ones(len(flux_cut))
             flux_cutsky = numpy.zeros(len(flux_cut))
 
-
         flux_cut = flux_cut + (1-spec_conf['skysub'])*flux_cutsky
         #plot().spec_sim(wave, flux, wave_cut, flux_cut, redshift, spec_conf)
-
         ###4 - we compute the noise 
         flux_noised_withsky, noise_spec = self.add_noise(wave_cut, flux_cut, spec_conf, redshift)
 

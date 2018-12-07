@@ -399,7 +399,7 @@ class Output:
         '''
         ##for each range we take the AM
         line = ''
-        line += '%s\t'%Namesim[:-4]
+        line += '%s\t%1.4f\t%.4E\t'%(Namesim[:-4], sky.skymag, sky.skyflux)
         for i in sky.sky:
             line += '%s\t%s\t'%(i, sky.sky[i]['AM'])
         line += '\n' 

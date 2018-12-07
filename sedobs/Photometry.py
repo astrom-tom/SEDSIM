@@ -48,8 +48,12 @@ class Photometry:
         this methods normalise the template (wave, flux) to the
         maganitude (Norm) in the given band
         '''
+        bandtonorm = copy.deepcopy(band)
+        bandtonorm[-2] = 'none'
+
         ##1 - Compute the magnitude
-        magAB, fluxmag, Leff, FWHM = self.Compute_mag_from_template(wave, flux, band, sky, conf)
+        magAB, fluxmag, Leff, FWHM = self.Compute_mag_from_template(wave,
+                flux, bandtonorm, sky, conf)
 
         ##2 - Convert the normalisation magnitude to flux
         fluxNormmag = self.mag2flux(Norm, Leff)
@@ -90,8 +94,10 @@ class Photometry:
             ##compute the magnitude in the band
             #magAB, fluxAB, Leff, FWHM= self.Compute_mag_from_template(wave, flux, \
             #        
-
+            if len(band_list[i]) == 3:
+                band_list[i] = [band_list[i][0],0,0,0,band_list[i][-2], band_list[i][-1]]
             simuphot = self.Compute_mag_from_template(wave, flux, band_list[i], sky, fullconf)
+
             if len(simuphot) == 6:
                 magAB, fluxAB, magABsky, fluxABsky, Leff, FWHM = simuphot
             else:
@@ -186,7 +192,7 @@ class Photometry:
         fluxcp = copy.copy(flux)
 
         ##check if we need to apply sky
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             Spectro = Spectroscopy.Spectroscopy()
             ##we apply the sky emission
             ###regrid sky on template wavelength
@@ -212,7 +218,7 @@ class Photometry:
 
         ###convert template to frequence space
         freqTemp, Template_hz = self.convert_wave_to_freq(wave, flux_skysub)
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             indexs = numpy.where((OH[0] >= Lambda[0]) & (OH[0] <= Lambda[-1]))[0]
             OHmeasw = OH[0][indexs]
             SkyfreqTemp, SkyTemplate_hz = self.convert_wave_to_freq(OH[0][indexs], \
@@ -221,34 +227,34 @@ class Photometry:
 
         ##interpolate the filter throughput to the wavelength grid
         Trans_wave_model = numpy.interp(wave, Lambda, Tran)
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             Trans_wave_modelsky = numpy.interp(OHmeasw, Lambda, Tran)
 
         ##and Normalise it
         ###WARNING!!: [::-1] because for the integration of y=f(x), x must be increasing
         Normalisation = numpy.trapz(Trans_wave_model, freqTemp[::-1])
         TranfreqNormed = Trans_wave_model / Normalisation 
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             SkyNormalisation = numpy.trapz(Trans_wave_modelsky, SkyfreqTemp[::-1])
             SkyTranfreqNormed = Trans_wave_modelsky / SkyNormalisation 
         
         ###make the integration
         integration = numpy.trapz(Template_hz*TranfreqNormed, freqTemp[::-1])
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             Skyintegration = numpy.trapz(SkyTemplate_hz*SkyTranfreqNormed, SkyfreqTemp[::-1])
 
         ###and compute magnitude
         MagAB = -2.5*numpy.log10(integration)-48.60
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             SkyMagAB = -2.5*numpy.log10(Skyintegration)-48.60
 
         Fluxmag = self.mag2flux(MagAB, Leff)
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             SkyFluxmag = self.mag2flux(SkyMagAB, Leff)
         
         
         #plt().Filter_template(wave, flux, Lambda, Tran, Leff, FWHM, Fluxmag)
-        if usesky != 'none':
+        if usesky != 'none' and skysub != 1.0:
             return MagAB, Fluxmag, SkyMagAB, SkyFluxmag, Leff, FWHM
         else:
             return MagAB, Fluxmag, Leff, FWHM
