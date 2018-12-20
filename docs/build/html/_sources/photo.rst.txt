@@ -78,7 +78,6 @@ The configuration we use is the one given below:
     AvsList = 0.0;0.4050;0.8100;1.2149;1.6200;2.0250
     RvsList = 4.05
     IGMUse = SPARTAN_Meiksin_Free_7curves.hdf5
-    ###IGM type free or mean or empty
     IGMtype = free 
     EMline= yes
     EBVnList =
@@ -92,7 +91,7 @@ We choose to use individual files (and not the full_array option).
 Checking configuration
 ^^^^^^^^^^^^^^^^^^^^^^
 
-We starting sedobs with this file (*sedobs --simu.conf*) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:
+We starting sedobs with this file (*sedobs -p simu.conf*) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:
 
 .. figure:: ./pics/Photo_simu_checking.png
     :width: 750px
@@ -145,7 +144,7 @@ SEDobs start to take the library of templates that was created and add emission 
 
 The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed and apply sky emission (if used) to the template. After that, all the band in your configuration are computed. In each band, the error is computed from the mean and sigma of the gaussian given for each band (see :doc:`configuration` page).
 
-Finally, everything is saved (see :doc:`output`) for all the files that are created.
+Finally, everything is saved in different catalogs and single files(see :doc:`output` for all the files that are created).
 
 
 .. note::

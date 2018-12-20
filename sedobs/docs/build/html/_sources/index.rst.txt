@@ -39,6 +39,7 @@ Content
    usage
    configuration
    atmospheric
+   tests
    photo
    Spectro
    MultiSpectro

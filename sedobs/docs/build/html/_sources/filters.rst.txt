@@ -346,5 +346,11 @@ We list here all the filters that are available in SEDobs. They are all containe
 .. centered::
     filter names: H-wircam, J-wircam, K-wircam
 
+* Carnegie SUpernova project: https://csp.obs.carnegiescience.edu/data/filters
 
+.. figure:: ./pics/filters/CSP.png
+    :width: 750px
+    :align: center
 
+.. centered::
+    filter names: u-CSP, g-CSP, r-CSP, i-CSP, B-CSP, V-3009CSP, Y-dupont, J-dupont, H-dupont

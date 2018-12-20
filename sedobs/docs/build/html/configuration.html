@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuration &mdash; SEDobs 0.1.2 documentation</title>
+  <title>Configuration &mdash; SEDobs 0.1.7 documentation</title>
   
 
   
@@ -97,6 +97,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="photo.html">Photometric Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Spectro.html">Spectroscopic Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiSpectro.html">Multi-Spectroscopic Simulation</a></li>
@@ -184,7 +185,7 @@ These are not being computed on the fly which save a lot of time in the simulati
 <span class="nv">full_array</span> <span class="o">=</span>
 <span class="nv">z_distribution</span> <span class="o">=</span>
 <span class="nv">Nobj</span> <span class="o">=</span>
-<span class="nv">sizegal</span> <span class="o">=</span> <span class="m">1</span>
+<span class="nv">sizegal</span> <span class="o">=</span>
 
 <span class="o">[</span>Data_Type<span class="o">]</span>
 <span class="nv">Photometry</span> <span class="o">=</span>
@@ -204,20 +205,21 @@ These are not being computed on the fly which save a lot of time in the simulati
 <span class="nv">Norm_distribution</span> <span class="o">=</span>
 <span class="nv">Nband</span> <span class="o">=</span>
 <span class="nv">Band_list</span> <span class="o">=</span>
-<span class="nv">flux_unit</span> <span class="o">=</span>
-<span class="nv">wave_unit</span> <span class="o">=</span>
+<span class="nv">flux_unit</span> <span class="o">=</span> muJy
+<span class="nv">wave_unit</span> <span class="o">=</span> log_ang
 <span class="nv">savesky</span> <span class="o">=</span> No
 
 <span class="o">[</span>Cosmo<span class="o">]</span>
 <span class="nv">Ho</span><span class="o">=</span><span class="m">70</span>
-<span class="nv">Omega_m</span><span class="o">=</span><span class="m">0</span>.27
-<span class="nv">Omega_L</span><span class="o">=</span><span class="m">0</span>.73
-<span class="nv">Use_Cosmo</span><span class="o">=</span>Yes
+<span class="nv">Omega_m</span> <span class="o">=</span>
+<span class="nv">Omega_L</span> <span class="o">=</span>
+<span class="nv">Use_Cosmo</span> <span class="o">=</span>
 
 <span class="o">[</span>Templates<span class="o">]</span>
 <span class="nv">BaseSSP</span> <span class="o">=</span>
-<span class="nv">DustUse</span> <span class="o">=</span>
-<span class="nv">EBVsList</span> <span class="o">=</span>
+<span class="nv">DustModel</span> <span class="o">=</span>
+<span class="nv">AvsList</span> <span class="o">=</span>
+<span class="nv">RvsList</span> <span class="o">=</span>
 <span class="nv">IGMUse</span> <span class="o">=</span>
 <span class="nv">IGMtype</span> <span class="o">=</span>
 <span class="nv">EMline</span><span class="o">=</span>
@@ -278,7 +280,7 @@ These are not being computed on the fly which save a lot of time in the simulati
 <h2>Photo<a class="headerlink" href="#photo" title="Permalink to this headline">¶</a></h2>
 <p>This is where you tell SEDOBS what photometric data to simulate:</p>
 <ul>
-<li><p class="first"><strong>Norm_band</strong>: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page for all the filters available).</p>
+<li><p class="first"><strong>Norm_band</strong>: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page for all the filters available), an atmosphere range and a sky subrtaction estimation (see below).</p>
 </li>
 <li><p class="first"><strong>Norm_distribution</strong>: Only if you do not use the previous <strong>full_array</strong> option. This is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the same band you gave in the <strong>Norm_band</strong> entry.</p>
 </li>
@@ -303,21 +305,23 @@ These are not being computed on the fly which save a lot of time in the simulati
 </li>
 </ul>
 <p>An example is given below, without full array:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> r-megacam
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam,low,98<span class="o">)</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span> magnorm.txt
 <span class="nv">Nband</span> <span class="o">=</span> <span class="m">10</span>
-<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
-.0, <span class="m">0</span>.23, <span class="m">0</span>.12,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
-cam,0.0,0.55, <span class="m">0</span>.41,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04,none<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06,none<span class="o">)</span>
+<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0,0.31,0.38,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09,low,98<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>i-megacam, <span class="m">0</span>.0, <span class="m">0</span>.23, <span class="m">0</span>.12,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,low,99.5<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>H-wircam,0.0,0.71,0.37,low,99.5<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wircam,0.0,0.55,0.41,low,99.5<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08,0.04,none,100<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>IRAC2,0.0,0.09,0.06,none,100<span class="o">)</span>
 </pre></div>
 </div>
 <p>And with it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> r-megacam
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam,low,98<span class="o">)</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span>
 <span class="nv">Nband</span> <span class="o">=</span> <span class="m">10</span>
-<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0, <span class="m">0</span>.31, <span class="m">0</span>.38,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>i-megacam, <span class="m">0</span>
-.0, <span class="m">0</span>.23, <span class="m">0</span>.12,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19,int<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>H-wircam, <span class="m">0</span>.0, <span class="m">0</span>.71,0.37,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wir
-cam,0.0,0.55,0.41,low<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08, <span class="m">0</span>.04,none<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC2,0.0,0.09,0.06,none<span class="o">)</span>
+<span class="nv">Band_list</span> <span class="o">=</span> <span class="o">(</span>u-megacam,0.0,0.31,0.38,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>g-megacam,0.0,0.15,0.20,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>r-megacam,0.0,0.19,0.09,low,98<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>i-megacam, <span class="m">0</span>.0, <span class="m">0</span>.23, <span class="m">0</span>.12,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>z-megacam,0.0, <span class="m">0</span>.38, <span class="m">0</span>.19,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,low,99.5<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>H-wircam,0.0,0.71,0.37,low,99.5<span class="o">)</span><span class="p">;</span><span class="o">(</span>K-wircam,0.0,0.55,0.41,low,99.5<span class="o">)</span><span class="p">;</span><span class="o">(</span>IRAC1,0.0,0.08,0.04,none,100<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>IRAC2,0.0,0.09,0.06,none,100<span class="o">)</span>
 </pre></div>
 </div>
 </div>
@@ -327,7 +331,7 @@ cam,0.0,0.55,0.41,low<span class="o">)</span><span class="p">;</span><span class
 <ul>
 <li><p class="first"><strong>NSpec</strong>: This is the number of spectroscopy per simulated galaxy you want to create. For a given template, randomely chosen in the library, you can ask to have 1, 2 or N spectra to be created (for example sdss-like and HST-like).</p>
 </li>
-<li><p class="first"><strong>Norm_band</strong>: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above), you must give an offset, and information about errors on that band as well atsmopheric parameters.</p>
+<li><p class="first"><strong>Norm_band</strong>: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above) you must give the name of a filter, atmospheric range and a skysubstraction efficiency estimation.</p>
 </li>
 <li><p class="first"><strong>Noise_reg</strong>: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.</p>
 </li>
@@ -355,7 +359,7 @@ cam,0.0,0.55,0.41,low<span class="o">)</span><span class="p">;</span><span class
 <p>An example of this section is given below without full array option.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Spectro<span class="o">]</span>
 <span class="nv">NSpec</span> <span class="o">=</span> <span class="m">2</span>
-<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam, <span class="m">0</span>.0, <span class="m">0</span>.1, <span class="m">0</span>.03,low,90<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,none,100<span class="o">)</span>
+<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam,none,100<span class="o">)</span>
 <span class="nv">Noise_reg</span> <span class="o">=</span>  <span class="o">(</span><span class="m">1080</span>,1170<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">3600</span>,3700<span class="o">)</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span> dist_mag.txt
 <span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,dist_SNR1.txt,low,90<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,15000,50,100,dist_SNR2.txt,none,100<span class="o">)</span>
@@ -366,10 +370,10 @@ cam,0.0,0.55,0.41,low<span class="o">)</span><span class="p">;</span><span class
 <p>And with it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Spectro<span class="o">]</span>
 <span class="nv">NSpec</span> <span class="o">=</span> <span class="m">2</span>
-<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam, <span class="m">0</span>.0, <span class="m">0</span>.1, <span class="m">0</span>.03,low,90<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam, <span class="m">0</span>.0, <span class="m">0</span>.68, <span class="m">0</span>.45,none,100<span class="o">)</span>
+<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam,none,100<span class="o">)</span>
 <span class="nv">Noise_reg</span> <span class="o">=</span>  <span class="o">(</span><span class="m">1080</span>,1170<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">3600</span>,3700<span class="o">)</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span> dist_mag.txt
-<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,low,90<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,15000,50,100,none,100<span class="o">)</span>
+<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,15000,50,100,none,100<span class="o">)</span>
 <span class="nv">flux_unit</span> <span class="o">=</span>
 <span class="nv">wave_unit</span> <span class="o">=</span>
 </pre></div>
@@ -440,20 +444,24 @@ Each pre-computed library comes with already defined range of values for the gal
 <li><strong>TAU</strong>: The same as for the ages. TAUs are defined (for both delayed and declining) from 0.1Gyr to 9.9Gyr. You can give any values between these two limits.</li>
 <li><strong>MET</strong>: Unlike the other parameters, SEDobs will not interpolate between existing values. Therefore you have to give one (or more) of these metallicites (in Z(solar) unit): 0.02;0.2;0.4;1.0;2.5.</li>
 <li><strong>EBVList</strong>: The color excess values you want to apply. They must be positive (or equal to 0).</li>
+<li><strong>AvsList</strong>:  Total extinction in the V band. Must be positive.</li>
+<li><strong>RvsList</strong>:  optical to selective extinction ratio (with Rv = Av/E(b-v))</li>
 </ul>
 <p>For each list of parameters you have to separate values by ‘;’ wihout spaces.</p>
 <p>En example of such section is given here:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Templates<span class="o">]</span>
-<span class="nv">BaseSSP</span><span class="o">=</span>LIB_BC03_Delayed_LR_Chab_SPARTAN.hdf5
-<span class="nv">DustUse</span><span class="o">=</span>calzetti.dat
-<span class="nv">EBVList</span><span class="o">=</span><span class="m">0</span>.0<span class="p">;</span><span class="m">0</span>.05<span class="p">;</span><span class="m">0</span>.1<span class="p">;</span><span class="m">0</span>.15<span class="p">;</span><span class="m">0</span>.2<span class="p">;</span><span class="m">0</span>.25<span class="p">;</span><span class="m">0</span>.30<span class="p">;</span><span class="m">0</span>.35<span class="p">;</span><span class="m">0</span>.4<span class="p">;</span><span class="m">0</span>.45<span class="p">;</span><span class="m">0</span>.50
-<span class="nv">IGMUse</span> <span class="o">=</span>SPARTAN_Meiksin_Free_7curves.hdf5
+<span class="nv">BaseSSP</span> <span class="o">=</span> LIB_BC03_Delayed_LR_Salp_SPARTAN.hdf5
+<span class="nv">DustModel</span> <span class="o">=</span> calzetti.dat
+<span class="nv">DustUse_ste</span> <span class="o">=</span> yes
+<span class="nv">AvsList</span> <span class="o">=</span> <span class="m">0</span>.0<span class="p">;</span><span class="m">0</span>.4050<span class="p">;</span><span class="m">0</span>.8100<span class="p">;</span><span class="m">1</span>.2149<span class="p">;</span><span class="m">1</span>.6200<span class="p">;</span><span class="m">2</span>.0250
+<span class="nv">RvsList</span> <span class="o">=</span> <span class="m">4</span>.05
+<span class="nv">IGMUse</span> <span class="o">=</span> SPARTAN_Meiksin_Free_7curves.hdf5
 <span class="c1">###IGM type free or mean or empty</span>
 <span class="nv">IGMtype</span> <span class="o">=</span> free
 <span class="nv">EMline</span><span class="o">=</span> yes
+<span class="nv">EBVnList</span> <span class="o">=</span>
 <span class="nv">Lyafrac</span> <span class="o">=</span> <span class="m">0</span>.5
-<span class="nv">Age</span> <span class="o">=</span> <span class="m">0</span>.1e+09<span class="p">;</span><span class="m">0</span>.2e+09<span class="p">;</span><span class="m">0</span>.3e+09<span class="p">;</span><span class="m">0</span>.4e+09<span class="p">;</span><span class="m">0</span>.5e+09<span class="p">;</span><span class="m">0</span>.6e+09<span class="p">;</span><span class="m">0</span>.7e+09<span class="p">;</span><span class="m">0</span>.8e+09<span class="p">;</span><span class="m">0</span>.9e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.1e
-+09<span class="p">;</span><span class="m">1</span>.2e+09<span class="p">;</span><span class="m">1</span>.3e+09<span class="p">;</span><span class="m">1</span>.4e+09<span class="p">;</span><span class="m">1</span>.5e+09
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">0</span>.5e+08<span class="p">;</span><span class="m">0</span>.75e+08<span class="p">;</span><span class="m">0</span>.1e+09<span class="p">;</span><span class="m">0</span>.2e+09<span class="p">;</span><span class="m">0</span>.3e+09<span class="p">;</span><span class="m">0</span>.4e+09<span class="p">;</span><span class="m">0</span>.5e+09<span class="p">;</span><span class="m">0</span>.6e+09<span class="p">;</span><span class="m">0</span>.7e+09<span class="p">;</span><span class="m">0</span>.8e+09<span class="p">;</span><span class="m">0</span>.9e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.1e+09<span class="p">;</span><span class="m">1</span>.2e+09<span class="p">;</span><span class="m">1</span>.3e+09<span class="p">;</span><span class="m">1</span>.4e+09<span class="p">;</span><span class="m">1</span>.5e+09
 <span class="nv">TAU</span> <span class="o">=</span> <span class="m">0</span>.10<span class="p">;</span><span class="m">0</span>.2<span class="p">;</span><span class="m">0</span>.3<span class="p">;</span><span class="m">0</span>.4<span class="p">;</span><span class="m">0</span>.5<span class="p">;</span><span class="m">0</span>.6<span class="p">;</span><span class="m">0</span>.7<span class="p">;</span><span class="m">0</span>.8<span class="p">;</span><span class="m">0</span>.9<span class="p">;</span><span class="m">1</span>.0
 <span class="nv">MET</span> <span class="o">=</span> <span class="m">0</span>.4<span class="p">;</span><span class="m">1</span>.0<span class="p">;</span><span class="m">2</span>.5
 </pre></div>
@@ -503,7 +511,7 @@ Each pre-computed library comes with already defined range of values for the gal
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.2',
+            VERSION:'0.1.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Multi-Spectroscopic Simulation &mdash; SEDobs 0.1.2 documentation</title>
+  <title>Multi-Spectroscopic Simulation &mdash; SEDobs 0.1.7 documentation</title>
   
 
   
@@ -88,7 +88,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="photo.html">Photometric Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Spectro.html">Spectroscopic Simulation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Multi-Spectroscopic Simulation</a><ul>
@@ -177,40 +178,52 @@
 The configuration we use is the one given below (named: SEDobs_Test_run_multispectro.conff):</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
 <span class="nv">Project_name</span><span class="o">=</span> SEDobs_Test_run_multispectro
-<span class="nv">Author</span><span class="o">=</span> R. THOMAS - <span class="m">19</span>/9/18
+<span class="nv">Author</span> <span class="o">=</span> R. THOMAS - <span class="m">6</span>/12/18
 <span class="nv">Project_Directory</span><span class="o">=</span> ~/.sedobs/test_run_multispectro
 <span class="nv">full_array</span> <span class="o">=</span>
 <span class="nv">z_distribution</span> <span class="o">=</span> dist_zspec_multi.txt
-<span class="nv">Nobj</span> <span class="o">=</span> <span class="m">1500</span>
+<span class="nv">Nobj</span> <span class="o">=</span> <span class="m">2500</span>
+<span class="nv">sizegal</span> <span class="o">=</span> <span class="m">1</span>
+
 <span class="o">[</span>Data_Type<span class="o">]</span>
 <span class="nv">Photometry</span> <span class="o">=</span> No
 <span class="nv">Spectro</span> <span class="o">=</span> Yes
+
 <span class="o">[</span>Spectro<span class="o">]</span>
 <span class="nv">NSpec</span> <span class="o">=</span> <span class="m">2</span>
-<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam, <span class="m">0</span>.0, <span class="m">0</span>.1, <span class="m">0</span>.03<span class="o">)</span>
-<span class="nv">Noise_reg</span> <span class="o">=</span>  <span class="o">(</span><span class="m">1080</span>,1170<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">3600</span>,3700<span class="o">)</span>
+<span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span>J-wircam,none,100<span class="o">)</span>
+<span class="nv">Noise_reg</span> <span class="o">=</span>  <span class="o">(</span><span class="m">2900</span>,3200<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">8000</span>,8200<span class="o">)</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span> dist_mag.txt
-<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,dist_SNR1.txt<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,15000,50,100,dist_SNR2.txt<span class="o">)</span>
+<span class="nv">types</span> <span class="o">=</span> <span class="o">(</span><span class="m">3500</span>,9500,7.25,240,dist_SNR1.txt,low,98<span class="o">)</span><span class="p">;</span><span class="o">(</span><span class="m">12000</span>,15000,50,100,dist_SNR2.txt,none,100<span class="o">)</span>
+<span class="nv">flux_unit</span> <span class="o">=</span> muJy
+<span class="nv">wave_unit</span> <span class="o">=</span> log_ang
+
 <span class="o">[</span>Photo<span class="o">]</span>
 <span class="nv">Norm_band</span> <span class="o">=</span>
 <span class="nv">Norm_distribution</span> <span class="o">=</span>
 <span class="nv">Nband</span> <span class="o">=</span>
 <span class="nv">Band_list</span> <span class="o">=</span>
+<span class="nv">flux_unit</span> <span class="o">=</span>
+<span class="nv">wave_unit</span> <span class="o">=</span>
+<span class="nv">savesky</span> <span class="o">=</span>
+
 <span class="o">[</span>Cosmo<span class="o">]</span>
 <span class="nv">Ho</span><span class="o">=</span><span class="m">70</span>
-<span class="nv">Omega_m</span><span class="o">=</span><span class="m">0</span>.27
-<span class="nv">Omega_L</span><span class="o">=</span><span class="m">0</span>.73
-<span class="nv">Use_Cosmo</span><span class="o">=</span>Yes
+<span class="nv">Omega_m</span> <span class="o">=</span> <span class="m">0</span>.27
+<span class="nv">Omega_L</span> <span class="o">=</span> <span class="m">0</span>.73
+<span class="nv">Use_Cosmo</span> <span class="o">=</span> Yes
+
 <span class="o">[</span>Templates<span class="o">]</span>
-<span class="nv">BaseSSP</span><span class="o">=</span>LIB_BC03_Delayed_LR_Salp_SPARTAN.hdf5
-<span class="nv">DustUse</span><span class="o">=</span>calzetti.dat
-<span class="nv">EBVList</span><span class="o">=</span><span class="m">0</span>.0<span class="p">;</span><span class="m">0</span>.1<span class="p">;</span><span class="m">0</span>.2<span class="p">;</span><span class="m">0</span>.30<span class="p">;</span><span class="m">0</span>.4<span class="p">;</span><span class="m">0</span>.50
+<span class="nv">BaseSSP</span> <span class="o">=</span> LIB_BC03_Delayed_LR_Salp_SPARTAN.hdf5
+<span class="nv">DustModel</span> <span class="o">=</span> calzetti.dat
+<span class="nv">AvsList</span> <span class="o">=</span> <span class="m">0</span>.0<span class="p">;</span><span class="m">0</span>.4050<span class="p">;</span><span class="m">0</span>.8100<span class="p">;</span><span class="m">1</span>.2149<span class="p">;</span><span class="m">1</span>.6200<span class="p">;</span><span class="m">2</span>.0250
+<span class="nv">RvsList</span> <span class="o">=</span> <span class="m">4</span>.05
 <span class="nv">IGMUse</span> <span class="o">=</span> SPARTAN_Meiksin_Free_7curves.hdf5
-<span class="c1">###IGM type free or mean or empty</span>
 <span class="nv">IGMtype</span> <span class="o">=</span> free
 <span class="nv">EMline</span><span class="o">=</span> yes
+<span class="nv">EBVnList</span> <span class="o">=</span>
 <span class="nv">Lyafrac</span> <span class="o">=</span> <span class="m">0</span>.5
-<span class="nv">Age</span> <span class="o">=</span> <span class="m">0</span>.1e+09<span class="p">;</span><span class="m">0</span>.2e+09<span class="p">;</span><span class="m">0</span>.3e+09<span class="p">;</span><span class="m">0</span>.4e+09<span class="p">;</span><span class="m">0</span>.5e+09<span class="p">;</span><span class="m">0</span>.6e+09<span class="p">;</span><span class="m">0</span>.7e+09<span class="p">;</span><span class="m">0</span>.8e+09<span class="p">;</span><span class="m">0</span>.9e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.1e+09<span class="p">;</span><span class="m">1</span>.2e+09<span class="p">;</span><span class="m">1</span>.3e+09<span class="p">;</span><span class="m">1</span>.4e+09<span class="p">;</span><span class="m">1</span>.5e+09
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">0</span>.5e+08<span class="p">;</span><span class="m">0</span>.75e+08<span class="p">;</span><span class="m">0</span>.1e+09<span class="p">;</span><span class="m">0</span>.2e+09<span class="p">;</span><span class="m">0</span>.3e+09<span class="p">;</span><span class="m">0</span>.4e+09<span class="p">;</span><span class="m">0</span>.5e+09<span class="p">;</span><span class="m">0</span>.6e+09<span class="p">;</span><span class="m">0</span>.7e+09<span class="p">;</span><span class="m">0</span>.8e+09<span class="p">;</span><span class="m">0</span>.9e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.0e+09<span class="p">;</span><span class="m">1</span>.1e+09<span class="p">;</span><span class="m">1</span>.2e+09<span class="p">;</span><span class="m">1</span>.3e+09<span class="p">;</span><span class="m">1</span>.4e+09<span class="p">;</span><span class="m">1</span>.5e+09
 <span class="nv">TAU</span> <span class="o">=</span> <span class="m">0</span>.10<span class="p">;</span><span class="m">0</span>.2<span class="p">;</span><span class="m">0</span>.3<span class="p">;</span><span class="m">0</span>.4<span class="p">;</span><span class="m">0</span>.5<span class="p">;</span><span class="m">0</span>.6<span class="p">;</span><span class="m">0</span>.7<span class="p">;</span><span class="m">0</span>.8<span class="p">;</span><span class="m">0</span>.9<span class="p">;</span><span class="m">1</span>.0
 <span class="nv">MET</span> <span class="o">=</span> <span class="m">0</span>.4<span class="p">;</span><span class="m">1</span>.0<span class="p">;</span><span class="m">2</span>.5
 </pre></div>
@@ -219,7 +232,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_multispe
 </div>
 <div class="section" id="checking-configuration">
 <h2>Checking configuration<a class="headerlink" href="#checking-configuration" title="Permalink to this headline">¶</a></h2>
-<p>We start sedobs with this file (<em>sedobs –SEDobs_Test_run_multispectro.conf</em>) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:</p>
+<p>We start sedobs with this file (<em>sedobs -p SEDobs_Test_run_multispectro.conf</em>) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="_images/multispec_check.png"><img alt="GUI" src="_images/multispec_check.png" style="width: 750px;" /></a>
 </div>
@@ -273,8 +286,8 @@ The configuration we use is the one given below (named: SEDobs_Test_run_multispe
 <a class="reference internal image-reference" href="_images/multisimobj.png"><img alt="GUI" src="_images/multisimobj.png" style="width: 950px;" /></a>
 </div>
 <p>SEDobs start to take the library of templates that was created and adds emission lines. If you asked to give a certain fraction of lyman alpha emitters it will take it into account. Then the dust extinction will be added and the IGM as well. SEDobs will also tell you how many templates there is after all extinction are applied. Next, it will apply the cosmology to the library. The templaes will be redshifted and if you decided to use the cosmology it will keep only the templates that are younger than the age of the universe at the redshift of the simulated galaxy.</p>
-<p>The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed. After that. Then it will cut the right regions depending on all your spectral configuration and create the noise based on the noise regions that are given in the configuration. This noise will be created so the SNR matches. (see <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page).</p>
-<p>Finally, everything is saved (see <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a>) for all the files that are created.</p>
+<p>The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you selected and taking into account if you want to use sky emission. After that, it will create the noise based on the noise region that is given in the configuration and on the SNR . (see <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page).</p>
+<p>Finally, everything is saved in different catalog and individual files (see <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a> for all the files that are created).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This exact run can be started in the test of SEDobs. if you hit the command <strong>sedobs –test</strong> and select the photometric simulation sedobs will run exactly this configuration.</p>
@@ -324,7 +337,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_multispe
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.2',
+            VERSION:'0.1.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -24,8 +24,8 @@ Installation
 
 SEDobs is written in python 3.6 with the following library and versions:
 
-* Numpy v1.14.2: Numerical python
-* Scipy v1.0.1: Some useful function for spectral processing
+* Numpy v1.14.3: Numerical python
+* Scipy v1.1.0: Some useful function for spectral processing
 * h5py  v2.8.0: hdf5 file creation and handling
 * tqdm  v4.23.4: progress bar
 

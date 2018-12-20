@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Photometric Simulation &mdash; SEDobs 0.1.2 documentation</title>
+  <title>Photometric Simulation &mdash; SEDobs 0.1.7 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Spectroscopic Simulation" href="Spectro.html" />
-    <link rel="prev" title="Atmospheric effect" href="atmospheric.html" /> 
+    <link rel="prev" title="tests" href="tests.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">tests</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Photometric Simulation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#checking-configuration">Checking configuration</a></li>
@@ -218,7 +219,6 @@ The configuration we use is the one given below:</p>
 <span class="nv">AvsList</span> <span class="o">=</span> <span class="m">0</span>.0<span class="p">;</span><span class="m">0</span>.4050<span class="p">;</span><span class="m">0</span>.8100<span class="p">;</span><span class="m">1</span>.2149<span class="p">;</span><span class="m">1</span>.6200<span class="p">;</span><span class="m">2</span>.0250
 <span class="nv">RvsList</span> <span class="o">=</span> <span class="m">4</span>.05
 <span class="nv">IGMUse</span> <span class="o">=</span> SPARTAN_Meiksin_Free_7curves.hdf5
-<span class="c1">###IGM type free or mean or empty</span>
 <span class="nv">IGMtype</span> <span class="o">=</span> free
 <span class="nv">EMline</span><span class="o">=</span> yes
 <span class="nv">EBVnList</span> <span class="o">=</span>
@@ -232,7 +232,7 @@ The configuration we use is the one given below:</p>
 </div>
 <div class="section" id="checking-configuration">
 <h2>Checking configuration<a class="headerlink" href="#checking-configuration" title="Permalink to this headline">¶</a></h2>
-<p>We starting sedobs with this file (<em>sedobs –simu.conf</em>) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:</p>
+<p>We starting sedobs with this file (<em>sedobs -p simu.conf</em>) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="_images/Photo_simu_checking.png"><img alt="GUI" src="_images/Photo_simu_checking.png" style="width: 750px;" /></a>
 </div>
@@ -276,7 +276,7 @@ The configuration we use is the one given below:</p>
 </div>
 <p>SEDobs start to take the library of templates that was created and add emission lines. If you asked to give a certain fraction of lyman alpha emitters it will take it into account. Then the dust extinction will be added and the IGM as well. SEDobs will also tell you how many templates there is after all extinction are applied. Next, it will apply the cosmology to the library. The templaes will be redshifted and if you decided to use the cosmology it will keep only the templates that are younger than the age of the universe at the redshift of the simulated galaxy.</p>
 <p>The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed and apply sky emission (if used) to the template. After that, all the band in your configuration are computed. In each band, the error is computed from the mean and sigma of the gaussian given for each band (see <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page).</p>
-<p>Finally, everything is saved (see <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a>) for all the files that are created.</p>
+<p>Finally, everything is saved in different catalogs and single files(see <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a> for all the files that are created).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This exact run can be started in the test of SEDobs. if you hit the command <strong>sedobs –test</strong> and select the photometric simulation sedobs will run exactly this configuration.</p>
@@ -295,7 +295,7 @@ The configuration we use is the one given below:</p>
         <a href="Spectro.html" class="btn btn-neutral float-right" title="Spectroscopic Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="atmospheric.html" class="btn btn-neutral" title="Atmospheric effect" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tests.html" class="btn btn-neutral" title="tests" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -326,7 +326,7 @@ The configuration we use is the one given below:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.2',
+            VERSION:'0.1.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

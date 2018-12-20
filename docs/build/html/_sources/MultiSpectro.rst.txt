@@ -37,40 +37,52 @@ The configuration we use is the one given below (named: SEDobs_Test_run_multispe
 
 	[General]
 	Project_name= SEDobs_Test_run_multispectro
-	Author= R. THOMAS - 19/9/18
+	Author = R. THOMAS - 6/12/18
 	Project_Directory= ~/.sedobs/test_run_multispectro
 	full_array =  
 	z_distribution = dist_zspec_multi.txt
-	Nobj = 1500 
+	Nobj = 2500 
+	sizegal = 1
+
 	[Data_Type]
 	Photometry = No
 	Spectro = Yes
+
 	[Spectro]
 	NSpec = 2 
-	Norm_band = (r-megacam, 0.0, 0.1, 0.03)
-	Noise_reg =  (1080,1170);(3600,3700)
+	Norm_band = (r-megacam,low,98);(J-wircam,none,100)
+	Noise_reg =  (2900,3200);(8000,8200)
 	Norm_distribution = dist_mag.txt 
-	types = (3500,9500,7.25,240,dist_SNR1.txt);(12000,15000,50,100,dist_SNR2.txt)
+	types = (3500,9500,7.25,240,dist_SNR1.txt,low,98);(12000,15000,50,100,dist_SNR2.txt,none,100)
+	flux_unit = muJy
+	wave_unit = log_ang
+
 	[Photo]
 	Norm_band = 
 	Norm_distribution = 
 	Nband = 
 	Band_list = 
+	flux_unit = 
+	wave_unit =
+	savesky = 
+
 	[Cosmo]
 	Ho=70
-	Omega_m=0.27
-	Omega_L=0.73
-	Use_Cosmo=Yes
+	Omega_m = 0.27
+	Omega_L = 0.73
+	Use_Cosmo = Yes
+
 	[Templates]
-	BaseSSP=LIB_BC03_Delayed_LR_Salp_SPARTAN.hdf5
-	DustUse=calzetti.dat
-	EBVList=0.0;0.1;0.2;0.30;0.4;0.50
+	BaseSSP = LIB_BC03_Delayed_LR_Salp_SPARTAN.hdf5
+	DustModel = calzetti.dat
+	AvsList = 0.0;0.4050;0.8100;1.2149;1.6200;2.0250
+	RvsList = 4.05
 	IGMUse = SPARTAN_Meiksin_Free_7curves.hdf5
-	###IGM type free or mean or empty
 	IGMtype = free 
 	EMline= yes
+	EBVnList =
 	Lyafrac = 0.5
-	Age = 0.1e+09;0.2e+09;0.3e+09;0.4e+09;0.5e+09;0.6e+09;0.7e+09;0.8e+09;0.9e+09;1.0e+09;1.0e+09;1.1e+09;1.2e+09;1.3e+09;1.4e+09;1.5e+09
+	Age = 0.5e+08;0.75e+08;0.1e+09;0.2e+09;0.3e+09;0.4e+09;0.5e+09;0.6e+09;0.7e+09;0.8e+09;0.9e+09;1.0e+09;1.0e+09;1.1e+09;1.2e+09;1.3e+09;1.4e+09;1.5e+09
 	TAU = 0.10;0.2;0.3;0.4;0.5;0.6;0.7;0.8;0.9;1.0
 	MET = 0.4;1.0;2.5
 
@@ -79,7 +91,7 @@ We choose to use individual files (and not the full_array option).
 Checking configuration
 ^^^^^^^^^^^^^^^^^^^^^^
 
-We start sedobs with this file (*sedobs --SEDobs_Test_run_multispectro.conf*) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:
+We start sedobs with this file (*sedobs -p SEDobs_Test_run_multispectro.conf*) sedobs start by checking your configuration. You can see the output of the terminal for the full checking of your configuration:
 
 .. figure:: ./pics/multispec_check.png
     :width: 750px
@@ -138,9 +150,9 @@ After all these checking and preparations SEDobs starts to simulate. It will go 
 
 SEDobs start to take the library of templates that was created and adds emission lines. If you asked to give a certain fraction of lyman alpha emitters it will take it into account. Then the dust extinction will be added and the IGM as well. SEDobs will also tell you how many templates there is after all extinction are applied. Next, it will apply the cosmology to the library. The templaes will be redshifted and if you decided to use the cosmology it will keep only the templates that are younger than the age of the universe at the redshift of the simulated galaxy.   
 
-The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed. After that. Then it will cut the right regions depending on all your spectral configuration and create the noise based on the noise regions that are given in the configuration. This noise will be created so the SNR matches. (see :doc:`configuration` page).
+The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you selected and taking into account if you want to use sky emission. After that, it will create the noise based on the noise region that is given in the configuration and on the SNR . (see :doc:`configuration` page).
 
-Finally, everything is saved (see :doc:`output`) for all the files that are created.
+Finally, everything is saved in different catalog and individual files (see :doc:`output` for all the files that are created).
 
 
 .. note::

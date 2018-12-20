@@ -108,7 +108,7 @@ Preparation
 After this checks, SEDobs is going to prepare the extra files:
     * The final redshift, normalisation magnitude and SNR distributions. From the four files given (see above), four new distributions will be created, matching the shape of the original ones with the number of object you want to create. Examples are given below for this run:
 
-.. figure:: ./pics/multispec_all.png
+.. figure:: ./pics/fulldist.png
     :width: 750px
     :align: center
     :alt: GUI
@@ -138,7 +138,7 @@ After all these checking and preparations SEDobs starts to simulate. It will go 
 
 SEDobs start to take the library of templates that was created and adds emission lines. If you asked to give a certain fraction of lyman alpha emitters it will take it into account. Then the dust extinction will be added and the IGM as well. SEDobs will also tell you how many templates there is after all extinction are applied. Next, it will apply the cosmology to the library. The templaes will be redshifted and if you decided to use the cosmology it will keep only the templates that are younger than the age of the universe at the redshift of the simulated galaxy.   
 
-The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed. After that, all the band in your configuration are computed. In each band, the error is computed from the mean and sigma of the gaussian given for each band. Then it will cut the right regions depending on all your spectral configuration and create the noise based on the noise regions that are given in the configuration. This noise will be created so the SNR matches (see :doc:`configuration` page).
+The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed and apply sky emission (if used) to the template. After that, all the band in your configuration are computed. In each band, the error is computed from the mean and sigma of the gaussian given for each band. Then it will cut the right regions depending on all your spectral configuration and create the noise based on the noise regions that are given in the configuration and the sky emission (if used). This noise will be created so the SNR matches (see :doc:`configuration` page).
 
 Finally, everything is saved (see :doc:`output`) for all the files that are created.
 

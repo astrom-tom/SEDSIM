@@ -2,7 +2,7 @@
 __author__ = "Romain Thomas"
 __credits__ = "Romain Thomas"
 __license__ = "GNU GPL v3"
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 __maintainer__ = "Romain Thomas"
 __email__ = "rthomas@eso.org"
 __status__ = "Development"

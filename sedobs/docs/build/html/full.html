@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Full Simulation &mdash; SEDobs 0.1.2 documentation</title>
+  <title>Full Simulation &mdash; SEDobs 0.1.7 documentation</title>
   
 
   
@@ -88,7 +88,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="atmospheric.html">Atmospheric effect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="photo.html">Photometric Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Spectro.html">Spectroscopic Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiSpectro.html">Multi-Spectroscopic Simulation</a></li>
@@ -251,7 +252,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
 </dd>
 </dl>
 <div class="figure align-center">
-<a class="reference internal image-reference" href="_images/multispec_all.png"><img alt="GUI" src="_images/multispec_all.png" style="width: 750px;" /></a>
+<a class="reference internal image-reference" href="_images/fulldist.png"><img alt="GUI" src="_images/fulldist.png" style="width: 750px;" /></a>
 </div>
 <p>These four distributions will be joined in one file called ‘final_array_z_StN_mag.txt’ and placed in your project directory. This file can be re-used for another run using the <em>final array option</em>.</p>
 <blockquote>
@@ -273,7 +274,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
 <a class="reference internal image-reference" href="_images/fullobjectsingle.png"><img alt="GUI" src="_images/fullobjectsingle.png" style="width: 950px;" /></a>
 </div>
 <p>SEDobs start to take the library of templates that was created and adds emission lines. If you asked to give a certain fraction of lyman alpha emitters it will take it into account. Then the dust extinction will be added and the IGM as well. SEDobs will also tell you how many templates there is after all extinction are applied. Next, it will apply the cosmology to the library. The templaes will be redshifted and if you decided to use the cosmology it will keep only the templates that are younger than the age of the universe at the redshift of the simulated galaxy.</p>
-<p>The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed. After that, all the band in your configuration are computed. In each band, the error is computed from the mean and sigma of the gaussian given for each band. Then it will cut the right regions depending on all your spectral configuration and create the noise based on the noise regions that are given in the configuration. This noise will be created so the SNR matches (see <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page).</p>
+<p>The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed and apply sky emission (if used) to the template. After that, all the band in your configuration are computed. In each band, the error is computed from the mean and sigma of the gaussian given for each band. Then it will cut the right regions depending on all your spectral configuration and create the noise based on the noise regions that are given in the configuration and the sky emission (if used). This noise will be created so the SNR matches (see <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page).</p>
 <p>Finally, everything is saved (see <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a>) for all the files that are created.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -324,7 +325,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.2',
+            VERSION:'0.1.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -13,11 +13,10 @@ setup(
    description = 'Python tool for observed galaxy SED simulation',
    python_requires = '>=3.6',
    install_requires = [
-       "numpy >= 1.14.2",
+       "numpy >= 1.14.3",
        "h5py >= 2.8.0",
-       "scipy >= 1.0.1",
+       "scipy >= 1.1.0",
        "tqdm >= 4.23.4",
-       "extinction >= 0.4.0",
    ],
    include_package_data=True,
 )
