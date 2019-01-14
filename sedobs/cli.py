@@ -31,7 +31,7 @@ class CLI:
         """
         This function creates defines the 7 main arguments of SPARTAN using the argparse module
         """
-        parser = argparse.ArgumentParser(description="SEDobs, R. Thomas, 2018, \
+        parser = argparse.ArgumentParser(description="SEDobs, R. Thomas, 2018-2019, \
                 This program comes with ABSOLUTELY NO WARRANTY; and is distributed under \
                 the GPLv3.0 Licence terms.See the version of this Licence distributed along \
                 this code for details.\n website: \n \

@@ -52,9 +52,39 @@ def main():
     hide_dir = os.path.join(home,'.sedobs/')
     fileconf = os.path.join(hide_dir, 'sedobs_conf')
     
+    if args.docs == False and args.version == False and \
+            args.project == None and args.test == False:
+        MTU.Info('\tNo argument was passed ... sedobs --help will help you ... quit...\n', 'Yes')
+        sys.exit()
+
     if not os.path.isdir(hide_dir):
         MTU.Info('Create hidden directory for configuration and test files: ~/.sedobs', 'Yes')
         os.mkdir(hide_dir)
+
+    ###if the user wants to display the internal documentation
+    if args.docs == True:
+        
+        ##check if there is any internet connection
+        try:
+            socket.setdefaulttimeout(3)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+            url = info.__website__
+        ##if not we use the local documentation distributed along the software
+        except: 
+            MTU.Info('No internet connection detected, open local documentation', 'No')
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            url = os.path.join(dir_path, 'docs/build/html/index.html')
+
+        for i in ['falkon', 'firefox', 'open', 'qupzilla', 'chromium', 'google-chrome']:
+            ##we check if the command exist in the system
+            exist = call(['which', i])
+            if exist == 0:
+                ##if it does then we use it to load the documentation
+                call([i, url])
+                ##and we stop the loop
+                sys.exit()
+                break
+
 
 
     if not os.path.isfile(fileconf):
@@ -89,11 +119,6 @@ def main():
             copyfile(os.path.join(dirname,i), os.path.join(hide_dir,i))
 
         MTU.Info('Test files copied in hidden directory\n', 'No')
-        sys.exit()
-
-    if args.docs == False and args.version == False and \
-            args.project == None and args.test == False:
-        MTU.Info('\tNo argument was passed ... sedobs --help will help you ... quit...\n', 'Yes')
         sys.exit()
 
     ###if test:
@@ -154,30 +179,6 @@ def main():
     else:
         ##no test
         test = 'notest'
-
-    ###if the user wants to display the internal documentation
-    if args.docs == True:
-        
-        ##check if there is any internet connection
-        try:
-            socket.setdefaulttimeout(3)
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
-            url = info.__website__
-        ##if not we use the local documentation distributed along the software
-        except: 
-            MTU.Info('No internet connection detected, open local documentation', 'No')
-            dir_path = os.path.dirname(os.path.realpath(__file__))
-            url = os.path.join(dir_path, 'docs/build/html/index.html')
-
-        for i in ['falkon', 'firefox', 'open', 'qupzilla', 'chromium', 'google-chrome']:
-            ##we check if the command exist in the system
-            exist = call(['which', i])
-            if exist == 0:
-                ##if it does then we use it to load the documentation
-                call([i, url])
-                ##and we stop the loop
-                sys.exit()
-                break
 
     if args.project != None:
         print('----------------------------------------------------------')
