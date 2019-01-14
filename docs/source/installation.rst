@@ -31,7 +31,7 @@ SEDobs is written in python 3.6 with the following library and versions:
 
 Other libraries are used but they are all part of the standard python library. As such no extra installations are needed.
 
-The last SEDobs version is v0.1.1 and is available in the pypi test repository. To install it:
+The last SEDobs version is v0.1.8 and is available in the pypi test repository. To install it:
 
 .. code-block:: shell
      :linenos:
