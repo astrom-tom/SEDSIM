@@ -36,7 +36,7 @@ The last SEDobs version is v0.1.1 and is available in the pypi test repository. 
 .. code-block:: shell
      :linenos:
 
-     pip install --extra-index-url https://test.pypi.org/simple SEDObs --user
+     pip install -i https://test.pypi.org/simple/ sedobs
 
 Using this command will allow you not to have to install any other package. Pip will install what is missing for you.
 
