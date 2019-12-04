@@ -108,7 +108,7 @@ class Main:
             if self.DataT == 'Spectro' or self.DataT == 'Combined':
                 Name_spectro = '%s_spectro_N%s.dat'%(self.conf.General['PName'], N)
                 Name_sky = '%s_spectro_sky_N%s'%(self.conf.General['PName'], N)
-
+                
             if self.DataT == 'Combined':
                 Name_Combined = '%s_comb_N%s.dat'%(self.conf.General['PName'], N)
                 Name_sky = '%s_comb_sky_N%s'%(self.conf.General['PName'], N) 

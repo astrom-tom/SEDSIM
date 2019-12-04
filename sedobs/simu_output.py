@@ -182,6 +182,7 @@ class Output:
         N = 1
         for i, j in zip(Photosim, Spectrosim):
             name = Name[:-4] + '_%s'%N + '.spec'
+            print(name)
             namesky = Namesky + '_%s'%N + '.spec'
             self.create_indiv_spec_files(name, namesky, spectrodir, Spectrosim[j])
             line += '\t' + name + '\t%.4f\t%.4f'%(Photosim[i]['Meas'], Photosim[i]['Err'])
@@ -307,6 +308,7 @@ class Output:
                 w = wave[i[0]]
                 f = flux[i[0]]
                 n = noise[i[0]]
+                print(w, f, n)
                 line = '%s\t\t%s\t\t%s\n'%(w, f, n)
                 ff.write(line)
 
