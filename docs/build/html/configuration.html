@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuration &mdash; SEDobs 0.1.8 documentation</title>
+  <title>Configuration &mdash; SEDobs 0.1.9 documentation</title>
   
 
   
@@ -17,23 +17,28 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Atmospheric effect" href="atmospheric.html" />
-    <link rel="prev" title="Getting started" href="usage.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
+    <link rel="prev" title="Getting started" href="usage.html" />
+    <link href="_static/my_theme.css" rel="stylesheet" type="text/css">
 
 </head>
 
@@ -41,11 +46,10 @@
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -172,9 +176,9 @@
 <h1>Configuration<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <hr class="docutils" />
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
+<p class="admonition-title">Warning</p>
 <p><strong>Input Files</strong></p>
-<p class="last">SEDobs relies on numerous inputs that are pre-computed (e.g. Stellar Population, IGM extinction, etc). To make use of them you must download them at this <a class="reference external" href="https://drive.google.com/open?id=0B6RLimXliDkhOG93ZzRSSDhvUUE">link</a>
+<p>SEDobs relies on numerous inputs that are pre-computed (e.g. Stellar Population, IGM extinction, etc). To make use of them you must download them at this <a class="reference external" href="https://drive.google.com/open?id=0B6RLimXliDkhOG93ZzRSSDhvUUE">link</a>
 These are not being computed on the fly which save a lot of time in the simulating process. See details below on how to use them.</p>
 </div>
 <p>In order to make a simulation run with SEDobs, a configuration file must be filled. An example is given below (filled fields are default values):</p>
@@ -235,13 +239,13 @@ These are not being computed on the fly which save a lot of time in the simulati
 <h2>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
 <p>The general section is the first of the configuration file. It is composed of 7 entries:</p>
 <ul class="simple">
-<li><strong>Project_name</strong>: This is the name of your project. All the files created in the <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a> writing part of the code will use this name as prefix. For example if you name your project ‘my_simulation’, all the files will start by ‘’my_simulation+ending.txt’‘. <strong>It must not contain any space.</strong></li>
-<li><strong>Author</strong>: This is your name. Here you can write whatever you want (like name + date). This is not use anywhere in the code. <strong>It is more for a personnal note</strong>.</li>
-<li><strong>Project Directory</strong>: This is the (absolute) path of the directory where you want SEDobs to write all the outputs. Usually it is the directory where the configuration file is located. All the files an directory that are created by SEDobs will be written in that directory.</li>
-<li><strong>full_array</strong>: This is a file containing all the properties of the galaxies you want to simulate. This is optionnal (redshift, normalisation magnitude and signal to noise ratios). SEDobs will simulate exactly what is in this file. See the tutorial for more informations.</li>
-<li><strong>z_distribution</strong>: Only if you do not use the previous ‘’full_array’’ option. This file contains the distribution of redshift you want to mimick. It is a one column catalog with redshift values (with 4 decimal maximum).</li>
-<li><strong>Nobj</strong>: Only if you do not use the previous ‘’full_array’’ option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the <strong>z_distribution</strong> option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution.</li>
-<li><strong>sizegal</strong>: Averaged angular size of the galaxies that will be simulated, in arcsec. This is used to scale up the OH skyline spectrum (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details). The default size is 1’‘.</li>
+<li><p><strong>Project_name</strong>: This is the name of your project. All the files created in the <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a> writing part of the code will use this name as prefix. For example if you name your project ‘my_simulation’, all the files will start by ‘’my_simulation+ending.txt’‘. <strong>It must not contain any space.</strong></p></li>
+<li><p><strong>Author</strong>: This is your name. Here you can write whatever you want (like name + date). This is not use anywhere in the code. <strong>It is more for a personnal note</strong>.</p></li>
+<li><p><strong>Project Directory</strong>: This is the (absolute) path of the directory where you want SEDobs to write all the outputs. Usually it is the directory where the configuration file is located. All the files an directory that are created by SEDobs will be written in that directory.</p></li>
+<li><p><strong>full_array</strong>: This is a file containing all the properties of the galaxies you want to simulate. This is optionnal (redshift, normalisation magnitude and signal to noise ratios). SEDobs will simulate exactly what is in this file. See the tutorial for more informations.</p></li>
+<li><p><strong>z_distribution</strong>: Only if you do not use the previous ‘’full_array’’ option. This file contains the distribution of redshift you want to mimick. It is a one column catalog with redshift values (with 4 decimal maximum).</p></li>
+<li><p><strong>Nobj</strong>: Only if you do not use the previous ‘’full_array’’ option.  This is the number of objects you want SEDobs to create. This needs of course to be used with the <strong>z_distribution</strong> option. If the catalog given in the z_distribution option contains 500 redshifts and that you give N_obj=5000, SEDobs will create a redshift distribution of 5000 object with the same shape as your input redshift distribution.</p></li>
+<li><p><strong>sizegal</strong>: Averaged angular size of the galaxies that will be simulated, in arcsec. This is used to scale up the OH skyline spectrum (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details). The default size is 1’‘.</p></li>
 </ul>
 <p>An example of the version with the <strong>full_array</strong> option:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>General<span class="o">]</span>
@@ -280,29 +284,23 @@ These are not being computed on the fly which save a lot of time in the simulati
 <h2>Photo<a class="headerlink" href="#photo" title="Permalink to this headline">¶</a></h2>
 <p>This is where you tell SEDOBS what photometric data to simulate:</p>
 <ul>
-<li><p class="first"><strong>Norm_band</strong>: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page for all the filters available), an atmosphere range and a sky subrtaction estimation (see below).</p>
-</li>
-<li><p class="first"><strong>Norm_distribution</strong>: Only if you do not use the previous <strong>full_array</strong> option. This is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the same band you gave in the <strong>Norm_band</strong> entry.</p>
-</li>
-<li><p class="first"><strong>Nband</strong>: The number of photometric band you want to be computed for a given simulation.</p>
-</li>
-<li><p class="first"><strong>Band_list</strong>: This is where you give the photometric configuration for each band. For each of them you must give multiple information <strong>(name,offset,mean,sigma,atm,skysub)</strong>:</p>
+<li><p><strong>Norm_band</strong>: This is the band SEDobs will use to normalise the selected model to the observed magnitude. It is a name of a filter (see <a class="reference internal" href="filters.html"><span class="doc">Filters</span></a> page for all the filters available), an atmosphere range and a sky subrtaction estimation (see below).</p></li>
+<li><p><strong>Norm_distribution</strong>: Only if you do not use the previous <strong>full_array</strong> option. This is the magnitude distribution SEDobs will use to create your data. It is a one column only file with magnitude values (AB) in the same band you gave in the <strong>Norm_band</strong> entry.</p></li>
+<li><p><strong>Nband</strong>: The number of photometric band you want to be computed for a given simulation.</p></li>
+<li><p><strong>Band_list</strong>: This is where you give the photometric configuration for each band. For each of them you must give multiple information <strong>(name,offset,mean,sigma,atm,skysub)</strong>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><strong>name</strong>: This is the name of the filter</li>
-<li><strong>offset</strong>: This is the offset of the band (in magnitude) that will be applied in all the magnitudes</li>
-<li><strong>mean</strong> and <strong>sigma</strong>: To compute the errors on the band, SEDobs created a gaussian and randomely select in that gaussian to create the simulated error. You must give for each band the mean and sigma of that gaussian.</li>
-<li><strong>atm</strong>: This let SEDOBS know if this band is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for details).</li>
-<li><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details.</li>
+<li><p><strong>name</strong>: This is the name of the filter</p></li>
+<li><p><strong>offset</strong>: This is the offset of the band (in magnitude) that will be applied in all the magnitudes</p></li>
+<li><p><strong>mean</strong> and <strong>sigma</strong>: To compute the errors on the band, SEDobs created a gaussian and randomely select in that gaussian to create the simulated error. You must give for each band the mean and sigma of that gaussian.</p></li>
+<li><p><strong>atm</strong>: This let SEDOBS know if this band is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for details).</p></li>
+<li><p><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details.</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first"><strong>flux_unit</strong>: This is the unit of the output photometry. If empty it will be erg/s/cm2/A. You can also give <em>Jy</em> and <em>muJy</em> (micro Jensky).</p>
-</li>
-<li><p class="first"><strong>wave_unit</strong>: This is the unit of the wavelength of the output photometry. If empty it will be Angstrom. You can also give <em>log_ang</em> to get directly the logarithm (base 10) of the wavelength.</p>
-</li>
-<li><p class="first"><strong>savesky</strong>: Yes or No. This is if you want to save the full OHlines spectrum (this can take some disk space, to use wisely).</p>
-</li>
+<li><p><strong>flux_unit</strong>: This is the unit of the output photometry. If empty it will be erg/s/cm2/A. You can also give <em>Jy</em> and <em>muJy</em> (micro Jensky).</p></li>
+<li><p><strong>wave_unit</strong>: This is the unit of the wavelength of the output photometry. If empty it will be Angstrom. You can also give <em>log_ang</em> to get directly the logarithm (base 10) of the wavelength.</p></li>
+<li><p><strong>savesky</strong>: Yes or No. This is if you want to save the full OHlines spectrum (this can take some disk space, to use wisely).</p></li>
 </ul>
 <p>An example is given below, without full array:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">Norm_band</span> <span class="o">=</span> <span class="o">(</span>r-megacam,low,98<span class="o">)</span>
@@ -329,31 +327,25 @@ These are not being computed on the fly which save a lot of time in the simulati
 <h2>Spectro<a class="headerlink" href="#spectro" title="Permalink to this headline">¶</a></h2>
 <p>This is where you precise the spectroscopic information of the simulations. Seven entries are needed:</p>
 <ul>
-<li><p class="first"><strong>NSpec</strong>: This is the number of spectroscopy per simulated galaxy you want to create. For a given template, randomely chosen in the library, you can ask to have 1, 2 or N spectra to be created (for example sdss-like and HST-like).</p>
-</li>
-<li><p class="first"><strong>Norm_band</strong>: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above) you must give the name of a filter, atmospheric range and a skysubstraction efficiency estimation.</p>
-</li>
-<li><p class="first"><strong>Noise_reg</strong>: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.</p>
-</li>
-<li><p class="first"><strong>Norm_distribution</strong>: Only if you do not use the <strong>full_array</strong> option. You must give the normalisation file (see above for photometry).</p>
-</li>
-<li><p class="first"><strong>types</strong>: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: <strong>l1, l2, dl, R [,SNR.txt], atm, skysub</strong>:</p>
+<li><p><strong>NSpec</strong>: This is the number of spectroscopy per simulated galaxy you want to create. For a given template, randomely chosen in the library, you can ask to have 1, 2 or N spectra to be created (for example sdss-like and HST-like).</p></li>
+<li><p><strong>Norm_band</strong>: For each spectrum that you want to create you must tell SEDobs in what band you want to normalize it. As in the case of photometry (see above) you must give the name of a filter, atmospheric range and a skysubstraction efficiency estimation.</p></li>
+<li><p><strong>Noise_reg</strong>: This is a region free of emission lines where the SNR will be adjusted. It is given in angstrom.</p></li>
+<li><p><strong>Norm_distribution</strong>: Only if you do not use the <strong>full_array</strong> option. You must give the normalisation file (see above for photometry).</p></li>
+<li><p><strong>types</strong>: This is where you give the spectroscopic configuration. For each spectrum you want to simulate, you must give: <strong>l1, l2, dl, R [,SNR.txt], atm, skysub</strong>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><strong>l1</strong>: The starting wavelength of your spectrum</li>
-<li><strong>l2</strong>: The end wavelength of your spectrum</li>
-<li><strong>dl</strong>: The delta lambda of your spectrum</li>
-<li><strong>R</strong>: The spectral resolution of your spectrum</li>
-<li><strong>SNR.txt</strong>: Only if you do not use the <strong>full_array</strong> option. The file containing the Signal to noise ratio distribution (one column catalog).</li>
-<li><strong>atm</strong>: This let SEDOBS know if this spectrum is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for details).</li>
-<li><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details.</li>
+<li><p><strong>l1</strong>: The starting wavelength of your spectrum</p></li>
+<li><p><strong>l2</strong>: The end wavelength of your spectrum</p></li>
+<li><p><strong>dl</strong>: The delta lambda of your spectrum</p></li>
+<li><p><strong>R</strong>: The spectral resolution of your spectrum</p></li>
+<li><p><strong>SNR.txt</strong>: Only if you do not use the <strong>full_array</strong> option. The file containing the Signal to noise ratio distribution (one column catalog).</p></li>
+<li><p><strong>atm</strong>: This let SEDOBS know if this spectrum is affected by atmsopherical effects. It can take four values: none, low, int, high (see <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for details).</p></li>
+<li><p><strong>skysub</strong>: A number between 0 and 100. This is your estimation of the sky substraction efficiency (100[%] means perfect substraction, 0[%] means no sky is substracted). See <a class="reference internal" href="atmospheric.html"><span class="doc">Atmospheric effect</span></a> for more details.</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first"><strong>flux_unit</strong>: This is the unit of the output spectrum. If empty it will be erg/s/cm2/A. You can also give <em>Jy</em> and <em>muJy</em> (micro Jensky).</p>
-</li>
-<li><p class="first"><strong>wave_unit</strong>: This is the unit of the wavelength of the output spectrum. If empty it will be Angstrom. You can also give <em>log_ang</em> to get directly the logarithm (base 10) of the wavelength.</p>
-</li>
+<li><p><strong>flux_unit</strong>: This is the unit of the output spectrum. If empty it will be erg/s/cm2/A. You can also give <em>Jy</em> and <em>muJy</em> (micro Jensky).</p></li>
+<li><p><strong>wave_unit</strong>: This is the unit of the wavelength of the output spectrum. If empty it will be Angstrom. You can also give <em>log_ang</em> to get directly the logarithm (base 10) of the wavelength.</p></li>
 </ul>
 <p>You must repeat that for each spectrum.</p>
 <p>An example of this section is given below without full array option.</p>
@@ -396,12 +388,12 @@ An example of this section is given below:</p>
 <p>This is the section where you tell SEDobs what kind of templates you want to choose from to make the simulations. In order to speed-up the simulation process different types of templates and extinction have been pre-computed. You must download these files <a class="reference external" href="https://drive.google.com/open?id=0B6RLimXliDkhOG93ZzRSSDhvUUE">here</a>. Be carefull of the file size as some files are more than 1Gb. The directories are:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Directory EXT: Contains different dust extinction laws. You can freely add yours.</li>
-<li>Directory EmLine: Contains emission lines related files.</li>
-<li>Directory IGM: Contains all the IGM curves (in HDF5 format).</li>
-<li>Directory LIBS: Contains pre-computed CSPs with different SFH, IGM and metallicities.</li>
-<li>Directory Atmos: Contains pre-computed sky emission spectra.</li>
-<li>File: SPARTAN_filters.hdf5 contains all the photometric filters curves.</li>
+<li><p>Directory EXT: Contains different dust extinction laws. You can freely add yours.</p></li>
+<li><p>Directory EmLine: Contains emission lines related files.</p></li>
+<li><p>Directory IGM: Contains all the IGM curves (in HDF5 format).</p></li>
+<li><p>Directory LIBS: Contains pre-computed CSPs with different SFH, IGM and metallicities.</p></li>
+<li><p>Directory Atmos: Contains pre-computed sky emission spectra.</p></li>
+<li><p>File: SPARTAN_filters.hdf5 contains all the photometric filters curves.</p></li>
 </ul>
 </div></blockquote>
 <p>It is very important to keep all these directories in the same parent directory (SEDobs has relative paths to that parent directory hardcoded). The layout should look like this:</p>
@@ -417,35 +409,30 @@ An example of this section is given below:</p>
 <p>The path to the parent directory is the one you have to give when you start the SEDobs for the first time (see <a class="reference internal" href="usage.html"><span class="doc">Getting started</span></a>).</p>
 <p>Once you have all the extra input files you can fill the template section:</p>
 <ul>
-<li><p class="first"><strong>BaseSSP</strong>: This is the basic files with pre-computed templates. They are located in the LIBS input directory. Their format are LIB_BC03_[ SFH type ]_[ Resolution ]_[ IMF ]_SPARTAN.hdf5.</p>
+<li><p><strong>BaseSSP</strong>: This is the basic files with pre-computed templates. They are located in the LIBS input directory. Their format are LIB_BC03_[ SFH type ]_[ Resolution ]_[ IMF ]_SPARTAN.hdf5.</p>
 <blockquote>
 <div><ul class="simple">
-<li>SFH type are for the moment exponentially delayed and exponentially declining.</li>
-<li>Resolution: LR = low resolution; HR = high resolution</li>
-<li>IMF:  Chab for Chabrier IMG, Salp for Salpeter IMF.</li>
+<li><p>SFH type are for the moment exponentially delayed and exponentially declining.</p></li>
+<li><p>Resolution: LR = low resolution; HR = high resolution</p></li>
+<li><p>IMF:  Chab for Chabrier IMG, Salp for Salpeter IMF.</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first"><strong>Dust Use</strong>: The dust extinction files that you want to use (located in the EXT directory).</p>
-</li>
-<li><p class="first"><strong>IGMUse</strong>: The IGM prescription you want to use. You can choose from Meiskin+06 and Madau+95.</p>
-</li>
-<li><p class="first"><strong>IGMtype</strong>: The type of IGM you want to use. Both previous extinction have been upgraded to allow 7 different IGM curves at a given redshift (see Thomas+17a). Here you can say <strong>mean</strong> or <strong>free</strong>. Mean means that you just want to use the mean IGM value at each redshift, free means that you allow SEDobs to apply one of the 7 IGM transmission curves at any redshift. Each file in the IGM directory contain all the 7 curves at any redshift from 1.5 to 7 (so 5500 redshift x 7 curves = 38500 curves).</p>
-</li>
-<li><p class="first"><strong>EmLine</strong>: yes or no if you want to add emission line to your templates (Presription of Schaerer+05).</p>
-</li>
-<li><p class="first"><strong>LyaFrac</strong>: As the Lyman alpha line can be both in emission and absorption we leave the user the choice of fraction of Lyman alpha emitters in the simulation. If you enter 1, it means that Lyman alpha will always be added to the template. If you put 0, it will never be added. If you write 0.5 it will be added 50% of the time.</p>
-</li>
+<li><p><strong>Dust Use</strong>: The dust extinction files that you want to use (located in the EXT directory).</p></li>
+<li><p><strong>IGMUse</strong>: The IGM prescription you want to use. You can choose from Meiskin+06 and Madau+95.</p></li>
+<li><p><strong>IGMtype</strong>: The type of IGM you want to use. Both previous extinction have been upgraded to allow 7 different IGM curves at a given redshift (see Thomas+17a). Here you can say <strong>mean</strong> or <strong>free</strong>. Mean means that you just want to use the mean IGM value at each redshift, free means that you allow SEDobs to apply one of the 7 IGM transmission curves at any redshift. Each file in the IGM directory contain all the 7 curves at any redshift from 1.5 to 7 (so 5500 redshift x 7 curves = 38500 curves).</p></li>
+<li><p><strong>EmLine</strong>: yes or no if you want to add emission line to your templates (Presription of Schaerer+05).</p></li>
+<li><p><strong>LyaFrac</strong>: As the Lyman alpha line can be both in emission and absorption we leave the user the choice of fraction of Lyman alpha emitters in the simulation. If you enter 1, it means that Lyman alpha will always be added to the template. If you put 0, it will never be added. If you write 0.5 it will be added 50% of the time.</p></li>
 </ul>
 <p>Physical parameters:
 Each pre-computed library comes with already defined range of values for the galactic ages, SFH timescales amd metallity.</p>
 <ul class="simple">
-<li><strong>Age</strong>: The ages that you want SEDobs to consider. The range of age is defined from 1e+06yr to 1.5e+10yr. You can five any age between these two limits. SEDobs will interpolate between the existing ages to match your list.</li>
-<li><strong>TAU</strong>: The same as for the ages. TAUs are defined (for both delayed and declining) from 0.1Gyr to 9.9Gyr. You can give any values between these two limits.</li>
-<li><strong>MET</strong>: Unlike the other parameters, SEDobs will not interpolate between existing values. Therefore you have to give one (or more) of these metallicites (in Z(solar) unit): 0.02;0.2;0.4;1.0;2.5.</li>
-<li><strong>EBVList</strong>: The color excess values you want to apply. They must be positive (or equal to 0).</li>
-<li><strong>AvsList</strong>:  Total extinction in the V band. Must be positive.</li>
-<li><strong>RvsList</strong>:  optical to selective extinction ratio (with Rv = Av/E(b-v))</li>
+<li><p><strong>Age</strong>: The ages that you want SEDobs to consider. The range of age is defined from 1e+06yr to 1.5e+10yr. You can five any age between these two limits. SEDobs will interpolate between the existing ages to match your list.</p></li>
+<li><p><strong>TAU</strong>: The same as for the ages. TAUs are defined (for both delayed and declining) from 0.1Gyr to 9.9Gyr. You can give any values between these two limits.</p></li>
+<li><p><strong>MET</strong>: Unlike the other parameters, SEDobs will not interpolate between existing values. Therefore you have to give one (or more) of these metallicites (in Z(solar) unit): 0.02;0.2;0.4;1.0;2.5.</p></li>
+<li><p><strong>EBVList</strong>: The color excess values you want to apply. They must be positive (or equal to 0).</p></li>
+<li><p><strong>AvsList</strong>:  Total extinction in the V band. Must be positive.</p></li>
+<li><p><strong>RvsList</strong>:  optical to selective extinction ratio (with Rv = Av/E(b-v))</p></li>
 </ul>
 <p>For each list of parameters you have to separate values by ‘;’ wihout spaces.</p>
 <p>En example of such section is given here:</p>
@@ -480,7 +467,7 @@ Each pre-computed library comes with already defined range of values for the gal
         <a href="atmospheric.html" class="btn btn-neutral float-right" title="Atmospheric effect" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="usage.html" class="btn btn-neutral" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -489,7 +476,7 @@ Each pre-computed library comes with already defined range of values for the gal
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Romain Thomas.
+        &copy; Copyright 2018, Romain Thomas
 
     </p>
   </div>
@@ -506,36 +493,16 @@ Each pre-computed library comes with already defined range of values for the gal
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.8',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

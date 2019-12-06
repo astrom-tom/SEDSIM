@@ -26,7 +26,7 @@ author = 'Romain Thomas'
 # The short X.Y version
 version = '0.1'
 # The full version, including alpha/beta/rc tags
-release = '0.1.8'
+release = '0.1.9'
 
 
 # -- General configuration ---------------------------------------------------
@@ -108,7 +108,7 @@ htmlhelp_basename = 'SEDobsdoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 latex_engine = 'xelatex'
-latex_elements = {'\usepackage{amsmath}\n\usepackage{amssymb}\n'}
+#latex_elements = {'\usepackage{amsmath}\n\usepackage{amssymb}\n'}
 #latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #

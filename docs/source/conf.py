@@ -108,7 +108,7 @@ htmlhelp_basename = 'SEDobsdoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 latex_engine = 'xelatex'
-latex_elements = {'\usepackage{amsmath}\n\usepackage{amssymb}\n'}
+#latex_elements = {'\usepackage{amsmath}\n\usepackage{amssymb}\n'}
 #latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #

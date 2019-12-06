@@ -176,7 +176,7 @@ class Spectroscopy:
         
         ####first we extract the region where we compute the StN
         ####!!!WARNING they are given in rf
-        Noise_reg = specconf['Noise_reg'].split(',')
+        Noise_reg = specconf['Noise_reg'].strip(')').strip('(').split(',')
         Noise_reg_i = float(Noise_reg[0])*(1+Redshift)
         Noise_reg_f = float(Noise_reg[1])*(1+Redshift)
         

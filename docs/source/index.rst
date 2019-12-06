@@ -54,6 +54,10 @@ What is SEDobs?
 ===============
 SEDobs is a program that aims at using state of the art theoretical gelaxy SED (spectral energy distribution) to create simulated observation of distant galaxies. It used BC03 and M05 theoretical models and allows the user to configure the simulated observation that are needed. For a given simulated galaxy, the user is able to simulate multi-spectral and multi-photometric observations. Number of inputs are needed and described in :doc:`configuration`. The outputs are very easy and directly usable, they are described in :doc:`output`. To get started with the use of SEDobs you must install it :doc:`installation`. And carefully look at the :doc:`usage` and :doc:`configuration` pages to understand how to use it. 
 
+---- 
+
+SEDobs has been accepted for Publication in Astronomy and Computing! More details to come!
+
 ----
 
 **Contribute!**

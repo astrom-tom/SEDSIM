@@ -252,7 +252,7 @@ class check_prepare:
                     MTU.Info('redshift distribution: file found','No')
                 else: 
                     MTU.Error('redshift distribution: file not found...exit\n', 'Yes')
-                    MTU.Error('--> %s'% os.path.join(General['PDir'], General['z_dist']))
+                    MTU.Error('--> %s'% os.path.join(General['PDir'], General['z_dist']), 'Yes')
                     sys.exit()
             else:
                 MTU.Error('No redshift distribution given...exit\n', 'Yes')

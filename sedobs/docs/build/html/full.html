@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Full Simulation &mdash; SEDobs 0.1.8 documentation</title>
+  <title>Full Simulation &mdash; SEDobs 0.1.9 documentation</title>
   
 
   
@@ -17,23 +17,28 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Outputs" href="output.html" />
-    <link rel="prev" title="Multi-Spectroscopic Simulation" href="MultiSpectro.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
+    <link rel="prev" title="Multi-Spectroscopic Simulation" href="MultiSpectro.html" />
+    <link href="_static/my_theme.css" rel="stylesheet" type="text/css">
 
 </head>
 
@@ -41,11 +46,10 @@
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -169,8 +173,8 @@
 <div class="section" id="full-simulation">
 <h1>Full Simulation<a class="headerlink" href="#full-simulation" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This exact run can be started in the test of SEDobs. if you hit the command <strong>sedobs – –test</strong> and select the multispectro simulation sedobs will run exactly this configuration.</p>
+<p class="admonition-title">Note</p>
+<p>This exact run can be started in the test of SEDobs. if you hit the command <strong>sedobs – –test</strong> and select the multispectro simulation sedobs will run exactly this configuration.</p>
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
@@ -225,7 +229,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
 <a class="reference internal image-reference" href="_images/fullcheck.png"><img alt="GUI" src="_images/fullcheck.png" style="width: 750px;" /></a>
 </div>
 <ul class="simple">
-<li><strong>1-General section checking</strong>:  First it tells you what file you loaded. Then it checks the general section of the configuration file. It makes sure that your directory exist and that the filter file is found. Since we do not give a full array, it assumes we give individual distribution (in the spectroscopic case the redshift distribution, normalisation magnitude distribution and SNR distribution). It checks that the redshift distribution is found and that the number of objects is given. In the project directory you will have this files (of course this has to be adapted to your project):</li>
+<li><p><strong>1-General section checking</strong>:  First it tells you what file you loaded. Then it checks the general section of the configuration file. It makes sure that your directory exist and that the filter file is found. Since we do not give a full array, it assumes we give individual distribution (in the spectroscopic case the redshift distribution, normalisation magnitude distribution and SNR distribution). It checks that the redshift distribution is found and that the number of objects is given. In the project directory you will have this files (of course this has to be adapted to your project):</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Project Directory
     <span class="p">|</span>_SEDOBS.conf
@@ -236,18 +240,17 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
 </pre></div>
 </div>
 <ul class="simple">
-<li><strong>2-Check data type</strong>: Then SEDobs check what type of data you want to simulate, in this case single spectroscopy</li>
-<li><strong>3-Check Cosmology module</strong>: The cosmology configuration is verified</li>
-<li><strong>4-Check the spectroscopic-photometric configuration</strong>: SEDobs then start to check the spectroscopic configuration. It checks the number of spectra that will be simulated per galaxy, also the normalisation band (and magnitude distribution).  It will check that a SNR distribution is given per simulated spectrum (2 simulated spectra –&gt; 2 distributions of SNR). Finally it will check that the types of spectra are given as well as the noise regions and it will look at all the bands that will be simulated.</li>
-<li><strong>5-Check template configuration</strong>: Then SEDobs look at your template setting. It checks that all the input files are found (IGM, dust extinction, templates).</li>
+<li><p><strong>2-Check data type</strong>: Then SEDobs check what type of data you want to simulate, in this case single spectroscopy</p></li>
+<li><p><strong>3-Check Cosmology module</strong>: The cosmology configuration is verified</p></li>
+<li><p><strong>4-Check the spectroscopic-photometric configuration</strong>: SEDobs then start to check the spectroscopic configuration. It checks the number of spectra that will be simulated per galaxy, also the normalisation band (and magnitude distribution).  It will check that a SNR distribution is given per simulated spectrum (2 simulated spectra –&gt; 2 distributions of SNR). Finally it will check that the types of spectra are given as well as the noise regions and it will look at all the bands that will be simulated.</p></li>
+<li><p><strong>5-Check template configuration</strong>: Then SEDobs look at your template setting. It checks that all the input files are found (IGM, dust extinction, templates).</p></li>
 </ul>
 </div>
 <div class="section" id="preparation">
 <h2>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>After this checks, SEDobs is going to prepare the extra files:</dt>
-<dd><ul class="first last simple">
-<li>The final redshift, normalisation magnitude and SNR distributions. From the four files given (see above), four new distributions will be created, matching the shape of the original ones with the number of object you want to create. Examples are given below for this run:</li>
+<dl class="simple">
+<dt>After this checks, SEDobs is going to prepare the extra files:</dt><dd><ul class="simple">
+<li><p>The final redshift, normalisation magnitude and SNR distributions. From the four files given (see above), four new distributions will be created, matching the shape of the original ones with the number of object you want to create. Examples are given below for this run:</p></li>
 </ul>
 </dd>
 </dl>
@@ -257,14 +260,14 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
 <p>These four distributions will be joined in one file called ‘final_array_z_StN_mag.txt’ and placed in your project directory. This file can be re-used for another run using the <em>final array option</em>.</p>
 <blockquote>
 <div><ul class="simple">
-<li>From the Ages, Tau and metallicities that you give in your configuration SEDobs recompute a library of templates and save it in <em>SEDobs_Test_run_multispectro.hdf5</em> (this name depends on the name of your project).</li>
-<li>SEDobs starts to create the output files (with header). In this case it will be the parameter file, and the photometric (list of spectrum, redshift, normalisation magnitude) file. It also creates the spectra and original_template sub-directories</li>
+<li><p>From the Ages, Tau and metallicities that you give in your configuration SEDobs recompute a library of templates and save it in <em>SEDobs_Test_run_multispectro.hdf5</em> (this name depends on the name of your project).</p></li>
+<li><p>SEDobs starts to create the output files (with header). In this case it will be the parameter file, and the photometric (list of spectrum, redshift, normalisation magnitude) file. It also creates the spectra and original_template sub-directories</p></li>
 </ul>
 </div></blockquote>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
+<p class="admonition-title">Warning</p>
 <p>if you change some of the template parameters (Age, Tau, met) you must delete the <a href="#id1"><span class="problematic" id="id2">*</span></a>.hdf5 file that was created previously because SEDobs try to look for an already computed library of template before creating one.</p>
-<p class="last">It is the same for the <em>final_array_z_StN_mag.txt</em> file. If you change your redshift distribution of your normalisation band distribution you have to delete this file. SEDobs try to look for it to check if one is already here. If it finds it it will not recalculate it.</p>
+<p>It is the same for the <em>final_array_z_StN_mag.txt</em> file. If you change your redshift distribution of your normalisation band distribution you have to delete this file. SEDobs try to look for it to check if one is already here. If it finds it it will not recalculate it.</p>
 </div>
 </div>
 <div class="section" id="simulation">
@@ -277,8 +280,8 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
 <p>The template used for the simulated galaxy will then be chosen randomly in the left over templates. It will be normalize to the normalisation magnitude value in the normalisation band you choosed and apply sky emission (if used) to the template. After that, all the band in your configuration are computed. In each band, the error is computed from the mean and sigma of the gaussian given for each band. Then it will cut the right regions depending on all your spectral configuration and create the noise based on the noise regions that are given in the configuration and the sky emission (if used). This noise will be created so the SNR matches (see <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> page).</p>
 <p>Finally, everything is saved (see <a class="reference internal" href="output.html"><span class="doc">Outputs</span></a>) for all the files that are created.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This exact run can be started in the test of SEDobs. if you hit the command <strong>sedobs –test</strong> and select the photometric simulation sedobs will run exactly this configuration.</p>
+<p class="admonition-title">Note</p>
+<p>This exact run can be started in the test of SEDobs. if you hit the command <strong>sedobs –test</strong> and select the photometric simulation sedobs will run exactly this configuration.</p>
 </div>
 </div>
 </div>
@@ -294,7 +297,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
         <a href="output.html" class="btn btn-neutral float-right" title="Outputs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="MultiSpectro.html" class="btn btn-neutral" title="Multi-Spectroscopic Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="MultiSpectro.html" class="btn btn-neutral float-left" title="Multi-Spectroscopic Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -303,7 +306,7 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Romain Thomas.
+        &copy; Copyright 2018, Romain Thomas
 
     </p>
   </div>
@@ -320,36 +323,16 @@ The configuration we use is the one given below (named: SEDobs_Test_run_full.con
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.8',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -134,7 +134,6 @@ These four distributions will be joined in one file called 'final_array_z_StN_ma
 
 .. warning::
     if you change some of the template parameters (Age, Tau, met) you must delete the *.hdf5 file that was created previously because SEDobs try to look for an already computed library of template before creating one.
-
     It is the same for the *final_array_z_StN_mag.txt* file. If you change your redshift distribution of your normalisation band distribution you have to delete this file. SEDobs try to look for it to check if one is already here. If it finds it it will not recalculate it. 
 
 	

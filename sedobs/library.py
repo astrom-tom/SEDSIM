@@ -70,7 +70,7 @@ class from_Lib:
         Names_parameters    list, of parameter Names
         '''
         ##open the library and extract models
-        with h5py.File(LIBfile) as LIB:
+        with h5py.File(LIBfile, 'r') as LIB:
             wave = numpy.array(LIB['Wavelength'])
             Templates = numpy.array(LIB['Templates'])
             Names_parameters = numpy.array(LIB['Parameter']).tolist()

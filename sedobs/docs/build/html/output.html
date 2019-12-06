@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Outputs &mdash; SEDobs 0.1.8 documentation</title>
+  <title>Outputs &mdash; SEDobs 0.1.9 documentation</title>
   
 
   
@@ -17,22 +17,27 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Full Simulation" href="full.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
+    <link rel="prev" title="Full Simulation" href="full.html" />
+    <link href="_static/my_theme.css" rel="stylesheet" type="text/css">
 
 </head>
 
@@ -40,11 +45,10 @@
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -171,28 +175,28 @@
 <div class="section" id="template-library">
 <h2>Template library<a class="headerlink" href="#template-library" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><strong>~/project/path/my_simulation_run.hdf5</strong>: This is the aglomerate of all the galaxy templates SEDobs can choose from to create your simulation. Each simulation comes from this set of templates. They are defined in the ‘Template’ section of the configuration file.</li>
+<li><p><strong>~/project/path/my_simulation_run.hdf5</strong>: This is the aglomerate of all the galaxy templates SEDobs can choose from to create your simulation. Each simulation comes from this set of templates. They are defined in the ‘Template’ section of the configuration file.</p></li>
 </ul>
 </div>
 <div class="section" id="final-simulated-catalogs">
 <h2>Final simulated catalogs<a class="headerlink" href="#final-simulated-catalogs" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><strong>~/project/path/my_simulation_run_photo_file_final.txt</strong> [Only if photometry is used]: This is the final photometric catalog produced by SEDobs. It contains all the simulated galaxy with their redshift and their magnitude. The format of this file is the following [we give here the header]:</li>
+<li><p><strong>~/project/path/my_simulation_run_photo_file_final.txt</strong> [Only if photometry is used]: This is the final photometric catalog produced by SEDobs. It contains all the simulated galaxy with their redshift and their magnitude. The format of this file is the following [we give here the header]:</p></li>
 </ul>
 <p class="centered">
 <strong># ident     redshift        u-megacam       u-megacam_err   g-megacam       g-megacam_err   r-megacam       r-megacam_err   i-megacam       i-megacam_err   z-megacam       z-megacam_err</strong></p><p>The first column gives the name (ident) of the object, the second gives the redshift. Then each magnitude and their error are given. For each measurement in a given filter, two columns are written: The actual measurement (filter_name) and the error on this measurement (filter_name_err). This catalog can be used in the SPARTAN program.</p>
 <ul class="simple">
-<li><strong>~/project/path/my_simulation_run_spectro_file_final.txt</strong> [Only if the spectroscopy is used]: This is the final spectral catalog. It contains all the simulated spectra of the simulated galaxies with their redshift. The format is the following [header for 2-spectra simulation]:</li>
+<li><p><strong>~/project/path/my_simulation_run_spectro_file_final.txt</strong> [Only if the spectroscopy is used]: This is the final spectral catalog. It contains all the simulated spectra of the simulated galaxies with their redshift. The format is the following [header for 2-spectra simulation]:</p></li>
 </ul>
 <p class="centered">
 <strong># ident     redshift        spec1   i-megacam       i-megacam_err   spec2   J-wircam        J-wircam_err</strong></p><p>The first column gives again the name (ident) of the object and the second column give the redshift. Then the information for each spectrum is given. For each of them, 3 columns are given: The name of the spectrum (e.g spec1 or spec2) and the normalisation magnitude of this spectrum with its error. In this example i-megacam and i-megacam_err for the first spectrum and J-wircam with J-wircam_err for the second spectrum. This catalog can be used in SPARTAN.</p>
 <ul class="simple">
-<li><strong>~/project/path/my_simulation_run_Combined_file_final.txt</strong> [Only if both spectroscopy and photometry are used]. This is the agglomerate of the two previously presented catalogs. It contains all the photometric and spectroscopic information for each simulated galaxy. An example of a header with 2-spectra and photometric simulation:</li>
+<li><p><strong>~/project/path/my_simulation_run_Combined_file_final.txt</strong> [Only if both spectroscopy and photometry are used]. This is the agglomerate of the two previously presented catalogs. It contains all the photometric and spectroscopic information for each simulated galaxy. An example of a header with 2-spectra and photometric simulation:</p></li>
 </ul>
 <p class="centered">
 <strong># ident     redshift        spec1           i-megacam       i-megacam_err   spec2           J-wircam        J-wircam_err    u-megacam       u-megacam_err   g-megacam       g-megacam_err   r-megacam       r-megacam_err   i-megacam       i-megacam_err   z-megacam       z-megacam_err</strong></p><p>The combined catalog start with the same two columns as the other catalogs: ident and redshift. Then the Nx3 next columns are reserved for spectroscopy, with N=number of spectra created during the simulation (see previous point with spectral catalogs). This gives the columns 3 to 8. After the spectroscopic part, All the photometric bands are given; in this example from u to z. For each photometric point the measurement and error are given. In this example this gives columns from 9 to 18 (5 bands times 2).</p>
 <ul class="simple">
-<li><strong>~/project/path/my_simulation_run_sky_catalog.txt</strong> . This catalog will tell you what airmass was considered for each object. If you did not use any sky emission it will be filled by -99.9. If you used the sky emission it will  give you the magnitude of the sky (in the normalisation band you defined in the configuration file) and the flux (in erg/s/cm2/Ang) as well as the airmass.</li>
+<li><p><strong>~/project/path/my_simulation_run_sky_catalog.txt</strong> . This catalog will tell you what airmass was considered for each object. If you did not use any sky emission it will be filled by -99.9. If you used the sky emission it will  give you the magnitude of the sky (in the normalisation band you defined in the configuration file) and the flux (in erg/s/cm2/Ang) as well as the airmass.</p></li>
 </ul>
 <p class="centered">
 <strong># ident     mag_sky flux_sky  AMrange1  AM1 AMrange2  AM2….</strong></p></div>
@@ -200,13 +204,13 @@
 <h2>Individual spectral and photometric files<a class="headerlink" href="#individual-spectral-and-photometric-files" title="Permalink to this headline">¶</a></h2>
 <p>Three directories are created:</p>
 <ul class="simple">
-<li><strong>~/project/path/original_template/*</strong>: This is the directory where all the template that are actually used are stored. For the first simulated galaxy of the run, the file  <em>~/project/path/original_template/my_simulation_run_N1_original.txt</em> is the theoretical template that was used for the simulation. It is worth noting that it is correctly flux-calibrated. These files contain 2 columns: wavelength (in angstrom) and flux density.</li>
-<li><strong>~/project/path/photo_indiv/*</strong>: This directory contains all the photometric information for each simulated galaxy. For example, the first simulated galaxy of the run (with photometry of course) will give the file <em>~/project/path/photo_indiv/my_simulation_run_N1.dat_phot.txt</em>. This files contains all the photometric measurement made for this simulation:</li>
+<li><p><strong>~/project/path/original_template/*</strong>: This is the directory where all the template that are actually used are stored. For the first simulated galaxy of the run, the file  <em>~/project/path/original_template/my_simulation_run_N1_original.txt</em> is the theoretical template that was used for the simulation. It is worth noting that it is correctly flux-calibrated. These files contain 2 columns: wavelength (in angstrom) and flux density.</p></li>
+<li><p><strong>~/project/path/photo_indiv/*</strong>: This directory contains all the photometric information for each simulated galaxy. For example, the first simulated galaxy of the run (with photometry of course) will give the file <em>~/project/path/photo_indiv/my_simulation_run_N1.dat_phot.txt</em>. This files contains all the photometric measurement made for this simulation:</p></li>
 </ul>
 <p class="centered">
 <strong>#wavelength wavelength_err mag_template, mag_template_flux, magfinal, error_mag, fluxfinal, errorflux, magsky, Fluxsky</strong></p><p>The wavelength is the effective wavelength of each of the band. Wavelength_err give the half the width at half maximum of the filter. Mag_template and Mag_template_flux give the magniude (in AB system) and the flux of the theoretical template used for the simulation with sky applied. Magfinal, errormag, fluxfinal and errorflux gives the final magnitude anf flux (with offset applied) for the simulated galaxy. Finally, the magnitude and flux of the sky are given by magsky and fluxsky.</p>
 <ul class="simple">
-<li><strong>~/project/path/spectra/*</strong>: This directory contains all the spectra of the simulated galaxies. Assuming you asked for two spectra in the configuration of the simulation run the first simulated galaxy will give 2 spectra: <em>~/project/path/spectra/my_simulation_run_N1_1.txt</em> and <em>~/project/path/spectra/my_simulation_run_N1_2.txt</em>. Each file contain a spectrum simulated for the first object of the run. The format of these files is: wavelength, flux density and error. Additionnally, the sky spectrum is given for each science spectrum in a different file: <em>~/project/path/spectra/my_simulation_run_sky_N1_1.txt</em> and <em>~/project/path/spectra/my_simulation_run_sky_N2_1.txt</em></li>
+<li><p><strong>~/project/path/spectra/*</strong>: This directory contains all the spectra of the simulated galaxies. Assuming you asked for two spectra in the configuration of the simulation run the first simulated galaxy will give 2 spectra: <em>~/project/path/spectra/my_simulation_run_N1_1.txt</em> and <em>~/project/path/spectra/my_simulation_run_N1_2.txt</em>. Each file contain a spectrum simulated for the first object of the run. The format of these files is: wavelength, flux density and error. Additionnally, the sky spectrum is given for each science spectrum in a different file: <em>~/project/path/spectra/my_simulation_run_sky_N1_1.txt</em> and <em>~/project/path/spectra/my_simulation_run_sky_N2_1.txt</em></p></li>
 </ul>
 <p>Few example of simulated data are shown below:</p>
 <div class="figure align-center">
@@ -219,8 +223,8 @@
 <a class="reference internal image-reference" href="_images/example3.png"><img alt="GUI" src="_images/example3.png" style="width: 750px;" /></a>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">All the plots have been made using the photon program: <a class="reference external" href="http://photon-plot.readthedocs.io/en/latest/index.html">http://photon-plot.readthedocs.io/en/latest/index.html</a></p>
+<p class="admonition-title">Note</p>
+<p>All the plots have been made using the photon program: <a class="reference external" href="http://photon-plot.readthedocs.io/en/latest/index.html">http://photon-plot.readthedocs.io/en/latest/index.html</a></p>
 </div>
 </div>
 </div>
@@ -234,7 +238,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="full.html" class="btn btn-neutral" title="Full Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="full.html" class="btn btn-neutral float-left" title="Full Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -243,7 +247,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Romain Thomas.
+        &copy; Copyright 2018, Romain Thomas
 
     </p>
   </div>
@@ -260,36 +264,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.8',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

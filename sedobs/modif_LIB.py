@@ -205,7 +205,7 @@ class IGMlib:
         ###is probably useless to give more than 4 digits)
         redshift = round(redshift,4)
         ## Open the IGMfile
-        with h5py.File(IGMfile) as IGM:
+        with h5py.File(IGMfile, 'r') as IGM:
             Curves = numpy.array(IGM['%s/Curve'%str(redshift)])
             Wave = numpy.array(IGM['Wavelength/Wave'])
             Tr = numpy.array(IGM['%s/Transmissions'%str(redshift)])

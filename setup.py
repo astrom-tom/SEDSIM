@@ -1,15 +1,23 @@
 from setuptools import setup  
-import sedobs.__info__ as sed
+
+__author__ = "Romain Thomas"
+__credits__ = "Romain Thomas"
+__license__ = "GNU GPL v3"
+__version__ = "19.12.0"
+__maintainer__ = "Romain Thomas"
+__email__ = "rthomas@eso.org"
+__status__ = "Development"
+__website__ = "https://astrom-tom.github.io/SEDobs/build/html/index.html" 
 
 setup(
    name = 'sedobs',
-   version = sed.__version__,
-   author = sed.__author__,
-   author_email = sed.__email__,
+   version = __version__,
+   author = __author__,
+   author_email = __email__,
    packages = ['sedobs'],
    entry_points = {'gui_scripts': ['sedobs = sedobs.__main__:main',],},
-   url = sed.__website__,
-   license = sed.__license__,
+   url = __website__,
+   license = __license__,
    description = 'Python tool for observed galaxy SED simulation',
    python_requires = '>=3.6',
    install_requires = [
